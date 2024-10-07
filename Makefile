@@ -15,7 +15,7 @@ rollback-migrations:
 # Funções para Iniciar, Parar e Reiniciar o Servidor
 start:
 	@docker compose -f $(DOCKER_COMPOSE_FILE) up --build -d
-#@docker exec -it api-alo python /api/app/db/models.py
+	@docker exec -it smeif-api python /api/app/database/models.py
 
 stop:
 	@docker compose -f $(DOCKER_COMPOSE_FILE) down

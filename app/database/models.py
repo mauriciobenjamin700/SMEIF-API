@@ -1,35 +1,155 @@
 from datetime import datetime
-from sqlalchemy import Boolean, DateTime, Float, Integer, String, ForeignKey, Text
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-
-from api.app.database.base import Base
-from api.app.database.connection import engine
+from sqlalchemy import DateTime, Float, String, ForeignKey, Text
+from sqlalchemy.orm import Mapped, mapped_column
 
 
-class Client(Base):
+from os.path import abspath, dirname
+import sys
+sys.path.append(dirname(abspath(__file__))) #Garantindo a criação das tabelas
+
+from base import Base
+from connection import engine
+
+class UserModel(Base):
     """
-    
-    - Attributes: 
-        - id: str PK,
-        - google_id: str UNIQUE,
-        - name: str NOT NULL,
-        - phone: str UNIQUE NOT NULL,
-        - email: str UNIQUE NOT NULL,
-        - password: str NOT NULL
-        - level: str NOT NULL # ["CLIENT", "INTERLOCUTOR", "PRODUCER"]
-        - cpf_cnpj: str,
-        - pixkey_type: str 
-        - pixkey
-    
-
+    - cpf: str
+    - name: str
+    - phone: str
+    - phone_optional: str | None
+    - email: str
+    - login: str
+    - password: str
+    - level: str    
     """
-    __tablename__ = 'client'  
+
+    __tablename__ = 'user'  
     
-    id: Mapped[str] = mapped_column(String, primary_key=True)
-    google_id: Mapped[str] = mapped_column(String, unique=True, nullable=True)
-    name: Mapped[str] = mapped_column(String, nullable=False)
-    phone: Mapped[str] = mapped_column(String, unique=True,nullable=False)
+    cpf: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
+    phone: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    phone_optional: Mapped[str] = mapped_column(String, unique=True, nullable=True)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String, nullable=False)
-    level: Mapped[str] = mapped_column(String, nullable=False)
-    cpf_cnpj: Mapped[str] = mapped_column(String, nullable=True)
+    login: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String, unique= False, nullable=False)
+    level: Mapped[str] = mapped_column(String, unique=False ,nullable=False)
+
+
+class WarningModel(Base):
+    """
+    - id: str
+    - parent_cpf: str
+    - text: str
+    - file_path: str | None
+    - date: datetime
+    """
+
+    __tablename__ = 'warning'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    parent_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    file_path: Mapped[str] = mapped_column(String, nullable=True)
+    date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
+class ChildModel(Base):
+
+    __tablename__ = 'child'
+
+    cpf: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
+    matriculation: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+
+
+class NotifyModel(Base):
+
+    __tablename__ = 'notify'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    origin: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"),nullable=False)
+    parent_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
+
+
+class ChildParentsModel(Base):
+
+    __tablename__ = 'child_parents'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), primary_key=True)
+    parent_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), primary_key=True)
+
+class ClassModel(Base):
+
+    __tablename__ = 'class'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    room: Mapped[str] = mapped_column(String, nullable=False)
+    teacher_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+
+
+class ClassEventModel(Base):
+
+    __tablename__ = 'class_event'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
+    start_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    end_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
+class ClassStudantModel(Base):
+    """
+    - id: str
+    - class_id: str
+    - child_cpf: str
+    """
+
+    __tablename__ = 'class_studant'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
+    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
+
+
+class PresenceModel(Base):
+
+    __tablename__ = 'presence'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    class_event_id: Mapped[str] = mapped_column(String, ForeignKey("class_event.id"), nullable=False)
+    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
+    type: Mapped[str] = mapped_column(String, nullable=False) # P or F
+    date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
+class NoteModel(Base):
+
+    __tablename__ = 'note'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    class_event_id: Mapped[str] = mapped_column(String, ForeignKey("class_event.id"), nullable=False)
+    points: Mapped[float] = mapped_column(Float, nullable=False)
+    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
+    date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
+def create_tables(engine) -> bool:
+    """
+    Cria no banco todas as entidades necessárias para o sistema
+    """
+    try:
+        Base.metadata.create_all(engine)
+        return True
+    except Exception as e:
+        print(f"Erro ao criar entidades: {e}")
+        return False
+
+if __name__ == "__main__":
+
+    print("Starting Database")
+    success = create_tables(engine)
+    print(f"Database setup {'succeeded' if success else 'failed'}")

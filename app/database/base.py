@@ -16,13 +16,12 @@ class Base(DeclarativeBase):
         columns_str = ", ".join(f"{key}={value!r}" for key, value in columns.items())
         return f"{cls.__name__}({columns_str})"
     
-    def dict(self, *args, **kwargs) -> Dict[str, Any]:
+    def dict(self) -> Dict[str, Any]:
         """
         Converte o objeto para um dicionário, removendo chaves com valores None.
         
         Args:
-            *args: Argumentos adicionais para a conversão.
-            **kwargs: Argumentos adicionais para a conversão.
+
             
         Returns:
             Dict[str, Any]: O objeto convertido em dicionário.
