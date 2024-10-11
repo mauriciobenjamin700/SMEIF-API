@@ -11,8 +11,9 @@ def base_validation(field: str, field_name) -> str:
     if not field:
         raise HTTPException(400, f"Campo {field_name} vazio")
 
-    elif field.strip() == "":
-        raise HTTPException(400, f"Campo {field_name} vazio")
+    elif isinstance(field, str):
+        if field.strip() == "":
+            raise HTTPException(400, f"Campo {field_name} vazio")
     
     return field
     

@@ -51,7 +51,7 @@ class UserRequest(BaseSchema):
         return validate_phone_number(value)
     
     @model_validator(mode="before")
-    def field_validate_phone_optional(cls, values) -> str:
+    def field_validate_phone_optional(cls, values) -> dict:
         value = values.get("phone_optional")
         if value:
             value = base_validation(value, "Telefone Opcional")
@@ -61,9 +61,9 @@ class UserRequest(BaseSchema):
             if value == phone:
                 raise HTTPException(400, "Telefone e Telefone Opcional não podem ser iguais")
 
-            return validate_phone_number(value)
+            values["phone_optional"] = validate_phone_number(value)
         
-        return value
+        return values
     
     @field_validator("email", mode="before")
     def field_validate_email(cls, value) -> str:
@@ -84,5 +84,7 @@ class UserRequest(BaseSchema):
 
         if value not in LEVEL.values():
             raise ValueError(f"Nível de Acesso inválido. Valores válidos: {', '.join(LEVEL.values())}")
+        
+        return value
         
 

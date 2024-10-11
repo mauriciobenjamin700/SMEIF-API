@@ -1,4 +1,3 @@
-from fastapi.background import P
 from schemas.user import UserRequest
 
 
@@ -23,7 +22,7 @@ def test_UserRequest_sucess():
         level=level
     )
 
-    assert user.cpf == cpf
+    assert user.cpf == cpf.replace(".", "").replace("-", "")
     assert user.name == name
     assert user.phone == phone
     assert user.phone_optional == phone_optional
@@ -31,4 +30,3 @@ def test_UserRequest_sucess():
     assert user.login == login
     assert user.password == password
     assert user.level == level
-
