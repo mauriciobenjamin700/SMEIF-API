@@ -45,7 +45,7 @@ def validate_cpf(string:str) -> str:
         return  identity
 
     
-    raise HTTPException(400,"CPF/CNPJ inválido")
+    raise HTTPException(400,"CPF inválido")
 
 
 def validate_email(email:str) -> str:

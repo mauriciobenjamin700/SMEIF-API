@@ -20,7 +20,7 @@ class UserRequest(BaseSchema):
     - cpf: str
     - name: str
     - phone: str
-    - phone_optional: str
+    - phone_optional: str = "
     - email: str
     - login: str
     - password: str
@@ -29,7 +29,7 @@ class UserRequest(BaseSchema):
     cpf: str = Field(title="cpf", description="CPF do usuário", examples=["123.456.789-00"])
     name: str = Field(title="name", description="Nome do usuário", examples=["John Doe"])
     phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 00000-0000"])
-    phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 00000-0000"])
+    phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 00000-0000"], default="")
     email: str = Field(title="email", description="E-mail do usuário", examples=["test@example.com"])
     login: str = Field(title="login", description="Login do usuário", examples=["john.doe"])
     password: str = Field(title="password", description="Senha do usuário", examples=["123456"])
@@ -53,7 +53,7 @@ class UserRequest(BaseSchema):
     @model_validator(mode="before")
     def field_validate_phone_optional(cls, values) -> dict:
         value = values.get("phone_optional")
-        if value:
+        if value.strip() != "":
             value = base_validation(value, "Telefone Opcional")
 
             phone = values.get("phone")
@@ -62,6 +62,9 @@ class UserRequest(BaseSchema):
                 raise HTTPException(400, "Telefone e Telefone Opcional não podem ser iguais")
 
             values["phone_optional"] = validate_phone_number(value)
+        
+        else:
+            values["phone_optional"] = ""
         
         return values
     
@@ -79,11 +82,10 @@ class UserRequest(BaseSchema):
         return base_validation(value, "Senha")
     
     @field_validator("level", mode="before")
-    def field_validate_level(cls, value) -> str:
-        value =  base_validation(value, "Nível de Acesso")
+    def field_validate_level(cls, value) -> int:
 
-        if value not in LEVEL.values():
-            raise ValueError(f"Nível de Acesso inválido. Valores válidos: {', '.join(LEVEL.values())}")
+        if not value or value not in LEVEL.values():
+            raise HTTPException(400,"Nível de Acesso inválido")
         
         return value
         
