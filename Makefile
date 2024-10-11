@@ -25,7 +25,7 @@ restart: stop start
 # A diferança entre o '@' e sem o '@' é que com o '@' o comando é executado direto e sem o '@' o comando é jogado no terminal e depois executado
 
 tests:
-	@docker exec -it "Nome da Sua API" pytest -p no:warnings /api/app/tests
+	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests
 
 
 kabum:
