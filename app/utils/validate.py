@@ -18,7 +18,27 @@ def base_validation(field: str, field_name) -> str:
     return field
     
 
+def validate_string_field(field: str) -> str | None:
+    """
+    Valida um campo de texto.
+    
+    - Args:
+        - field: str: Campo de texto que será validado
+        
+    - Return:
+        - str: Casoo o campo não esteja vazio
+        - None: Caso o campo esteja vazio
+    
+    """
+    
+    if isinstance(field, str):
 
+        field = field.strip()
+
+        if len(field) == 0:
+            field = None
+    
+    return field
 
 def validate_cpf(string:str) -> str:
     """
@@ -56,12 +76,13 @@ def validate_email(email:str) -> str:
         - email:: str: Email que será validado
         
     - Return:
-        - None
+        - str: Email formatado
     
     - Raises:    
         - HTTPException: 400 - E-mail invalido
     
     """
+    email = email.replace(" ", "").lower()
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     if not match(email_regex, email):
         raise HTTPException(400, "Email inválido")
