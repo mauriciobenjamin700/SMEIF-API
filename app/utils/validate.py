@@ -57,8 +57,6 @@ def validate_cpf(string:str) -> str:
     """
 
     identity = "".join([number for number in string if number.isnumeric()])
-    print(identity)
-    print("Tamanho: ",len(identity))
     
     if len(identity) == 11: #Caso seja um CPF
 
@@ -140,7 +138,6 @@ def validate_phone_number(phone_number: str) -> str:
     
     # Removendo todos os caracteres que não são dígitos
     cleaned_number = sub(r'\D', '', phone_number)
-    print("linha 121 -> ", cleaned_number)
     
     # Definindo o formato esperado de número de telefone brasileiro com DDD e dígito 9
     phone_regex = r'^\d{2}9\d{8}$'

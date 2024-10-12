@@ -1,12 +1,48 @@
 from pytest import fixture
 
+
+
 from database.connection import Session
+from database.models import UserModel
+from schemas.user import UserRequest
+from utils.cryptography import crypto
 
 @fixture
 def db_session():
     try:
         session = Session()
+
+        session.query(UserModel).delete()
+
         yield session
 
     finally:
+
+        session.query(UserModel).delete()
+
         session.close()
+
+
+@fixture
+def mock_UserRequest() -> UserRequest:
+    return UserRequest(
+        cpf="123.456.789-00",
+        name="John Doe",
+        phone="(00) 90000-0000",
+        email="john.doe@gmail.com",
+        login="john.doe",
+        password="123456",
+        level=1
+    )
+
+@fixture
+def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
+    
+    request = UserRequest(**mock_UserRequest.dict())
+
+    request.password = crypto(request.password)
+
+    user = UserModel(**request.dict())
+
+    db_session.add(user)
+    db_session.commit()

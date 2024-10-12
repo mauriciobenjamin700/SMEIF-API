@@ -2,6 +2,20 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 
+from constants.user import (
+    ADD_MESSAGE, 
+    DELETE_MESSAGE,
+    ERROR_CPF_ALREADY_EXISTS,
+    ERROR_EMAIL_ALREADY_EXISTS,
+    ERROR_LOGIN_ALREADY_EXISTS, 
+    ERROR_NOT_FOUND_USER, 
+    ERROR_NOT_FOUND_USERS, 
+    ERROR_NOT_ID, 
+    ERROR_PASSWORD_WRONG,
+    ERROR_PHONE_ALREADY_EXISTS, 
+    UPDATE_MESSAGE_FAIL, 
+    UPDATE_MESSAGE_SUCESS
+)
 from controllers.base import Repository
 from database.models import UserModel
 from schemas.user import (
@@ -32,17 +46,20 @@ class UserUseCases(Repository):
             - dict: {"detail": "Usuário cadastrado com sucesso"}
 
         - Raises:
-            - HTTPException: 400 - ID não informado
-            - HTTPException: 404 - Usuário não encontrado
-            - HTTPException: 409 - Usuário já cadastrado
+            - HTTPException: 409 - CPF já cadastrado
+            - HTTPException: 409 - Telefone já cadastrado
+            - HTTPException: 409 - Email já cadastrado
+            - HTTPException: 409 - Login já cadastrado
             - HTTPException: 500 - Erro no servidor
         """
         try:
 
-            user = self._get(request.cpf)
-
-            if user:
-                raise HTTPException(status_code=409, detail="Usuário já cadastrado")
+            self._check_existence(
+                request.cpf, 
+                request.phone, 
+                request.email, 
+                request.login
+            )
             
             request.password = crypto(request.password)
             
@@ -51,7 +68,7 @@ class UserUseCases(Repository):
             self.db_session.add(user)
             self.db_session.commit()
 
-            return {"detail": "Usuário cadastrado com sucesso"}
+            return ADD_MESSAGE
 
         except HTTPException:
             raise
@@ -152,7 +169,7 @@ class UserUseCases(Repository):
                 self.db_session.commit()
                 self.db_session.refresh(user)
 
-            return {"detail": "Usuário atualizado com sucesso"} if updated else {"detail": "Nenhum dado foi atualizado"}
+            return UPDATE_MESSAGE_SUCESS if updated else UPDATE_MESSAGE_FAIL
 
         except HTTPException:
             raise
@@ -160,7 +177,7 @@ class UserUseCases(Repository):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
 
-    def delete(self, id: str) -> None:
+    def delete(self, id: str) -> dict:
         """
         Deleta um usuário
 
@@ -182,7 +199,7 @@ class UserUseCases(Repository):
             self.db_session.delete(user)
             self.db_session.commit()
 
-            return {"detail": "Usuário deletado com sucesso"}
+            return DELETE_MESSAGE
 
         except HTTPException:
             raise
@@ -210,10 +227,10 @@ class UserUseCases(Repository):
             user = self.db_session.query(UserModel).filter_by(login=acess.login).first()
 
             if not user:
-                raise HTTPException(status_code=404, detail="Usuário não encontrado")
+                raise HTTPException(status_code=404, detail=ERROR_NOT_FOUND_USER)
 
             if not verify(acess.password, user.password):
-                raise HTTPException(status_code=401, detail="Senha inválida")
+                raise HTTPException(status_code=401, detail=ERROR_PASSWORD_WRONG)
             
 
             data = self._map_UserModel_to_UserResponse(user)
@@ -227,16 +244,43 @@ class UserUseCases(Repository):
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
+        
+    def _check_existence(self, cpf: str, phone: str, email: str, login: str) -> None:
+            
+            user = self.db_session.query(UserModel).filter_by(cpf=cpf).first()
+    
+            if user:
+                
+                raise HTTPException(status_code=409, detail=ERROR_CPF_ALREADY_EXISTS)
+            
+            user = self.db_session.query(UserModel).filter_by(phone=phone).first()
+
+            if user:
+                
+                raise HTTPException(status_code=409, detail=ERROR_PHONE_ALREADY_EXISTS)
+
+            user = self.db_session.query(UserModel).filter_by(email=email).first()
+            
+            if user:
+                
+                raise HTTPException(status_code=409, detail=ERROR_EMAIL_ALREADY_EXISTS)
+
+            user = self.db_session.query(UserModel).filter_by(login=login).first()
+
+            if user:
+
+                raise HTTPException(status_code=409, detail=ERROR_LOGIN_ALREADY_EXISTS)
+            
 
     def _get(self, id: str) -> UserModel:
 
         if not id:
-            raise HTTPException(status_code=400, detail="ID não informado")
+            raise HTTPException(status_code=400, detail=ERROR_NOT_ID)
         
         user = self.db_session.query(UserModel).filter_by(cpf=id).first()
 
         if not user:
-            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+            raise HTTPException(status_code=404, detail=ERROR_NOT_FOUND_USER)
         
         return user
     
@@ -245,7 +289,7 @@ class UserUseCases(Repository):
         users = self.db_session.query(UserModel).all()
 
         if not users:
-            raise HTTPException(status_code=404, detail="Nenhum usuário encontrado")
+            raise HTTPException(status_code=404, detail=ERROR_NOT_FOUND_USERS)
         
         return users
     
@@ -255,7 +299,8 @@ class UserUseCases(Repository):
             name=user.name,
             phone=user.phone,
             phone_optional=user.phone_optional,
-            email=user.email
+            email=user.email,
+            level=user.level
         )
     
     def _map_list_UserModel_to_list_UserResponse(self, users: list[UserModel]) -> list[UserResponse]:

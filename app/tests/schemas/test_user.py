@@ -3,7 +3,11 @@ from pytest import raises
 
 
 
-from schemas.user import UserRequest
+from schemas.user import (
+    UserRequest,
+    UserUpdateRequest,
+    UserLoginRequest
+)
 
 
 def test_UserRequest_sucess():
@@ -477,3 +481,44 @@ def test_UserRequest_fail_level_invalid():
 
     assert e.value.status_code == 400
     assert e.value.detail == "Nível de Acesso inválido"
+
+
+def test_user_update_request_sucess():
+    name = "John Doe"
+    phone = "90900000001"  # Número de telefone no formato correto
+    phone_optional = "90900000000"  # Número de telefone no formato correto
+    email = "jhon.doe@gmail.com"
+    login = "john.doe"
+    password = "123456"
+
+    user = UserUpdateRequest(
+        name=name,
+        phone=phone,
+        phone_optional=phone_optional,
+        email=email,
+        login=login,
+        password=password
+    )
+
+    assert user.name == name
+    assert user.phone == phone
+    assert user.phone_optional == phone_optional
+    assert user.email == email
+    assert user.login == login
+    assert user.password == password
+
+# TODO: Testar todos os casos de update
+
+def test_user_login_request_sucess():
+    login = "john.doe"
+    password = "123456"
+
+    user = UserLoginRequest(
+        login=login,
+        password=password
+    )
+
+    assert user.login == login
+    assert user.password == password
+
+# TODO: Testar todos os casos de login

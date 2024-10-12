@@ -12,6 +12,7 @@ def generate_secret_key(length: int = 64) -> str:
     """
     return secrets.token_hex(length)
 
-# Exemplo de uso
-secret_key = generate_secret_key()
-print(f"Chave secreta gerada: {secret_key}")
+if __name__ == "__main__":
+
+    secret_key = generate_secret_key()
+    print(f"Chave secreta gerada: {secret_key}")

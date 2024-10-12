@@ -1,4 +1,11 @@
-from dataclasses import field
+"""
+- DataClasses for User
+    - UserRequest
+    - UserResponse
+    - UserUpdateRequest
+    - UserLoginRequest
+"""
+
 from fastapi import HTTPException
 from pydantic import (
     Field,
@@ -55,7 +62,7 @@ class UserRequest(BaseSchema):
     @model_validator(mode="before")
     def field_validate_phone_optional(cls, values) -> dict:
         value = values.get("phone_optional")
-        if value.strip() != "":
+        if value and value.strip() != "":
             value = base_validation(value, "Telefone Opcional")
 
             phone = values.get("phone")
@@ -106,6 +113,7 @@ class UserResponse(BaseSchema):
     phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"])
     phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 00000-0000"], default="")
     email: str = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"])
+    level: int = Field(title="level", description="Nível de acesso do usuário", examples=["1"])
 
     @field_validator("phone_optional", mode="before")
     def field_validate_phone_optional(cls, value) -> str:
@@ -128,6 +136,7 @@ class UserUpdateRequest(BaseSchema):
     email: str = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"], default=None)
     login: str = Field(title="login", description="Login do usuário", examples=["john.doe"], default=None)
     password: str = Field(title="password", description="Senha do usuário", examples=["123456"], default=None)
+    level: int = Field(title="level", description="Nível de acesso do usuário", examples=["2"], default=None)
 
     @field_validator("name", mode="before")
     def field_validate_name(cls, value) -> str:
@@ -171,6 +180,15 @@ class UserUpdateRequest(BaseSchema):
     def field_validate_password(cls, value) -> str:
 
         return validate_string_field(value)
+
+
+    @field_validator("level", mode="before")
+    def field_validate_level(cls, value) -> int:
+        if value:
+            if value not in LEVEL.values():
+                raise HTTPException(400,"Nível de Acesso inválido")
+        
+        return value
 
 
 class UserLoginRequest(BaseSchema):
