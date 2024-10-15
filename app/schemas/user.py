@@ -31,7 +31,6 @@ class UserRequest(BaseSchema):
     - phone: str
     - phone_optional: str = "
     - email: str
-    - login: str
     - password: str
     - level: int
     """
@@ -40,7 +39,6 @@ class UserRequest(BaseSchema):
     phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"])
     phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 9000-0000"], default="")
     email: str = Field(title="email", description="E-mail do usuário", examples=["test@example.com"])
-    login: str = Field(title="login", description="Login do usuário", examples=["john.doe"])
     password: str = Field(title="password", description="Senha do usuário", examples=["123456"])
     level: int = Field(title="level", description="Nível de acesso do usuário", examples=[f"{key}: {value}" for key, value in LEVEL.items()])
 
@@ -81,10 +79,6 @@ class UserRequest(BaseSchema):
     def field_validate_email(cls, value) -> str:
         value = base_validation(value, "E-mail")
         return validate_email(value)
-    
-    @field_validator("login", mode="before")
-    def field_validate_login(cls, value) -> str:
-        return base_validation(value, "Login")
     
     @field_validator("password", mode="before")
     def field_validate_password(cls, value) -> str:
@@ -130,17 +124,18 @@ class UserUpdateRequest(BaseSchema):
     - email: str | None
     - password: str | None
     """
-    name: str = Field(title="name", description="Nome do usuário", examples=["John Doe"], default=None)
-    phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"], default=None)
-    phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 9000-0000"], default=None)
-    email: str = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"], default=None)
-    login: str = Field(title="login", description="Login do usuário", examples=["john.doe"], default=None)
+    name: str | None = Field(title="name", description="Nome do usuário", examples=["John Doe"], default=None)
+    phone: str | None = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"], default=None)
+    phone_optional: str | None = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 9000-0000"], default=None)
+    email: str |  None = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"], default=None)
     password: str = Field(title="password", description="Senha do usuário", examples=["123456"], default=None)
     level: int = Field(title="level", description="Nível de acesso do usuário", examples=["2"], default=None)
 
     @field_validator("name", mode="before")
     def field_validate_name(cls, value) -> str:
-        return validate_string_field(value)
+        value =  validate_string_field(value)
+
+        return value
     
     @field_validator("phone", mode="before")
     def field_validate_phone(cls, value) -> str:
@@ -170,12 +165,6 @@ class UserUpdateRequest(BaseSchema):
             
         return value
     
-    @field_validator("login", mode="before")
-    def field_validate_login(cls, value) -> str:
-
-        return validate_string_field(value)
-    
-
     @field_validator("password", mode="before")
     def field_validate_password(cls, value) -> str:
 
@@ -193,20 +182,22 @@ class UserUpdateRequest(BaseSchema):
 
 class UserLoginRequest(BaseSchema):
     """
-    - login: str
+    - cpf: str
     - password: str
     """
-    login: str = Field(title="login", description="Login do usuário", examples=["john.doe"])
+    cpf: str = Field(title="CPF", description="CPF do usuário", examples=["123.123.123.12"])
     password: str = Field(title="password", description="Senha do usuário", examples=["123456"])
 
-    @field_validator("login", mode="before")
+    @field_validator("cpf", mode="before")
     def field_validate_login(cls, value) -> str:
 
         value =  validate_string_field(value)
 
         if not value:
 
-            raise HTTPException(400, "Login não informado")
+            raise HTTPException(400, "CPF não informado")
+        
+        value = validate_cpf(value)
         
         return value
     

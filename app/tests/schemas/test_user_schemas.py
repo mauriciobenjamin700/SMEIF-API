@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from pytest import raises
 
 
-
 from schemas.user import (
     UserRequest,
     UserUpdateRequest,
@@ -16,7 +15,6 @@ def test_UserRequest_sucess():
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -26,7 +24,6 @@ def test_UserRequest_sucess():
         phone=phone,
         phone_optional=phone_optional,
         email=email,
-        login=login,
         password=password,
         level=level
     )
@@ -36,7 +33,6 @@ def test_UserRequest_sucess():
     assert user.phone == phone
     assert user.phone_optional == phone_optional
     assert user.email == email
-    assert user.login == login
     assert user.password == password
     assert user.level == level
 
@@ -46,7 +42,6 @@ def test_UserRequest_fail_cpf_none():
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -57,7 +52,6 @@ def test_UserRequest_fail_cpf_none():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -71,7 +65,6 @@ def test_UserRequest_fail_cpf_spaces():
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -82,7 +75,6 @@ def test_UserRequest_fail_cpf_spaces():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -96,7 +88,6 @@ def test_UserRequest_fail_cpf_validation():
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -107,7 +98,6 @@ def test_UserRequest_fail_cpf_validation():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -122,7 +112,6 @@ def test_UserRequest_fail_name_none():
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -133,7 +122,6 @@ def test_UserRequest_fail_name_none():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -148,7 +136,6 @@ def test_UserRequest_fail_name_spaces():
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -159,7 +146,6 @@ def test_UserRequest_fail_name_spaces():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -174,7 +160,6 @@ def test_UserRequest_fail_phone_none():
     phone = None  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -185,7 +170,6 @@ def test_UserRequest_fail_phone_none():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -200,7 +184,6 @@ def test_UserRequest_fail_phone_spaces():
     phone = "     "   # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -211,7 +194,6 @@ def test_UserRequest_fail_phone_spaces():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -225,7 +207,6 @@ def test_UserRequest_fail_phone_validation():
     phone = "12312"   # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -236,7 +217,6 @@ def test_UserRequest_fail_phone_validation():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -251,7 +231,6 @@ def test_UserRequest_sucess_with_no_optional_phone():
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = ""  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -261,7 +240,6 @@ def test_UserRequest_sucess_with_no_optional_phone():
         phone=phone,
         phone_optional=phone_optional,
         email=email,
-        login=login,
         password=password,
         level=level
     )
@@ -271,7 +249,6 @@ def test_UserRequest_sucess_with_no_optional_phone():
     assert user.phone == phone
     assert user.phone_optional == phone_optional
     assert user.email == email
-    assert user.login == login
     assert user.password == password
     assert user.level == level
 
@@ -282,7 +259,6 @@ def test_UserRequest_fail_option_phone_validation():
     phone = "89912345678"   # Número de telefone no formato correto
     phone_optional = "1234"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -293,7 +269,6 @@ def test_UserRequest_fail_option_phone_validation():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -308,7 +283,6 @@ def test_UserRequest_fail_option_phone_equals_phone():
     phone = "89912345678"   # Número de telefone no formato correto
     phone_optional = "89912345678"  # Número de telefone no formato correto
     email = "test@example.com"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -319,7 +293,6 @@ def test_UserRequest_fail_option_phone_equals_phone():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -335,7 +308,6 @@ def test_UserRequest_fail_email_spaces():
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = " "
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -346,7 +318,6 @@ def test_UserRequest_fail_email_spaces():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -360,7 +331,6 @@ def test_UserRequest_fail_email_validation():
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = "aaaa"
-    login = "john.doe"
     password = "123456"
     level = 1
 
@@ -371,7 +341,6 @@ def test_UserRequest_fail_email_validation():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -380,31 +349,6 @@ def test_UserRequest_fail_email_validation():
     assert e.value.detail == "Email inválido"
 
 
-def test_UserRequest_fail_login_spaces():
-    cpf = "123.456.789-00"
-    name = "John Doe"
-    phone = "89912345678"   
-    phone_optional = "89912345679"  
-    email = "example@gmail.com"
-    login = "    "
-    password = "123456"
-    level = 1
-
-    with raises(HTTPException) as e:
-        UserRequest(
-            cpf=cpf,
-            name=name,
-            phone=phone,
-            phone_optional=phone_optional,
-            email=email,
-            login=login,
-            password=password,
-            level=level
-        )
-
-    assert e.value.status_code == 400
-    assert e.value.detail == "Campo Login vazio"
-
 
 def test_UserRequest_fail_password_spaces():
     cpf = "123.456.789-00"
@@ -412,7 +356,6 @@ def test_UserRequest_fail_password_spaces():
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = "example@gmail.com"
-    login = "john.doe"
     password = "   "
     level = 1
 
@@ -423,7 +366,6 @@ def test_UserRequest_fail_password_spaces():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -438,7 +380,6 @@ def test_UserRequest_fail_level_None():
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = "example@gmail.com"
-    login = "john.doe"
     password = "12345"
     level = None
 
@@ -449,7 +390,6 @@ def test_UserRequest_fail_level_None():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -463,7 +403,6 @@ def test_UserRequest_fail_level_invalid():
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = "example@gmail.com"
-    login = "john.doe"
     password = "12345"
     level = 10
 
@@ -474,7 +413,6 @@ def test_UserRequest_fail_level_invalid():
             phone=phone,
             phone_optional=phone_optional,
             email=email,
-            login=login,
             password=password,
             level=level
         )
@@ -483,12 +421,11 @@ def test_UserRequest_fail_level_invalid():
     assert e.value.detail == "Nível de Acesso inválido"
 
 
-def test_user_update_request_sucess():
+def test_UserUpdateRequest_sucess():
     name = "John Doe"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "jhon.doe@gmail.com"
-    login = "john.doe"
     password = "123456"
 
     user = UserUpdateRequest(
@@ -496,7 +433,6 @@ def test_user_update_request_sucess():
         phone=phone,
         phone_optional=phone_optional,
         email=email,
-        login=login,
         password=password
     )
 
@@ -504,21 +440,153 @@ def test_user_update_request_sucess():
     assert user.phone == phone
     assert user.phone_optional == phone_optional
     assert user.email == email
-    assert user.login == login
     assert user.password == password
 
-# TODO: Testar todos os casos de update
-
-def test_user_login_request_sucess():
-    login = "john.doe"
+def test_UserUpdateRequest_sucess_no_name():
+    name = ""
+    phone = "90900000001"  # Número de telefone no formato correto
+    phone_optional = "90900000000"  # Número de telefone no formato correto
+    email = "jhon.doe@gmail.com"
     password = "123456"
 
-    user = UserLoginRequest(
-        login=login,
+    user = UserUpdateRequest(
+        name=name,
+        phone=phone,
+        phone_optional=phone_optional,
+        email=email,
         password=password
     )
 
-    assert user.login == login
+    assert user.name == None
+    assert user.phone == phone
+    assert user.phone_optional == phone_optional
+    assert user.email == email
+    assert user.password == password
+
+def test_UserUpdateRequest_sucess_no_phone():
+    name = "John Doe"
+    phone_optional = "90900000000"  # Número de telefone no formato correto
+    email = "jhon.doe@gmail.com"
+    password = "123456"
+
+    user = UserUpdateRequest(
+        name=name,
+        phone_optional=phone_optional,
+        email=email,
+        password=password
+    )
+
+    assert user.name == name
+    assert user.phone_optional == phone_optional
+    assert user.email == email
+    assert user.password == password
+
+def test_UserUpdateRequest_sucess_no_optional_phone():
+    name = "John Doe"
+    phone = "90900000001"  # Número de telefone no formato correto
+    email = "jhon.doe@gmail.com"
+    password = "123456"
+
+    user = UserUpdateRequest(
+        name=name,
+        phone=phone,
+        email=email,
+        password=password
+    )
+
+    assert user.name == name
+    assert user.phone == phone
+    assert user.email == email
+    assert user.password == password
+
+def test_UserUpdateRequest_sucess_no_email():
+    name = "John Doe"
+    phone = "90900000001"  # Número de telefone no formato correto
+    phone_optional = "90900000000"  # Número de telefone no formato correto
+    password = "123456"
+
+    user = UserUpdateRequest(
+        name=name,
+        phone=phone,
+        phone_optional=phone_optional,
+        password=password
+    )
+
+    assert user.name == name
+    assert user.phone == phone
+    assert user.phone_optional == phone_optional
+    assert user.password == password
+
+def test_UserUpdateRequest_sucess_no_password():
+    name = "John Doe"
+    phone = "90900000001"  # Número de telefone no formato correto
+    phone_optional = "90900000000"  # Número de telefone no formato correto
+    email = "jhon.doe@gmail.com"
+
+    user = UserUpdateRequest(
+        name=name,
+        phone=phone,
+        phone_optional=phone_optional,
+        email=email
+    )
+
+    assert user.name == name
+    assert user.phone == phone
+    assert user.phone_optional == phone_optional
+    assert user.email == email
+
+
+
+def test_UserLoginRequest_sucess():
+    cpf = "123.456.789-00"
+    password = "123456"
+
+    user = UserLoginRequest(
+        cpf=cpf,
+        password=password
+    )
+
+    assert user.cpf == cpf.replace(".", "").replace("-", "")
     assert user.password == password
 
 # TODO: Testar todos os casos de login
+
+def test_UserLoginRequest_fail_no_cpf():
+    cpf = ""
+    password = "123456"
+
+    with raises(HTTPException) as e:
+        UserLoginRequest(
+            cpf=cpf,
+            password=password
+        )
+
+    assert e.value.status_code == 400
+    assert e.value.detail == "CPF não informado"
+
+def test_UserLoginRequest_fail_invalid_cpf():
+    cpf = "123"
+    password = "123456"
+
+    with raises(HTTPException) as e:
+        UserLoginRequest(
+            cpf=cpf,
+            password=password
+        )
+
+    assert e.value.status_code == 400
+    assert e.value.detail == "CPF inválido"
+
+
+def test_UserLoginRequest_fail_no_password():
+    cpf = "123.456.789-00"
+    password = ""
+
+    with raises(HTTPException) as e:
+        UserLoginRequest(
+            cpf=cpf,
+            password=password
+        )
+
+    assert e.value.status_code == 400
+    assert e.value.detail == "Senha não informada"

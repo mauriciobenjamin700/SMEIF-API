@@ -27,6 +27,9 @@ restart: stop start
 tests: start
 	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests
 
+test-schemas: start
+	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/schemas/
+
 
 kabum:
 	@docker system prune -a --force

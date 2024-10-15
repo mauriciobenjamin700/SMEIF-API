@@ -36,6 +36,7 @@ def validate_string_field(field: str) -> str | None:
         field = field.strip()
 
         if len(field) == 0:
+            
             field = None
     
     return field
