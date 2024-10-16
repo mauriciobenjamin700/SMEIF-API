@@ -5,8 +5,6 @@
     - UserUpdateRequest
     - UserLoginRequest
 """
-
-from fastapi import HTTPException
 from pydantic import (
     Field,
     field_validator,
@@ -14,7 +12,7 @@ from pydantic import (
 )
 
 
-from constants.user import LEVEL
+from constants.user import ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS, LEVEL
 from schemas.base import BaseSchema
 from utils.validate import(
     base_validation,
@@ -23,13 +21,14 @@ from utils.validate import(
     validate_phone_number,
     validate_string_field
 )
+from utils.messages import generate_error_message
 
 class UserRequest(BaseSchema):
     """
     - cpf: str
     - name: str
     - phone: str
-    - phone_optional: str = "
+    - phone_optional: str = ""
     - email: str
     - password: str
     - level: int
@@ -66,7 +65,7 @@ class UserRequest(BaseSchema):
             phone = values.get("phone")
 
             if value == phone:
-                raise HTTPException(400, "Telefone e Telefone Opcional não podem ser iguais")
+                raise generate_error_message(400, ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS)
 
             values["phone_optional"] = validate_phone_number(value)
         
@@ -88,7 +87,7 @@ class UserRequest(BaseSchema):
     def field_validate_level(cls, value) -> int:
 
         if not value or value not in LEVEL.values():
-            raise HTTPException(400,"Nível de Acesso inválido")
+            raise generate_error_message(400,"Nível de Acesso inválido")
         
         return value
         
@@ -175,7 +174,7 @@ class UserUpdateRequest(BaseSchema):
     def field_validate_level(cls, value) -> int:
         if value:
             if value not in LEVEL.values():
-                raise HTTPException(400,"Nível de Acesso inválido")
+                raise generate_error_message(400,"Nível de Acesso inválido")
         
         return value
 
@@ -195,7 +194,7 @@ class UserLoginRequest(BaseSchema):
 
         if not value:
 
-            raise HTTPException(400, "CPF não informado")
+            raise generate_error_message(400, "CPF não informado")
         
         value = validate_cpf(value)
         
@@ -208,6 +207,6 @@ class UserLoginRequest(BaseSchema):
 
         if not value:
 
-            raise HTTPException(400, "Senha não informada")
+            raise generate_error_message(400, "Senha não informada")
         
         return value

@@ -1,1 +1,1 @@
-Coloque suas documentações aqui
+Leia o arquivo README.md para entender a cerca do projeto

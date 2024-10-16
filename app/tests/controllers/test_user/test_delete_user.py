@@ -3,11 +3,12 @@ from pytest import raises
 
 
 from constants.user import (
-    DELETE_MESSAGE,
     ERROR_NOT_ID,
-    ERROR_NOT_FOUND_USER
+    ERROR_NOT_FOUND_USER,
+    MESSAGE_DELETE_SUCESS
 )
 from controllers.user import UserUseCases
+from utils.messages import get_text
 
 
 def test_delete_user_sucess(db_session, mock_user_on_db):
@@ -16,7 +17,7 @@ def test_delete_user_sucess(db_session, mock_user_on_db):
 
     response = uc.delete(mock_user_on_db.cpf)
 
-    assert response["detail"] == DELETE_MESSAGE["detail"]
+    assert get_text(response) == MESSAGE_DELETE_SUCESS
 
 
 def test_delete_user_fail_no_id(db_session):

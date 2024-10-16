@@ -27,6 +27,7 @@ from utils.cryptography import (
     crypto,
     verify
 )
+from utils.messages import generate_error_message
 from services.tokens import encode_token
 
 
@@ -83,7 +84,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
+            raise generate_error_message(500, f"Erro no servidor: {e}")
 
     def get(self, id: str)  -> UserResponse:
         """
@@ -110,7 +111,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
+            raise generate_error_message(500, f"Erro no servidor: {e}")
 
 
     def get_all(self) -> list[UserResponse]:
@@ -137,7 +138,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
+            raise generate_error_message(500, f"Erro no servidor: {e}")
         
     def update(self, id:str, request: UserUpdateRequest) -> dict:
         """
@@ -188,7 +189,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
+            raise generate_error_message(500, f"Erro no servidor: {e}")
 
     def delete(self, id: str) -> dict:
         """
@@ -218,7 +219,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
+            raise generate_error_message(500, f"Erro no servidor: {e}")
         
     def login(self, acess: UserLoginRequest) -> str:
         """
@@ -243,7 +244,7 @@ class UserUseCases(Repository):
                 raise HTTPException(status_code=404, detail=ERROR_NOT_FOUND_USER)
 
             if not verify(acess.password, user.password):
-                raise HTTPException(status_code=401, detail=ERROR_PASSWORD_WRONG)
+                raise generate_error_message(401, ERROR_PASSWORD_WRONG)
             
 
             data = self._map_UserModel_to_UserResponse(user)
@@ -256,7 +257,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
+            raise generate_error_message(500, f"Erro no servidor: {e}")
         
     def _check_existence(self, cpf: str | None, phone: str | None, email: str | None) -> None:
             
@@ -266,7 +267,7 @@ class UserUseCases(Repository):
         
                 if user:
                     
-                    raise HTTPException(status_code=409, detail=ERROR_CPF_ALREADY_EXISTS)
+                    raise generate_error_message(409, ERROR_CPF_ALREADY_EXISTS)
                 
             if phone:
             
@@ -274,7 +275,7 @@ class UserUseCases(Repository):
 
                 if user:
                     
-                    raise HTTPException(status_code=409, detail=ERROR_PHONE_ALREADY_EXISTS)
+                    raise generate_error_message(409, ERROR_PHONE_ALREADY_EXISTS)
                 
             if email:
 
@@ -282,19 +283,19 @@ class UserUseCases(Repository):
                 
                 if user:
                     
-                    raise HTTPException(status_code=409, detail=ERROR_EMAIL_ALREADY_EXISTS)
+                    raise generate_error_message(409, ERROR_EMAIL_ALREADY_EXISTS)
 
             
 
     def _get(self, id: str) -> UserModel:
 
         if not id:
-            raise HTTPException(status_code=400, detail=ERROR_NOT_ID)
+            raise generate_error_message(400, ERROR_NOT_ID)
         
         user = self.db_session.query(UserModel).filter_by(cpf=id).first()
 
         if not user:
-            raise HTTPException(status_code=404, detail=ERROR_NOT_FOUND_USER)
+            raise generate_error_message(404, ERROR_NOT_FOUND_USER)
         
         return user
     
@@ -303,7 +304,7 @@ class UserUseCases(Repository):
         users = self.db_session.query(UserModel).all()
 
         if not users:
-            raise HTTPException(status_code=404, detail=ERROR_NOT_FOUND_USERS)
+            raise generate_error_message(404, ERROR_NOT_FOUND_USERS)
         
         return users
     
