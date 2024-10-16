@@ -1,7 +1,7 @@
 from pytest import fixture
 
 
-
+from constants.user import LEVEL
 from database.connection import Session
 from database.models import UserModel
 from schemas.user import UserRequest
@@ -30,9 +30,8 @@ def mock_UserRequest() -> UserRequest:
         name="John Doe",
         phone="(00) 90000-0000",
         email="john.doe@gmail.com",
-        login="john.doe",
         password="123456",
-        level=1
+        level=LEVEL["parent"]
     )
 
 @fixture

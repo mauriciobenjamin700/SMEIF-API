@@ -24,6 +24,8 @@ def test_add_user_success(db_session, mock_UserRequest):
     assert user_in_db.phone == user.phone
     assert user_in_db.phone_optional == user.phone_optional
     assert user_in_db.email == user.email
-    assert user_in_db.login == user.login
     assert verify(mock_UserRequest.password, user_in_db.password)
     assert user_in_db.level == user.level
+
+
+def test_add_user

@@ -7,7 +7,6 @@ from constants.user import (
     DELETE_MESSAGE,
     ERROR_CPF_ALREADY_EXISTS,
     ERROR_EMAIL_ALREADY_EXISTS,
-    ERROR_LOGIN_ALREADY_EXISTS, 
     ERROR_NOT_FOUND_USER, 
     ERROR_NOT_FOUND_USERS, 
     ERROR_NOT_ID, 
@@ -57,8 +56,7 @@ class UserUseCases(Repository):
             self._check_existence(
                 request.cpf, 
                 request.phone, 
-                request.email, 
-                request.login
+                request.email
             )
             
             request.password = crypto(request.password)
@@ -224,7 +222,7 @@ class UserUseCases(Repository):
         """
         try:
 
-            user = self.db_session.query(UserModel).filter_by(login=acess.login).first()
+            user = self.db_session.query(UserModel).filter_by(cpf=acess.cpf).first()
 
             if not user:
                 raise HTTPException(status_code=404, detail=ERROR_NOT_FOUND_USER)
@@ -245,7 +243,7 @@ class UserUseCases(Repository):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
         
-    def _check_existence(self, cpf: str, phone: str, email: str, login: str) -> None:
+    def _check_existence(self, cpf: str, phone: str, email: str) -> None:
             
             user = self.db_session.query(UserModel).filter_by(cpf=cpf).first()
     
@@ -265,11 +263,6 @@ class UserUseCases(Repository):
                 
                 raise HTTPException(status_code=409, detail=ERROR_EMAIL_ALREADY_EXISTS)
 
-            user = self.db_session.query(UserModel).filter_by(login=login).first()
-
-            if user:
-
-                raise HTTPException(status_code=409, detail=ERROR_LOGIN_ALREADY_EXISTS)
             
 
     def _get(self, id: str) -> UserModel:
