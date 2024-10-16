@@ -169,7 +169,7 @@ class UserUseCases(Repository):
                     if field == "password":
 
                         value = crypto(value)
-    
+
                     setattr(user, field, value)
                     updated = True
 

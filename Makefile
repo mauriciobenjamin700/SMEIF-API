@@ -27,10 +27,10 @@ restart: stop start
 tests: start
 	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests
 
-test-schemas: start
+test-schemas:
 	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/schemas/
 
-test-controllers: start
+test-controllers:
 	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/controllers/
 
 

@@ -4,7 +4,7 @@ from pytest import fixture
 from constants.user import LEVEL
 from database.connection import Session
 from database.models import UserModel
-from schemas.user import UserRequest
+from schemas.user import UserRequest, UserUpdateRequest
 from utils.cryptography import crypto
 
 @fixture
@@ -47,3 +47,26 @@ def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
     db_session.commit()
 
     return user
+
+
+@fixture
+def mock_UserUpdateRequest() -> UserUpdateRequest:
+
+    update = UserUpdateRequest(
+        name="Jane Doe",
+        phone_optional="(00) 91111-1111",
+        phone="(00) 90000-0066",
+        email="jane.doe@gmail.com",
+        password="654321"
+    )
+
+    return update
+
+@fixture
+def mock_UserUpdateRequest_level() -> UserUpdateRequest:
+
+    update = UserUpdateRequest(
+        level=LEVEL["teacher"]
+    )
+
+    return update
