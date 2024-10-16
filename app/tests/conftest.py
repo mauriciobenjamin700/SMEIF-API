@@ -45,3 +45,5 @@ def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
 
     db_session.add(user)
     db_session.commit()
+
+    return user

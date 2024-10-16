@@ -31,6 +31,18 @@ from services.tokens import encode_token
 
 
 class UserUseCases(Repository):
+    """
+    - Attributes:
+        - db_session: Sessão de conexão com o banco de dados
+
+    - Methods:
+        - add
+        - get
+        - get_all
+        - update
+        - delete
+        - login
+    """
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
@@ -48,7 +60,6 @@ class UserUseCases(Repository):
             - HTTPException: 409 - CPF já cadastrado
             - HTTPException: 409 - Telefone já cadastrado
             - HTTPException: 409 - Email já cadastrado
-            - HTTPException: 409 - Login já cadastrado
             - HTTPException: 500 - Erro no servidor
         """
         try:
@@ -243,25 +254,31 @@ class UserUseCases(Repository):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Erro no servidor: {e}")
         
-    def _check_existence(self, cpf: str, phone: str, email: str) -> None:
+    def _check_existence(self, cpf: str | None, phone: str | None, email: str | None) -> None:
             
-            user = self.db_session.query(UserModel).filter_by(cpf=cpf).first()
-    
-            if user:
+            if cpf:
+            
+                user = self.db_session.query(UserModel).filter_by(cpf=cpf).first()
+        
+                if user:
+                    
+                    raise HTTPException(status_code=409, detail=ERROR_CPF_ALREADY_EXISTS)
                 
-                raise HTTPException(status_code=409, detail=ERROR_CPF_ALREADY_EXISTS)
+            if phone:
             
-            user = self.db_session.query(UserModel).filter_by(phone=phone).first()
+                user = self.db_session.query(UserModel).filter_by(phone=phone).first()
 
-            if user:
+                if user:
+                    
+                    raise HTTPException(status_code=409, detail=ERROR_PHONE_ALREADY_EXISTS)
                 
-                raise HTTPException(status_code=409, detail=ERROR_PHONE_ALREADY_EXISTS)
+            if email:
 
-            user = self.db_session.query(UserModel).filter_by(email=email).first()
-            
-            if user:
+                user = self.db_session.query(UserModel).filter_by(email=email).first()
                 
-                raise HTTPException(status_code=409, detail=ERROR_EMAIL_ALREADY_EXISTS)
+                if user:
+                    
+                    raise HTTPException(status_code=409, detail=ERROR_EMAIL_ALREADY_EXISTS)
 
             
 
