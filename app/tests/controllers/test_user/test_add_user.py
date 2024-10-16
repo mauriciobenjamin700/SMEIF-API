@@ -3,7 +3,7 @@ from pytest import raises
 
 
 from constants.user import (
-    ADD_MESSAGE,
+    MESSAGE_ADD_SUCESS,
     ERROR_CPF_ALREADY_EXISTS,
     ERROR_EMAIL_ALREADY_EXISTS,
     ERROR_PHONE_ALREADY_EXISTS
@@ -12,10 +12,7 @@ from controllers.user import UserUseCases
 from database.models import UserModel
 from schemas.user import UserRequest
 from utils.cryptography import verify
-from utils.messages import (
-    get_text,
-    get_error_data
-)
+from utils.messages import get_text
 
 def test_add_user_success(db_session, mock_UserRequest):
     uc = UserUseCases(db_session)
@@ -24,7 +21,7 @@ def test_add_user_success(db_session, mock_UserRequest):
 
     response = uc.add(user)
 
-    assert get_text(response) == ADD_MESSAGE
+    assert get_text(response) == MESSAGE_ADD_SUCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 
@@ -56,7 +53,7 @@ def test_add_user_fail_phone_exits(db_session, mock_UserRequest):
 
     response = uc.add(user)
 
-    assert get_text(response) == ADD_MESSAGE
+    assert get_text(response) == MESSAGE_ADD_SUCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 
@@ -84,7 +81,7 @@ def test_add_user_fail_email_exits(db_session, mock_UserRequest):
 
     response = uc.add(user)
 
-    assert get_text(response) == ADD_MESSAGE
+    assert get_text(response) == MESSAGE_ADD_SUCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 

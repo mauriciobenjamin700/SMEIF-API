@@ -2,13 +2,13 @@ from fastapi import HTTPException
 from typing import Literal
 
 
-def gererate_sucess_message(text: str) -> dict:
+def SucessMessage(text: str) -> dict:
     """
     gereate a success message in the template dict
     """
     return {"detail": text}
 
-def generate_error_message(status: Literal[400,401,404,409,500], text: str) -> HTTPException:
+def ErrorMessage(status: Literal[400,401,404,409,500], text: str) -> HTTPException:
     """
     generate a error message in the template HTTPException
     """
@@ -20,9 +20,32 @@ def get_text(message: dict) -> str:
     """
     return message["detail"]
 
-def get_error_data(error: HTTPException) -> dict:
+def generate_error_responses_from_exceptions(exceptions: list[HTTPException]) -> dict:
     """
-    return:
-        tuple: status_code, detail
+    Gera uma estrutura de respostas de erro para FastAPI a partir de uma lista de HTTPException.
+
+    :param exceptions: Lista de objetos HTTPException.
+    :return: Dicionário formatado para o parâmetro `responses` do FastAPI.
     """
-    return error.value.status_code, error.value.detail
+    responses = {}
+    for exception in exceptions:
+        status_code = exception.status_code
+        detail = exception.detail
+
+        if status_code not in responses:
+            responses[status_code] = {
+                "description": "Erro",
+                "content": {
+                    "application/json": {
+                        "examples": {}
+                    }
+                }
+            }
+
+        example_key = detail.lower().replace(" ", "_")
+        responses[status_code]["content"]["application/json"]["examples"][example_key] = {
+            "summary": detail,
+            "value": {"detail": detail}
+        }
+
+    return responses

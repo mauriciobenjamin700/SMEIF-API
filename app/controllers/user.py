@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 
 
 from constants.user import (
-    ADD_MESSAGE, 
-    DELETE_MESSAGE,
+    MESSAGE_ADD_SUCESS, 
+    MESSAGE_DELETE_SUCESS,
     ERROR_CPF_ALREADY_EXISTS,
     ERROR_EMAIL_ALREADY_EXISTS,
     ERROR_NOT_FOUND_USER, 
@@ -12,8 +12,8 @@ from constants.user import (
     ERROR_NOT_ID, 
     ERROR_PASSWORD_WRONG,
     ERROR_PHONE_ALREADY_EXISTS, 
-    UPDATE_MESSAGE_FAIL, 
-    UPDATE_MESSAGE_SUCESS
+    MESSAGE_UPDATE_FAIL, 
+    MESSAGE_UPDATE_SUCESS
 )
 from controllers.base import Repository
 from database.models import UserModel
@@ -27,7 +27,10 @@ from utils.cryptography import (
     crypto,
     verify
 )
-from utils.messages import generate_error_message
+from utils.messages import (
+    SucessMessage,
+    ErrorMessage
+)
 from services.tokens import encode_token
 
 
@@ -78,13 +81,13 @@ class UserUseCases(Repository):
             self.db_session.add(user)
             self.db_session.commit()
 
-            return ADD_MESSAGE
+            return SucessMessage(MESSAGE_ADD_SUCESS)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise generate_error_message(500, f"Erro no servidor: {e}")
+            raise ErrorMessage(500, f"Erro no servidor: {e}")
 
     def get(self, id: str)  -> UserResponse:
         """
@@ -111,7 +114,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise generate_error_message(500, f"Erro no servidor: {e}")
+            raise ErrorMessage(500, f"Erro no servidor: {e}")
 
 
     def get_all(self) -> list[UserResponse]:
@@ -138,7 +141,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise generate_error_message(500, f"Erro no servidor: {e}")
+            raise ErrorMessage(500, f"Erro no servidor: {e}")
         
     def update(self, id:str, request: UserUpdateRequest) -> dict:
         """
@@ -183,13 +186,13 @@ class UserUseCases(Repository):
                 self.db_session.commit()
                 self.db_session.refresh(user)
 
-            return UPDATE_MESSAGE_SUCESS if updated else UPDATE_MESSAGE_FAIL
+            return SucessMessage(MESSAGE_UPDATE_SUCESS) if updated else SucessMessage(MESSAGE_UPDATE_FAIL)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise generate_error_message(500, f"Erro no servidor: {e}")
+            raise ErrorMessage(500, f"Erro no servidor: {e}")
 
     def delete(self, id: str) -> dict:
         """
@@ -213,13 +216,13 @@ class UserUseCases(Repository):
             self.db_session.delete(user)
             self.db_session.commit()
 
-            return DELETE_MESSAGE
+            return SucessMessage(MESSAGE_DELETE_SUCESS)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise generate_error_message(500, f"Erro no servidor: {e}")
+            raise ErrorMessage(500, f"Erro no servidor: {e}")
         
     def login(self, acess: UserLoginRequest) -> str:
         """
@@ -241,12 +244,11 @@ class UserUseCases(Repository):
             user = self.db_session.query(UserModel).filter_by(cpf=acess.cpf).first()
 
             if not user:
-                raise HTTPException(status_code=404, detail=ERROR_NOT_FOUND_USER)
+                raise ErrorMessage(404, ERROR_NOT_FOUND_USER)
 
             if not verify(acess.password, user.password):
-                raise generate_error_message(401, ERROR_PASSWORD_WRONG)
+                raise ErrorMessage(401, ERROR_PASSWORD_WRONG)
             
-
             data = self._map_UserModel_to_UserResponse(user)
             
             token = encode_token(data.dict())
@@ -257,7 +259,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise generate_error_message(500, f"Erro no servidor: {e}")
+            raise ErrorMessage(500, f"Erro no servidor: {e}")
         
     def _check_existence(self, cpf: str | None, phone: str | None, email: str | None) -> None:
             
@@ -267,7 +269,7 @@ class UserUseCases(Repository):
         
                 if user:
                     
-                    raise generate_error_message(409, ERROR_CPF_ALREADY_EXISTS)
+                    raise ErrorMessage(409, ERROR_CPF_ALREADY_EXISTS)
                 
             if phone:
             
@@ -275,7 +277,7 @@ class UserUseCases(Repository):
 
                 if user:
                     
-                    raise generate_error_message(409, ERROR_PHONE_ALREADY_EXISTS)
+                    raise ErrorMessage(409, ERROR_PHONE_ALREADY_EXISTS)
                 
             if email:
 
@@ -283,19 +285,19 @@ class UserUseCases(Repository):
                 
                 if user:
                     
-                    raise generate_error_message(409, ERROR_EMAIL_ALREADY_EXISTS)
+                    raise ErrorMessage(409, ERROR_EMAIL_ALREADY_EXISTS)
 
             
 
     def _get(self, id: str) -> UserModel:
 
         if not id:
-            raise generate_error_message(400, ERROR_NOT_ID)
+            raise ErrorMessage(400, ERROR_NOT_ID)
         
         user = self.db_session.query(UserModel).filter_by(cpf=id).first()
 
         if not user:
-            raise generate_error_message(404, ERROR_NOT_FOUND_USER)
+            raise ErrorMessage(404, ERROR_NOT_FOUND_USER)
         
         return user
     
@@ -304,7 +306,7 @@ class UserUseCases(Repository):
         users = self.db_session.query(UserModel).all()
 
         if not users:
-            raise generate_error_message(404, ERROR_NOT_FOUND_USERS)
+            raise ErrorMessage(404, ERROR_NOT_FOUND_USERS)
         
         return users
     

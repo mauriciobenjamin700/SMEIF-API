@@ -6,8 +6,8 @@ from database.models import UserModel
 from constants.user import (
     ERROR_NOT_FOUND_USER,
     ERROR_NOT_ID,
-    UPDATE_MESSAGE_FAIL, 
-    UPDATE_MESSAGE_SUCESS
+    MESSAGE_UPDATE_SUCESS, 
+    MESSAGE_UPDATE_FAIL
 )
 from controllers.user import UserUseCases
 from schemas.user import (
@@ -15,6 +15,8 @@ from schemas.user import (
     UserUpdateRequest
 )
 from utils.cryptography import verify
+from utils.messages import get_text
+
 
 def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):
     
@@ -22,7 +24,7 @@ def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):
 
     response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest)
 
-    assert response["detail"]  == UPDATE_MESSAGE_SUCESS["detail"]
+    assert get_text(response) == MESSAGE_UPDATE_SUCESS
 
     user = db_session.query(UserModel).filter_by(cpf=mock_user_on_db.cpf).first()
 
@@ -38,7 +40,7 @@ def test_update_user_level(db_session, mock_user_on_db, mock_UserUpdateRequest_l
 
     response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest_level)
 
-    assert response["detail"]  == UPDATE_MESSAGE_SUCESS["detail"]
+    assert get_text(response)  == MESSAGE_UPDATE_SUCESS
 
     user = db_session.query(UserModel).filter_by(cpf=mock_user_on_db.cpf).first()
 
@@ -58,7 +60,7 @@ def test_update_user_not_updated(db_session, mock_user_on_db):
 
     response = uc.update(mock_user_on_db.cpf, update)
 
-    assert response["detail"]  == UPDATE_MESSAGE_FAIL["detail"]
+    assert get_text(response)  == MESSAGE_UPDATE_FAIL
 
 
 def test_update_user_no_id(db_session, mock_user_on_db, mock_UserUpdateRequest):

@@ -14,14 +14,15 @@ from schemas.user import(
 )
 from services.session import db_session
 from routes.docs.user import (
-    ADD,
-    ADD_RESPONSE
+    ADD_DESCRIPTION,
+    ADD_RESPONSE_DESCRIPTION,
+    ADD_RESPONSES
 )
 
 
 router = APIRouter(prefix='/client', tags=['Client'])
 
-@router.post('/add', description=ADD, response_description=ADD_RESPONSE)
+@router.post('/add', description=ADD_DESCRIPTION, response_description=ADD_RESPONSE_DESCRIPTION, responses=ADD_RESPONSES)
 async def add_clients(
     user: UserRequest,
     db_session: Session = Depends(db_session),

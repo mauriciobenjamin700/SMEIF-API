@@ -27,7 +27,7 @@ app.include_router(client_router)
 
 
 @app.get('/')
-def test_api():
+def main():
     return {"mensage": "API rodando!"}
 
 # Executando o servidor

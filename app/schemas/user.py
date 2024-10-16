@@ -21,7 +21,8 @@ from utils.validate import(
     validate_phone_number,
     validate_string_field
 )
-from utils.messages import generate_error_message
+from utils.messages import ErrorMessage
+
 
 class UserRequest(BaseSchema):
     """
@@ -65,7 +66,7 @@ class UserRequest(BaseSchema):
             phone = values.get("phone")
 
             if value == phone:
-                raise generate_error_message(400, ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS)
+                raise ErrorMessage(400, ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS)
 
             values["phone_optional"] = validate_phone_number(value)
         
@@ -87,7 +88,7 @@ class UserRequest(BaseSchema):
     def field_validate_level(cls, value) -> int:
 
         if not value or value not in LEVEL.values():
-            raise generate_error_message(400,"Nível de Acesso inválido")
+            raise ErrorMessage(400,"Nível de Acesso inválido")
         
         return value
         
@@ -174,7 +175,7 @@ class UserUpdateRequest(BaseSchema):
     def field_validate_level(cls, value) -> int:
         if value:
             if value not in LEVEL.values():
-                raise generate_error_message(400,"Nível de Acesso inválido")
+                raise ErrorMessage(400,"Nível de Acesso inválido")
         
         return value
 
@@ -194,7 +195,7 @@ class UserLoginRequest(BaseSchema):
 
         if not value:
 
-            raise generate_error_message(400, "CPF não informado")
+            raise ErrorMessage(400, "CPF não informado")
         
         value = validate_cpf(value)
         
@@ -207,6 +208,6 @@ class UserLoginRequest(BaseSchema):
 
         if not value:
 
-            raise generate_error_message(400, "Senha não informada")
+            raise ErrorMessage(400, "Senha não informada")
         
         return value
