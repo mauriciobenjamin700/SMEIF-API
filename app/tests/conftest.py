@@ -4,7 +4,7 @@ from pytest import fixture
 from constants.user import LEVEL
 from database.connection import Session
 from database.models import UserModel
-from schemas.user import UserRequest, UserUpdateRequest
+from schemas.user import UserLoginRequest, UserRequest, UserUpdateRequest
 from utils.cryptography import crypto
 
 @fixture
@@ -70,3 +70,14 @@ def mock_UserUpdateRequest_level() -> UserUpdateRequest:
     )
 
     return update
+
+
+@fixture
+def mock_UserLoginRequest(mock_UserRequest) -> UserLoginRequest:
+
+    login = UserLoginRequest(
+        cpf=mock_UserRequest.cpf,
+        password=mock_UserRequest.password
+    )
+
+    return login

@@ -170,8 +170,12 @@ class UserUseCases(Repository):
 
                         value = crypto(value)
 
-                    setattr(user, field, value)
-                    updated = True
+                    value_in_field =  getattr(user, field)
+
+                    if value != value_in_field:
+
+                        setattr(user, field, value)
+                        updated = True
 
             if updated:
 

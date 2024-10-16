@@ -4,11 +4,16 @@ from pytest import raises
 
 from database.models import UserModel
 from constants.user import (
-    ERROR_NOT_FOUND_USERS, 
+    ERROR_NOT_FOUND_USER,
+    ERROR_NOT_ID,
+    UPDATE_MESSAGE_FAIL, 
     UPDATE_MESSAGE_SUCESS
 )
 from controllers.user import UserUseCases
-from schemas.user import UserResponse
+from schemas.user import (
+    UserResponse,
+    UserUpdateRequest
+)
 from utils.cryptography import verify
 
 def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):
@@ -39,3 +44,39 @@ def test_update_user_level(db_session, mock_user_on_db, mock_UserUpdateRequest_l
 
 
     assert user.level == mock_UserUpdateRequest_level.level
+
+def test_update_user_not_updated(db_session, mock_user_on_db):
+
+    uc = UserUseCases(db_session)
+
+    update = UserUpdateRequest(
+        name=mock_user_on_db.name,
+        phone=mock_user_on_db.phone,
+        phone_optional=mock_user_on_db.phone_optional,
+        email=mock_user_on_db.email,
+    )
+
+    response = uc.update(mock_user_on_db.cpf, update)
+
+    assert response["detail"]  == UPDATE_MESSAGE_FAIL["detail"]
+
+
+def test_update_user_no_id(db_session, mock_user_on_db, mock_UserUpdateRequest):
+
+    uc = UserUseCases(db_session)
+
+    with raises(HTTPException) as e:
+        uc.update(None, mock_UserUpdateRequest)
+
+    assert e.value.status_code == 400
+    assert e.value.detail == ERROR_NOT_ID
+
+def test_update_user_not_found(db_session, mock_user_on_db, mock_UserUpdateRequest):
+    
+        uc = UserUseCases(db_session)
+    
+        with raises(HTTPException) as e:
+            uc.update("12345678901", mock_UserUpdateRequest)
+    
+        assert e.value.status_code == 404
+        assert e.value.detail == ERROR_NOT_FOUND_USER
