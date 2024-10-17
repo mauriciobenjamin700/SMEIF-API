@@ -148,11 +148,12 @@ class UserUpdateRequest(BaseSchema):
     
 
     @field_validator("phone_optional", mode="before")
-    def field_validate_phone(cls, value) -> str:
+    def field_validate_phone_optional(cls, value) -> str:
 
         if validate_string_field(value):
             
             value = validate_phone_number(value)
+
 
         return value
     
