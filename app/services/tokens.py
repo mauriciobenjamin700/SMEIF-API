@@ -28,14 +28,7 @@ def encode_token(data_token: dict) -> str:
 def decode_token(token: str) -> dict:
     """
     Decodifica um token jwt em um dicionário com seu conteúdo
-    
-    Chaves do Token:
-        - id: str
-        - name: str
-        - email: str
-        - level: str
-        - pixkey_type: str
-        - pixkey: str
+        
     """
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

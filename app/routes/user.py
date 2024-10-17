@@ -104,7 +104,7 @@ async def delete_user(
 async def login(
     user: UserLoginRequest,
     db_session: Session = Depends(db_session)
-) -> dict:
+) -> str:
 
     uc = UserUseCases(db_session)
 
