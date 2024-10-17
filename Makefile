@@ -33,6 +33,9 @@ test-schemas: start
 test-controllers: start
 	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/controllers/
 
+test-routes: start
+	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/routes/
+
 
 kabum:
 	@docker system prune -a --force

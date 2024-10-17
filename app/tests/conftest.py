@@ -1,11 +1,18 @@
 from pytest import fixture
+from fastapi.testclient import TestClient
 
 
 from constants.user import LEVEL
 from database.connection import Session
 from database.models import UserModel
+from main import app
 from schemas.user import UserLoginRequest, UserRequest, UserUpdateRequest
 from utils.cryptography import crypto
+
+
+@fixture
+def api():
+    return TestClient(app)
 
 @fixture
 def db_session():
@@ -14,13 +21,29 @@ def db_session():
 
         session.query(UserModel).delete()
 
+        session.commit()
+
         yield session
 
     finally:
 
         session.query(UserModel).delete()
 
+        session.commit()
+
         session.close()
+
+
+@fixture
+def clean_data():
+    
+    session = Session()
+
+    session.query(UserModel).delete()
+
+    session.commit()
+
+    session.close()
 
 
 @fixture
