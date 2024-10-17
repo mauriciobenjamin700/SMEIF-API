@@ -28,6 +28,7 @@ from utils.cryptography import (
     verify
 )
 from utils.messages import (
+    ServerError,
     SucessMessage,
     ErrorMessage
 )
@@ -87,7 +88,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ErrorMessage(500, f"Erro no servidor: {e}")
+            raise ServerError(e)
 
     def get(self, id: str)  -> UserResponse:
         """
@@ -114,7 +115,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ErrorMessage(500, f"Erro no servidor: {e}")
+            raise ServerError(e)
 
 
     def get_all(self) -> list[UserResponse]:
@@ -141,7 +142,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ErrorMessage(500, f"Erro no servidor: {e}")
+            raise ServerError(e)
         
     def update(self, id:str, request: UserUpdateRequest) -> dict:
         """
@@ -192,7 +193,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ErrorMessage(500, f"Erro no servidor: {e}")
+            raise ServerError(e)
 
     def delete(self, id: str) -> dict:
         """
@@ -222,7 +223,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ErrorMessage(500, f"Erro no servidor: {e}")
+            raise ServerError(e)
         
     def login(self, acess: UserLoginRequest) -> str:
         """
@@ -259,7 +260,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ErrorMessage(500, f"Erro no servidor: {e}")
+            raise ServerError(e)
         
     def _check_existence(self, cpf: str | None, phone: str | None, email: str | None) -> None:
             

@@ -1,5 +1,14 @@
-from constants.user import MESSAGE_ADD_SUCESS
-from utils.messages import ErrorMessage, SucessMessage, generate_error_responses_from_exceptions
+from fastapi import Response
+
+
+from constants.base import ERROR_SERVER_ERROR
+from constants.user import (
+    ERROR_CPF_ALREADY_EXISTS, 
+    ERROR_EMAIL_ALREADY_EXISTS, 
+    ERROR_PHONE_ALREADY_EXISTS, 
+    MESSAGE_ADD_SUCESS
+)
+from utils.messages import generate_response, generate_responses_documentation
 
 
 ADD_DESCRIPTION = """
@@ -26,44 +35,12 @@ ADD_RESPONSE_DESCRIPTION = f"""
 
 """
 
-ADD_RESPONSES = generate_error_responses_from_exceptions(
+ADD_RESPONSES = generate_responses_documentation(
     [
-        ErrorMessage(409, "CPF já cadastrado"),
-        ErrorMessage(409, "Telefone já cadastrado"),
-        ErrorMessage(409, "Email já cadastrado"),
-        ErrorMessage(500, "Erro no servidor"),
-        ErrorMessage(400, "Jhon derrubou o servidor")
+        generate_response(200, MESSAGE_ADD_SUCESS),
+        generate_response(409, ERROR_CPF_ALREADY_EXISTS),
+        generate_response(409, ERROR_PHONE_ALREADY_EXISTS),
+        generate_response(409, ERROR_EMAIL_ALREADY_EXISTS),
+        generate_response(500, ERROR_SERVER_ERROR)
     ]
-)
-
-# ADD_RESPONSES = {
-#     409: {
-#         "description": "Conflito de dados",
-#         "content": {
-#             "application/json": {
-#                 "examples": {
-#                     "cpf_conflict": {
-#                         "summary": "CPF já cadastrado",
-#                         "value": {"detail": "CPF já cadastrado"}
-#                     },
-#                     "phone_conflict": {
-#                         "summary": "Telefone já cadastrado",
-#                         "value": {"detail": "Telefone já cadastrado"}
-#                     },
-#                     "email_conflict": {
-#                         "summary": "Email já cadastrado",
-#                         "value": {"detail": "Email já cadastrado"}
-#                     }
-#                 }
-#             }
-#         }
-#     },
-#     500: {
-#         "description": "Erro no servidor",
-#         "content": {
-#             "application/json": {
-#                 "example": {"detail": "Erro interno do servidor"}
-#             }
-#         }
-#     }
-# }
+    )
