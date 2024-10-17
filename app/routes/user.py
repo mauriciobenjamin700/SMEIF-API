@@ -17,9 +17,21 @@ from routes.docs.user import (
     ADD_DESCRIPTION,
     ADD_RESPONSE_DESCRIPTION,
     ADD_RESPONSES,
+    DELETE_DESCRIPTION,
+    DELETE_RESPONSE_DESCRIPTION,
+    DELETE_RESPONSES,
     GET_DESCRIPTION,
     GET_RESPONSE_DESCRIPTION,
-    GET_RESPONSES
+    GET_RESPONSES,
+    LIST_DESCRIPTION,
+    LIST_RESPONSE_DESCRIPTION,
+    LIST_RESPONSES,
+    LOGIN_DESCRIPTION,
+    LOGIN_RESPONSE_DESCRIPTION,
+    LOGIN_RESPONSES,
+    UPDATE_DESCRIPTION,
+    UPDATE_RESPONSE_DESCRIPTION,
+    UPDATE_RESPONSES
 )
 
 
@@ -49,7 +61,7 @@ async def get_user(
 
     return response
 
-@router.get("/list")
+@router.get("/list", description=LIST_DESCRIPTION, response_description=LIST_RESPONSE_DESCRIPTION, responses=LIST_RESPONSES)
 async def list_users(
     db_session: Session = Depends(db_session)
 ) -> list[UserResponse]:
@@ -61,7 +73,7 @@ async def list_users(
     return response
 
 
-@router.put("/update")
+@router.put("/update", description=UPDATE_DESCRIPTION, response_description=UPDATE_RESPONSE_DESCRIPTION, responses=UPDATE_RESPONSES)
 async def update_user(
     user_id: str,
     update: UserUpdateRequest,
@@ -75,7 +87,7 @@ async def update_user(
     return response
 
 
-@router.delete("/delete")
+@router.delete("/delete", description=DELETE_DESCRIPTION, response_description=DELETE_RESPONSE_DESCRIPTION, responses=DELETE_RESPONSES)
 async def delete_user(
     user_id: str,
     db_session: Session = Depends(db_session)
@@ -88,7 +100,7 @@ async def delete_user(
     return response
 
 
-@router.post("/login")
+@router.post("/login", description=LOGIN_DESCRIPTION, response_description=LOGIN_RESPONSE_DESCRIPTION, responses=LOGIN_RESPONSES)
 async def login(
     user: UserLoginRequest,
     db_session: Session = Depends(db_session)
