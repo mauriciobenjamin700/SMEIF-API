@@ -1,33 +1,29 @@
-import uvicorn
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from decouple import config
+import uvicorn
 
-from routes.client import router as client_router
 
+from routes.user import router as user_router
 
 
 app = FastAPI()
 
-# Configurando o middleware de CORS
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Especificar a origem permitida
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Métodos permitidos
-    allow_headers=["*"],  # Cabeçalhos permitidos
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"]
 )
 
-# Incluindo os roteadores
-app.include_router(client_router)
 
-
-
-# Endpoint de teste
+app.include_router(user_router)
 
 
 @app.get('/')
-def test_api():
+def main():
     return {"mensage": "API rodando!"}
 
 # Executando o servidor

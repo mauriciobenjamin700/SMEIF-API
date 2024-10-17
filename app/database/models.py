@@ -1,5 +1,12 @@
 from datetime import datetime
-from sqlalchemy import DateTime, Float, String, ForeignKey, Text
+from sqlalchemy import (
+    DateTime, 
+    Float, 
+    ForeignKey, 
+    Integer, 
+    String, 
+    Text
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 
@@ -7,8 +14,10 @@ from os.path import abspath, dirname
 import sys
 sys.path.append(dirname(abspath(__file__))) #Garantindo a criação das tabelas
 
+
 from base import Base
 from connection import engine
+
 
 class UserModel(Base):
     """
@@ -17,7 +26,6 @@ class UserModel(Base):
     - phone: str
     - phone_optional: str | None
     - email: str
-    - login: str
     - password: str
     - level: str    
     """
@@ -27,11 +35,10 @@ class UserModel(Base):
     cpf: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     phone: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    phone_optional: Mapped[str] = mapped_column(String, unique=True, nullable=True)
+    phone_optional: Mapped[str] = mapped_column(String, unique=False, nullable=True)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    login: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String, unique= False, nullable=False)
-    level: Mapped[str] = mapped_column(String, unique=False ,nullable=False)
+    level: Mapped[int] = mapped_column(Integer, unique=False ,nullable=False)
 
 
 class WarningModel(Base):
