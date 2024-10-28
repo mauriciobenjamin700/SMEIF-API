@@ -1,3 +1,12 @@
+"""
+- base_validation
+- validate_string_field
+- validate_cpf
+- validade_email
+- validate_date
+- validate_phone_number
+
+"""
 from datetime import datetime
 from fastapi import HTTPException
 from re import (
@@ -6,13 +15,26 @@ from re import (
 )
 
 
-def base_validation(field: str, field_name) -> str:
+from constants.base import ERROR_INVALID_CPF
 
+
+def base_validation(field: str, field_name: str) -> str:
+    """
+    Valida um campo de texto para impedir que fique vazio. Remove espaços em branco no início e no final do campo.
+
+    - Args:
+        - field: str: Campo de texto que será validado
+        - field_name: str: Nome do campo que será validado
+
+    - Return:
+        - str: Campo de texto validado
+    """
     if not field:
         raise HTTPException(400, f"Campo {field_name} vazio")
 
     elif isinstance(field, str):
-        if field.strip() == "":
+        field = field.strip()
+        if field:
             raise HTTPException(400, f"Campo {field_name} vazio")
     
     return field
@@ -20,13 +42,13 @@ def base_validation(field: str, field_name) -> str:
 
 def validate_string_field(field: str) -> str | None:
     """
-    Valida um campo de texto.
+    Valida um campo de texto, onde retorno string quando o campo esta correto.
     
     - Args:
         - field: str: Campo de texto que será validado
         
     - Return:
-        - str: Casoo o campo não esteja vazio
+        - str: Caso o campo não esteja vazio
         - None: Caso o campo esteja vazio
     
     """
@@ -49,10 +71,9 @@ def validate_cpf(string:str) -> str:
         - string:: str: String que será validada para ser, CPF ou CNPJ
         
     - Return:
-        - dict[str, str]: Dicionário com a informação sobre o tipo de identidade (CPF ou CNPJ) e o número da identidade
-            - chaves: 
-                - identity, 
-                - number
+        - str: CPF formatado (apenas números)
+    
+    - Raises:
         - HTTPException: Caso o tamanho da string seja inválido para ser um CPF ou CNPJ
     
     """
@@ -64,7 +85,7 @@ def validate_cpf(string:str) -> str:
         return  identity
 
     
-    raise HTTPException(400,"CPF inválido")
+    raise HTTPException(400,ERROR_INVALID_CPF)
 
 
 def validate_email(email:str) -> str:
