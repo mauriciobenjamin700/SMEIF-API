@@ -22,3 +22,7 @@ ERROR_PHONE_ALREADY_EXISTS = "Telefone já cadastrado"
 ERROR_EMAIL_ALREADY_EXISTS = "Email já cadastrado"
 
 ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS = "Telefone e Telefone Opcional não podem ser iguais"
+
+ERROR_USER_REQUIRED_FIELD_CPF = "CPF é obrigatório"
+ERROR_USER_REQUIRED_FIELD_NAME = "Nome é obrigatório"
+ERROR_USER_REQUIRED_FIELD_PHONE = "Telefone é obrigatório"

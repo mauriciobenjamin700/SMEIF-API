@@ -4,14 +4,22 @@ from pydantic import (
 )
 
 
-from app.utils.messages import ErrorMessage
+from app.utils.format import format_cpf
+from constants.base import ERROR_INVALID_CPF
+from constants.classes import (
+    ERROR_CLASSES_REQUIRED_FIELD_NAME,
+    ERROR_CLASSES_REQUIRED_FIELD_ROOM,
+    ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF
+)
 from schemas.base import BaseSchema
+from utils.messages import ValidationErrorMessage
 from utils.validate import (
     base_validation,
     validate_date,
     validate_email,
     validate_phone_number,
-    validate_cpf
+    validate_cpf,
+    validate_string
 )
 
 
@@ -40,20 +48,33 @@ class ClassRequest(BaseSchema):
 
     @field_validator("name", mode="before")
     def validate_name(cls, value):
-        value = base_validation(value, "Nome")
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_NAME)
+        
         return value
     
 
     @field_validator("room", mode="before")
     def validate_room(cls, value):
-        value = base_validation(value, "Sala")
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_ROOM)
+        
         return value
     
 
     @field_validator("teacher_cpf", mode="before")
     def validate_teacher_cpf(cls, value):
-        value = base_validation(value, "CPF do Professor")
-        return validate_cpf(value)
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
+        
+        if not validate_cpf(value):
+
+            raise ValidationErrorMessage(ERROR_INVALID_CPF)
+        
+        return format_cpf(value)
     
 
 class ClassEventRequest(BaseSchema):
@@ -226,6 +247,6 @@ class ClassResponse(ClassRequest):
         
         for student in value:
             if not isinstance(student, Studant):
-                raise ErrorMessage(400, "Aluno deve ser uma instância de Studant")
+                raise ValidationErrorMessage("Aluno deve ser uma instância de Studant")
         
         return value

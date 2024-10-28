@@ -10,18 +10,40 @@ from typing import Literal
 
 
 from constants.base import ERROR_SERVER_ERROR
+from schemas.base import BaseMessage
+
 
 def SucessMessage(text: str) -> dict:
     """
     gereate a success message in the template dict
     """
-    return {"detail": text}
+    return BaseMessage(detail=text)
 
 def ErrorMessage(status: Literal[400,401,404,409,500], text: str) -> HTTPException:
     """
     generate a error message in the template HTTPException
     """
     return HTTPException(status_code=status, detail=text)
+
+
+def ConflitErrorMessage(detail:str) -> HTTPException:
+    return HTTPException(status_code=409, detail=detail)
+
+
+def UnauthorizedErrorMessage(detail:str) -> HTTPException:
+    return HTTPException(status_code=401, detail=detail)
+
+
+def NotFoundErrorMessage(detail:str) -> HTTPException:
+    return HTTPException(status_code=404, detail=detail)
+
+
+def ValidationErrorMessage(errors: dict) -> HTTPException:
+    """
+    generate a validation error message in the template HTTPException
+    """
+    return HTTPException(status_code=400, detail=errors)
+
 
 def ServerError(error: Exception) -> HTTPException:
     """

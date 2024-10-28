@@ -12,16 +12,28 @@ from pydantic import (
 )
 
 
-from constants.user import ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS, LEVEL
+from constants.base import ERROR_INVALID_CPF, ERROR_INVALID_PHONE, ERROR_INVALID_PHONE_OPTIONAL
+from constants.user import (
+    ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS,
+    ERROR_USER_REQUIRED_FIELD_CPF,
+    ERROR_USER_REQUIRED_FIELD_NAME,
+    ERROR_USER_REQUIRED_FIELD_PHONE, 
+    LEVEL
+)
 from schemas.base import BaseSchema
 from utils.validate import(
     base_validation,
     validate_cpf,
     validate_email,
     validate_phone_number,
-    validate_string_field
+    validate_string
 )
-from utils.messages import ErrorMessage
+from utils.format import (
+    unformat_cpf,
+    unformat_phone
+)
+from utils.messages import ValidationErrorMessage
+
 
 
 class UserRequest(BaseSchema):
@@ -45,28 +57,56 @@ class UserRequest(BaseSchema):
 
     @field_validator("cpf", mode="before")
     def field_validate_cpf(cls, value) -> str:
-        value = base_validation(value, "CPF")
-        return validate_cpf(value)
+        
+        if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_CPF)
+
+        if not validate_cpf(value):
+
+            raise ValidationErrorMessage(ERROR_INVALID_CPF)
+        
+        return unformat_cpf(value)
     
     @field_validator("name", mode="before")
     def field_validate_name(cls, value) -> str:
-        return base_validation(value, "Nome")
+        
+        if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_NAME)
+        
+        return value
     
     @field_validator("phone", mode="before")
     def field_validate_phone(cls, value) -> str:
-        value = base_validation(value, "Telefone")
-        return validate_phone_number(value)
+
+        if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_PHONE)
+        
+        if not validate_phone_number(value):
+
+            raise ValidationErrorMessage(ERROR_INVALID_PHONE)
+        
+        return unformat_phone(value)
     
     @model_validator(mode="before")
     def field_validate_phone_optional(cls, values) -> dict:
+
         value = values.get("phone_optional")
-        if value and value.strip() != "":
+
+        if validate_string(value):
+
             value = base_validation(value, "Telefone Opcional")
 
             phone = values.get("phone")
 
             if value == phone:
-                raise ErrorMessage(400, ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS)
+                raise ValidationErrorMessage(ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS)
+            
+            if not validate_phone_number(value):
+
+                raise ValidationErrorMessage(ERROR_INVALID_PHONE_OPTIONAL)
 
             values["phone_optional"] = validate_phone_number(value)
         

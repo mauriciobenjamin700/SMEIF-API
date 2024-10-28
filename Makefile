@@ -28,13 +28,13 @@ tests: start
 	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests
 
 test-schemas: start
-	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/schemas/
+	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/schemas/$(file)
 
 test-controllers: start
-	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/controllers/
+	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/controllers/$(file)
 
 test-routes: start
-	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/routes/
+	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/routes/$(file)
 
 
 kabum:
