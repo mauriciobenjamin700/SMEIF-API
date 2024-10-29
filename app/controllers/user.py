@@ -17,6 +17,7 @@ from constants.user import (
 )
 from controllers.base import Repository
 from database.models import UserModel
+from schemas.base import BaseMessage
 from schemas.user import (
     UserLoginRequest,
     UserRequest,
@@ -51,7 +52,7 @@ class UserUseCases(Repository):
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
-    def add(self, request: UserRequest) -> dict:
+    def add(self, request: UserRequest) -> BaseMessage:
         """
         Adiciona um Usuário ao banco de dados
 
@@ -144,7 +145,7 @@ class UserUseCases(Repository):
         except Exception as e:
             raise ServerError(e)
         
-    def update(self, id:str, request: UserUpdateRequest) -> dict:
+    def update(self, id:str, request: UserUpdateRequest) -> BaseMessage:
         """
         Atualiza os dados de um usuário
 
@@ -195,7 +196,7 @@ class UserUseCases(Repository):
         except Exception as e:
             raise ServerError(e)
 
-    def delete(self, id: str) -> dict:
+    def delete(self, id: str) -> BaseMessage:
         """
         Deleta um usuário
 

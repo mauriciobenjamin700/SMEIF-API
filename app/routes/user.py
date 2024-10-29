@@ -12,6 +12,7 @@ from schemas.user import(
     UserUpdateRequest,
     UserLoginRequest
 )
+from schemas.base import BaseMessage
 from services.session import db_session
 from routes.docs.user import (
     ADD_DESCRIPTION,
@@ -41,7 +42,7 @@ router = APIRouter(prefix='/user', tags=['User'])
 async def add_user(
     user: UserRequest,
     db_session: Session = Depends(db_session),
-) -> dict:    
+) -> BaseMessage:    
 
     uc = UserUseCases(db_session)
 
@@ -78,7 +79,7 @@ async def update_user(
     user_id: str,
     update: UserUpdateRequest,
     db_session: Session = Depends(db_session)
-) -> dict:
+) -> BaseMessage:
 
     uc = UserUseCases(db_session)
 
@@ -91,7 +92,7 @@ async def update_user(
 async def delete_user(
     user_id: str,
     db_session: Session = Depends(db_session)
-) -> dict:
+) -> BaseMessage:
     
     uc = UserUseCases(db_session)
 

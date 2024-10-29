@@ -126,7 +126,7 @@ class UserRequest(BaseSchema):
 
                 raise ValidationErrorMessage(ERROR_INVALID_PHONE_OPTIONAL)
 
-            values["phone_optional"] = validate_phone_number(value)
+            values["phone_optional"] = unformat_phone(value)
         
         else:
             values["phone_optional"] = ""
