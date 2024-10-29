@@ -15,7 +15,6 @@ from schemas.user import (
     UserUpdateRequest
 )
 from utils.cryptography import verify
-from utils.messages import get_text
 
 
 def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):
@@ -24,7 +23,7 @@ def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):
 
     response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest)
 
-    assert get_text(response) == MESSAGE_UPDATE_SUCESS
+    assert response.detail == MESSAGE_UPDATE_SUCESS
 
     user = db_session.query(UserModel).filter_by(cpf=mock_user_on_db.cpf).first()
 
@@ -40,7 +39,7 @@ def test_update_user_level(db_session, mock_user_on_db, mock_UserUpdateRequest_l
 
     response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest_level)
 
-    assert get_text(response)  == MESSAGE_UPDATE_SUCESS
+    assert response.detail  == MESSAGE_UPDATE_SUCESS
 
     user = db_session.query(UserModel).filter_by(cpf=mock_user_on_db.cpf).first()
 
@@ -60,7 +59,7 @@ def test_update_user_not_updated(db_session, mock_user_on_db):
 
     response = uc.update(mock_user_on_db.cpf, update)
 
-    assert get_text(response)  == MESSAGE_UPDATE_FAIL
+    assert response.detail  == MESSAGE_UPDATE_FAIL
 
 
 def test_update_user_no_id(db_session, mock_user_on_db, mock_UserUpdateRequest):

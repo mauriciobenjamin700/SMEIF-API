@@ -8,6 +8,7 @@ from schemas.classes import (
     ClassStudentRequest,
     ClassResponse
 )
+from utils.format import unformat_cpf
 
 
 def test_ClassRequest_success():
@@ -19,4 +20,4 @@ def test_ClassRequest_success():
     schema = ClassRequest(**data)
     assert schema.name == data["name"]
     assert schema.room == data["room"]
-    assert schema.teacher_cpf == data["teacher_cpf"]
+    assert schema.teacher_cpf == unformat_cpf(data["teacher_cpf"])

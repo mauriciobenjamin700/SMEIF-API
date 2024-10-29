@@ -8,7 +8,6 @@ from constants.user import (
     MESSAGE_DELETE_SUCESS
 )
 from controllers.user import UserUseCases
-from utils.messages import get_text
 
 
 def test_delete_user_sucess(db_session, mock_user_on_db):
@@ -17,7 +16,7 @@ def test_delete_user_sucess(db_session, mock_user_on_db):
 
     response = uc.delete(mock_user_on_db.cpf)
 
-    assert get_text(response) == MESSAGE_DELETE_SUCESS
+    assert response.detail == MESSAGE_DELETE_SUCESS
 
 
 def test_delete_user_fail_no_id(db_session):

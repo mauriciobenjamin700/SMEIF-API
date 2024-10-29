@@ -51,11 +51,7 @@ def ServerError(error: Exception) -> HTTPException:
     """
     return HTTPException(status_code=500, detail=f"{ERROR_SERVER_ERROR}{error}")
 
-def get_text(message: dict) -> str:
-    """
-    get the text in a message
-    """
-    return message["detail"]
+
 
 
 

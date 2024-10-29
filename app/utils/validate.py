@@ -21,6 +21,9 @@ def validate_string(string: str) -> bool:
     if not string:
         result = False
 
+    elif not isinstance(string, str):
+        result = False
+
     elif len(string.strip()) == 0:
         result = False                      
 

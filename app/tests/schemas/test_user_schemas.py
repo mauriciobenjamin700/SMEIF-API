@@ -2,6 +2,16 @@ from fastapi import HTTPException
 from pytest import raises
 
 
+from constants.base import ERROR_INVALID_CPF, ERROR_INVALID_EMAIL, ERROR_INVALID_PHONE, ERROR_INVALID_PHONE_OPTIONAL
+from constants.user import (
+    ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS,
+    ERROR_USER_LEVEL_INVALID,
+    ERROR_USER_REQUIRED_FIELD_CPF,
+    ERROR_USER_REQUIRED_FIELD_EMAIL, 
+    ERROR_USER_REQUIRED_FIELD_NAME,
+    ERROR_USER_REQUIRED_FIELD_PASSWORD,
+    ERROR_USER_REQUIRED_FIELD_PHONE
+)
 from schemas.user import (
     UserRequest,
     UserUpdateRequest,
@@ -57,7 +67,7 @@ def test_UserRequest_fail_cpf_none():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Campo CPF vazio"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
 def test_UserRequest_fail_cpf_spaces():
     cpf = "     "
@@ -80,7 +90,7 @@ def test_UserRequest_fail_cpf_spaces():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Campo CPF vazio"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
 def test_UserRequest_fail_cpf_validation():
     cpf = "123"
@@ -103,7 +113,7 @@ def test_UserRequest_fail_cpf_validation():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "CPF inválido"
+    assert e.value.detail == ERROR_INVALID_CPF
 
 
 def test_UserRequest_fail_name_none():
@@ -127,7 +137,7 @@ def test_UserRequest_fail_name_none():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Campo Nome vazio"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_NAME
 
 
 def test_UserRequest_fail_name_spaces():
@@ -151,7 +161,7 @@ def test_UserRequest_fail_name_spaces():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Campo Nome vazio"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_NAME
 
 
 def test_UserRequest_fail_phone_none():
@@ -175,7 +185,7 @@ def test_UserRequest_fail_phone_none():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Campo Telefone vazio"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PHONE
 
 
 def test_UserRequest_fail_phone_spaces():
@@ -199,7 +209,7 @@ def test_UserRequest_fail_phone_spaces():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Campo Telefone vazio"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PHONE
 
 def test_UserRequest_fail_phone_validation():
     cpf = "123.456.789-00"
@@ -222,7 +232,7 @@ def test_UserRequest_fail_phone_validation():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Número de telefone inválido. Deve conter 11 dígitos no formato correto (XX9XXXXXXXX)"
+    assert e.value.detail == ERROR_INVALID_PHONE
 
 
 def test_UserRequest_sucess_with_no_optional_phone():
@@ -274,7 +284,7 @@ def test_UserRequest_fail_option_phone_validation():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Número de telefone inválido. Deve conter 11 dígitos no formato correto (XX9XXXXXXXX)"
+    assert e.value.detail == ERROR_INVALID_PHONE_OPTIONAL
 
 
 def test_UserRequest_fail_option_phone_equals_phone():
@@ -298,7 +308,7 @@ def test_UserRequest_fail_option_phone_equals_phone():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Telefone e Telefone Opcional não podem ser iguais"
+    assert e.value.detail == ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS
 
 
 
@@ -323,7 +333,7 @@ def test_UserRequest_fail_email_spaces():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Campo E-mail vazio"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_EMAIL
 
 def test_UserRequest_fail_email_validation():
     cpf = "123.456.789-00"
@@ -346,7 +356,7 @@ def test_UserRequest_fail_email_validation():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Email inválido"
+    assert e.value.detail == ERROR_INVALID_EMAIL
 
 
 
@@ -371,7 +381,7 @@ def test_UserRequest_fail_password_spaces():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Campo Senha vazio"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PASSWORD
 
 
 def test_UserRequest_fail_level_None():
@@ -395,7 +405,7 @@ def test_UserRequest_fail_level_None():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Nível de Acesso inválido"
+    assert e.value.detail == ERROR_USER_LEVEL_INVALID
 
 def test_UserRequest_fail_level_invalid():
     cpf = "123.456.789-00"
@@ -418,7 +428,7 @@ def test_UserRequest_fail_level_invalid():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Nível de Acesso inválido"
+    assert e.value.detail == ERROR_USER_LEVEL_INVALID
 
 
 def test_UserUpdateRequest_sucess():
@@ -457,7 +467,7 @@ def test_UserUpdateRequest_sucess_no_name():
         password=password
     )
 
-    assert user.name == None
+    assert user.name == ''
     assert user.phone == phone
     assert user.phone_optional == phone_optional
     assert user.email == email
@@ -562,7 +572,7 @@ def test_UserLoginRequest_fail_no_cpf():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "CPF não informado"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
 def test_UserLoginRequest_fail_invalid_cpf():
     cpf = "123"
@@ -575,7 +585,7 @@ def test_UserLoginRequest_fail_invalid_cpf():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "CPF inválido"
+    assert e.value.detail == ERROR_INVALID_CPF
 
 
 def test_UserLoginRequest_fail_no_password():
@@ -589,4 +599,4 @@ def test_UserLoginRequest_fail_no_password():
         )
 
     assert e.value.status_code == 400
-    assert e.value.detail == "Senha não informada"
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PASSWORD

@@ -57,3 +57,15 @@ def unformat_phone(phone: str):
     """
     return "".join([number for number in phone if number.isnumeric()])
 
+
+def clean_string_field(string: str) -> str:
+    """
+    Limpa uma string
+
+    - Args:
+        - string:: str: String que será limpa
+
+    - Return:
+        - str: String limpa
+    """
+    return string.strip() if string else ""

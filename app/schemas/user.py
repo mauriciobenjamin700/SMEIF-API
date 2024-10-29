@@ -12,25 +12,35 @@ from pydantic import (
 )
 
 
-from constants.base import ERROR_INVALID_CPF, ERROR_INVALID_PHONE, ERROR_INVALID_PHONE_OPTIONAL
+from constants.base import (
+    ERROR_INVALID_CPF, 
+    ERROR_INVALID_EMAIL, 
+    ERROR_INVALID_PHONE, 
+    ERROR_INVALID_PHONE_OPTIONAL
+)
 from constants.user import (
     ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS,
+    ERROR_USER_INVALID_OPTIONAL_PHONE,
+    ERROR_USER_LEVEL_INVALID,
     ERROR_USER_REQUIRED_FIELD_CPF,
+    ERROR_USER_REQUIRED_FIELD_EMAIL,
     ERROR_USER_REQUIRED_FIELD_NAME,
+    ERROR_USER_REQUIRED_FIELD_PASSWORD,
     ERROR_USER_REQUIRED_FIELD_PHONE, 
     LEVEL
 )
 from schemas.base import BaseSchema
 from utils.validate import(
-    base_validation,
     validate_cpf,
     validate_email,
     validate_phone_number,
     validate_string
 )
 from utils.format import (
+    clean_string_field,
     unformat_cpf,
-    unformat_phone
+    unformat_phone,
+    
 )
 from utils.messages import ValidationErrorMessage
 
@@ -97,11 +107,19 @@ class UserRequest(BaseSchema):
 
         if validate_string(value):
 
-            value = base_validation(value, "Telefone Opcional")
+            if not validate_phone_number(value):
+
+                raise ValidationErrorMessage(ERROR_INVALID_PHONE_OPTIONAL)
+
 
             phone = values.get("phone")
 
+            if not validate_string(phone):
+
+                raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_PHONE)
+
             if value == phone:
+
                 raise ValidationErrorMessage(ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS)
             
             if not validate_phone_number(value):
@@ -117,18 +135,32 @@ class UserRequest(BaseSchema):
     
     @field_validator("email", mode="before")
     def field_validate_email(cls, value) -> str:
-        value = base_validation(value, "E-mail")
-        return validate_email(value)
+        
+        if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_EMAIL)
+        
+        if not validate_email(value):
+
+            raise ValidationErrorMessage(ERROR_INVALID_EMAIL)
+        
+        return value
     
     @field_validator("password", mode="before")
     def field_validate_password(cls, value) -> str:
-        return base_validation(value, "Senha")
+        
+        if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_PASSWORD)
+        
+        return value
     
     @field_validator("level", mode="before")
     def field_validate_level(cls, value) -> int:
 
         if not value or value not in LEVEL.values():
-            raise ErrorMessage(400,"Nível de Acesso inválido")
+
+            raise ValidationErrorMessage(ERROR_USER_LEVEL_INVALID)
         
         return value
         
@@ -173,16 +205,22 @@ class UserUpdateRequest(BaseSchema):
 
     @field_validator("name", mode="before")
     def field_validate_name(cls, value) -> str:
-        value =  validate_string_field(value)
+        value =  clean_string_field(value)
 
         return value
     
     @field_validator("phone", mode="before")
     def field_validate_phone(cls, value) -> str:
 
-        if validate_string_field(value):
+        value = clean_string_field(value)
 
-            value = validate_phone_number(value)
+        if value:
+
+            if not validate_phone_number(value):
+
+                raise ValidationErrorMessage(ERROR_INVALID_PHONE)
+
+            value = unformat_phone(value)
 
         return value
     
@@ -190,33 +228,48 @@ class UserUpdateRequest(BaseSchema):
     @field_validator("phone_optional", mode="before")
     def field_validate_phone_optional(cls, value) -> str:
 
-        if validate_string_field(value):
-            
-            value = validate_phone_number(value)
+        value = clean_string_field(value)
 
+        if value:
+
+            if not validate_phone_number(value):
+
+                raise ValidationErrorMessage(ERROR_INVALID_PHONE_OPTIONAL)
+
+            value = unformat_phone(value)
 
         return value
     
     @field_validator("email", mode="before")
     def field_validate_email(cls, value) -> str:
 
-        if validate_string_field(value):
+        value = clean_string_field(value)
 
-            value =  validate_email(value)
+        if value:
+
+            if not validate_email(value):
+
+                raise ValidationErrorMessage(ERROR_INVALID_EMAIL)
+
             
         return value
     
     @field_validator("password", mode="before")
     def field_validate_password(cls, value) -> str:
 
-        return validate_string_field(value)
+        value = clean_string_field(value)
+
+        return value
 
 
     @field_validator("level", mode="before")
     def field_validate_level(cls, value) -> int:
+
         if value:
+
             if value not in LEVEL.values():
-                raise ErrorMessage(400,"Nível de Acesso inválido")
+
+                raise ValidationErrorMessage(ERROR_USER_LEVEL_INVALID)
         
         return value
 
@@ -232,23 +285,28 @@ class UserLoginRequest(BaseSchema):
     @field_validator("cpf", mode="before")
     def field_validate_login(cls, value) -> str:
 
-        value =  validate_string_field(value)
+        value =  clean_string_field(value)
 
         if not value:
 
-            raise ErrorMessage(400, "CPF não informado")
+            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_CPF)
         
-        value = validate_cpf(value)
+        if not validate_cpf(value):
+
+            raise ValidationErrorMessage(ERROR_INVALID_CPF)
+
+        value = unformat_cpf(value)
         
         return value
     
     @field_validator("password", mode="before")
     def field_validate_password(cls, value) -> str:
 
-        value =  validate_string_field(value)
+        value =  clean_string_field(value)
+
 
         if not value:
 
-            raise ErrorMessage(400, "Senha não informada")
+            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_PASSWORD)
         
         return value

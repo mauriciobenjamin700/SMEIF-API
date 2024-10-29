@@ -4,17 +4,29 @@ from pydantic import (
 )
 
 
-from app.utils.format import format_cpf
-from constants.base import ERROR_INVALID_CPF
+from utils.format import (
+    clean_string_field,
+    format_phone, 
+    unformat_cpf
+)
+from constants.base import ERROR_INVALID_CPF, ERROR_INVALID_EMAIL
 from constants.classes import (
+    ERROR_CLASSES_INVALID_FIELD_END_DATE,
+    ERROR_CLASSES_INVALID_FIELD_START_DATE,
+    ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID,
+    ERROR_CLASSES_REQUIRED_FIELD_END_DATE,
     ERROR_CLASSES_REQUIRED_FIELD_NAME,
     ERROR_CLASSES_REQUIRED_FIELD_ROOM,
-    ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF
+    ERROR_CLASSES_REQUIRED_FIELD_START_DATE,
+    ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF,
+    ERROR_STUDENT_REQUIRED_FIELD_CPF,
+    ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION,
+    ERROR_STUDENT_REQUIRED_FIELD_NAME,
+    ERROR_STUDENT_TYPE
 )
 from schemas.base import BaseSchema
 from utils.messages import ValidationErrorMessage
-from utils.validate import (
-    base_validation,
+from utils.validate import(
     validate_date,
     validate_email,
     validate_phone_number,
@@ -49,7 +61,12 @@ class ClassRequest(BaseSchema):
     @field_validator("name", mode="before")
     def validate_name(cls, value):
 
+        value = clean_string_field(value)
+
         if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_NAME)
+
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_NAME)
         
         return value
@@ -57,6 +74,8 @@ class ClassRequest(BaseSchema):
 
     @field_validator("room", mode="before")
     def validate_room(cls, value):
+
+        value = clean_string_field(value)
 
         if not validate_string(value):
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_ROOM)
@@ -67,6 +86,8 @@ class ClassRequest(BaseSchema):
     @field_validator("teacher_cpf", mode="before")
     def validate_teacher_cpf(cls, value):
 
+        value = clean_string_field(value)
+
         if not validate_string(value):
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
         
@@ -74,7 +95,7 @@ class ClassRequest(BaseSchema):
 
             raise ValidationErrorMessage(ERROR_INVALID_CPF)
         
-        return format_cpf(value)
+        return unformat_cpf(value)
     
 
 class ClassEventRequest(BaseSchema):
@@ -103,23 +124,44 @@ class ClassEventRequest(BaseSchema):
 
     @field_validator("class_id", mode="before")
     def validate_class_id(cls, value):
-        value = base_validation(value, "ID da Disciplina")
+        
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
+
         return value
     
 
     @field_validator("start_date", mode="before")
     def validate_start_date(cls, value):
-        value = base_validation(value, "Data de Início")
+
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_START_DATE)
+        
+        if not validate_date(value):
+            raise ValidationErrorMessage(ERROR_CLASSES_INVALID_FIELD_START_DATE)
+
         value = validate_date(value)
         return value
     
 
     @field_validator("end_date", mode="before")
     def validate_end_date(cls, value):
-        value = base_validation(value, "Data de Fim")
+
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_END_DATE)
+        
+        if not validate_date(value):
+            raise ValidationErrorMessage(ERROR_CLASSES_INVALID_FIELD_END_DATE)
+
         value = validate_date(value)
         return value
-    
 
 class ClassStudentRequest(BaseSchema):
     """
@@ -141,17 +183,32 @@ class ClassStudentRequest(BaseSchema):
 
     @field_validator("class_id", mode="before")
     def validate_class_id(cls, value):
-        value = base_validation(value, "ID da Disciplina")
+
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
+
         return value
     
 
     @field_validator("child_cpf", mode="before")
     def validate_child_cpf(cls, value):
-        value = base_validation(value, "CPF do Aluno")
-        return validate_cpf(value)
+
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
+        
+        if not validate_cpf(value):
+
+            raise ValidationErrorMessage(ERROR_INVALID_CPF)
+        
+        return unformat_cpf(value)
     
 
-class Studant(BaseSchema):
+class Student(BaseSchema):
     """
     - cpf: str
     - name: str
@@ -177,19 +234,31 @@ class Studant(BaseSchema):
 
     @field_validator("cpf", mode="before")
     def validate_cpf(cls, value):
-        value = base_validation(value, "CPF")
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_CPF)
         return validate_cpf(value)
     
 
     @field_validator("name", mode="before")
     def validate_name(cls, value):
-        value = base_validation(value, "Nome")
+        
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_NAME)
+        
         return value
     
 
     @field_validator("matriculation", mode="before")
     def validate_matriculation(cls, value):
-        value = base_validation(value, "Matrícula")
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION)
+
         return value
 
 class ClassResponse(ClassRequest):
@@ -198,7 +267,7 @@ class ClassResponse(ClassRequest):
     - teacher_name: str
     - teacher_phone: str
     _ teacher_email: str
-    - students: List[Studant]
+    - students: List[Student]
     """
     id: str = Field(
         title="ID",
@@ -220,7 +289,7 @@ class ClassResponse(ClassRequest):
         description="E-mail do professor que ministrará a disciplina",
         examples=["jose@gmail.com", "maria@gmail.com"]
     )
-    students: list[Studant] = Field(
+    students: list[Student] = Field(
         tittle="Alunos",
         description="Lista de alunos matriculados na disciplina",
         examples=["[{cpf: '123.456.789-00', name: 'João', matriculation: '123456'}, {cpf: '987.654.321-00', name: 'Maria', matriculation: '654321'}]"]
@@ -229,15 +298,18 @@ class ClassResponse(ClassRequest):
 
     @field_validator("teacher_phone", mode="before")
     def validate_teacher_phone(cls, value):
-        value = base_validation(value)
-        value = validate_phone_number(value)
+
+        value = format_phone(value)
         return value
     
 
     @field_validator("teacher_email", mode="before")
     def validate_teacher_email(cls, value):
-        value = base_validation(value)
-        return validate_email(value)
+        
+        if not validate_email(value):
+            raise ValidationErrorMessage(ERROR_INVALID_EMAIL)
+
+        return value
 
 
     @field_validator("students", mode="before")
@@ -246,7 +318,7 @@ class ClassResponse(ClassRequest):
             return []
         
         for student in value:
-            if not isinstance(student, Studant):
-                raise ValidationErrorMessage("Aluno deve ser uma instância de Studant")
+            if not isinstance(student, Student):
+                raise ValidationErrorMessage(ERROR_STUDENT_TYPE)
         
         return value
