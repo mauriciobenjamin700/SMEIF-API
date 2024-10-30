@@ -29,7 +29,6 @@ from utils.messages import ValidationErrorMessage
 from utils.validate import(
     validate_date,
     validate_email,
-    validate_phone_number,
     validate_cpf,
     validate_string
 )
@@ -64,8 +63,6 @@ class ClassRequest(BaseSchema):
         value = clean_string_field(value)
 
         if not validate_string(value):
-
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_NAME)
 
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_NAME)
         
@@ -264,6 +261,9 @@ class Student(BaseSchema):
 class ClassResponse(ClassRequest):
     """
     - id: str
+    - name: str
+    - room: str
+    - teacher_cpf: str
     - teacher_name: str
     - teacher_phone: str
     _ teacher_email: str

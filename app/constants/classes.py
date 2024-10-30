@@ -13,3 +13,9 @@ ERROR_STUDENT_REQUIRED_FIELD_NAME = "Nome do aluno é obrigatório"
 ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION = "Matrícula do aluno é obrigatória"
 
 ERROR_STUDENT_TYPE = "Aluno deve ser uma instância de Student"
+
+ERROR_CLASSES_GET_NOT_FOUND = "Disciplina não encontrada"
+
+ERROR_CLASS_ADD_CONFLICT = "Disciplina já cadastrada"
+
+MESSAGE_CLASS_ADD_SUCESS = "Disciplina cadastrada com sucesso"
