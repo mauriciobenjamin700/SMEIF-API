@@ -39,11 +39,9 @@ from utils.validate import(
 from utils.format import (
     clean_string_field,
     unformat_cpf,
-    unformat_phone,
-    
+    unformat_phone
 )
 from utils.messages import ValidationErrorMessage
-
 
 
 class UserRequest(BaseSchema):

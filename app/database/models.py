@@ -7,7 +7,10 @@ from sqlalchemy import (
     String, 
     Text
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import (
+    Mapped, 
+    mapped_column
+)
 
 
 from os.path import abspath, dirname
@@ -60,7 +63,11 @@ class WarningModel(Base):
 
 
 class ChildModel(Base):
-
+    """
+    - cpf: str
+    - name: str
+    - matriculation: str
+    """
     __tablename__ = 'child'
 
     cpf: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
@@ -69,7 +76,14 @@ class ChildModel(Base):
 
 
 class NotifyModel(Base):
-
+    """
+    - id: str
+    - text: str
+    - date: datetime
+    - origin: str
+    - parent_cpf: str
+    - child_cpf: str
+    """
     __tablename__ = 'notify'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
@@ -81,7 +95,11 @@ class NotifyModel(Base):
 
 
 class ChildParentsModel(Base):
-
+    """
+    - id: str
+    - child_cpf: str
+    - parent_cpf: str
+    """
     __tablename__ = 'child_parents'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
@@ -89,7 +107,12 @@ class ChildParentsModel(Base):
     parent_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), primary_key=True)
 
 class ClassModel(Base):
-
+    """
+    - id: str
+    - name: str
+    - room: str
+    - teacher_cpf: str
+    """
     __tablename__ = 'class'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
@@ -99,7 +122,12 @@ class ClassModel(Base):
 
 
 class ClassEventModel(Base):
-
+    """
+    - id: str
+    - class_id: str
+    - start_date: datetime
+    - end_date: datetime
+    """
     __tablename__ = 'class_event'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
@@ -123,7 +151,13 @@ class ClassStudantModel(Base):
 
 
 class PresenceModel(Base):
-
+    """
+    - id: str
+    - class_event_id: str
+    - child_cpf: str
+    - type: str
+    - date: datetime
+    """
     __tablename__ = 'presence'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
@@ -134,7 +168,13 @@ class PresenceModel(Base):
 
 
 class NoteModel(Base):
-
+    """
+    - id: str
+    - class_event_id: str
+    - points: float
+    - child_cpf: str
+    - date: datetime
+    """
     __tablename__ = 'note'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)

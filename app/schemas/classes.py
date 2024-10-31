@@ -29,7 +29,6 @@ from utils.messages import ValidationErrorMessage
 from utils.validate import(
     validate_date,
     validate_email,
-    validate_phone_number,
     validate_cpf,
     validate_string
 )
@@ -275,6 +274,9 @@ class Student(BaseSchema):
 class ClassResponse(ClassRequest):
     """
     - id: str
+    - name: str
+    - room: str
+    - teacher_cpf: str
     - teacher_name: str
     - teacher_phone: str
     _ teacher_email: str
