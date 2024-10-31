@@ -77,7 +77,7 @@ class ChildModel(Base):
 
 class NotifyModel(Base):
     """
-    - id: str
+    -id: str
     - text: str
     - date: datetime
     - origin: str
