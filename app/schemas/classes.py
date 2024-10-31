@@ -214,6 +214,82 @@ class ClassStudentRequest(BaseSchema):
         return unformat_cpf(value)
     
 
+class ClassUpdateRequest(BaseSchema):
+    """
+    - id: str
+    - name: str = ""
+    - room: str = ""
+    - teacher_cpf: str = ""
+    """
+    id: str = Field(
+        title="ID",
+        description="Código da disciplina a ser atualizada",
+        examples=['1', '2','3']
+    )
+    name: str = Field(
+        title="Nome",
+        description="Nome da disciplina a ser cadastrada",
+        examples=["Matemática", "Português", "Física"],
+        default=""
+    )
+    room: str = Field(
+        title="Sala",
+        description="Sala onde a aula será ministrada",
+        examples=["Sala 01", "Sala 02", "Sala 03"],
+        default=""
+    )
+    teacher_cpf: str = Field(
+        title="CPF do Professor",
+        description="CPF do professor que ministrará a disciplina",
+        examples=["123.456.789-00", "987.654.321-00"],
+        default=""
+    )
+
+
+    @field_validator("id", mode="before")
+    def validate_id(cls, value):
+            
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+
+            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
+
+        return value
+    
+
+    @field_validator("name", mode="before")
+    def validate_name(cls, value):
+
+        value = clean_string_field(value)
+        
+        return value
+    
+
+    @field_validator("room", mode="before")
+    def validate_room(cls, value):
+
+        value = clean_string_field(value)
+        
+        return value
+    
+
+    @field_validator("teacher_cpf", mode="before")
+    def validate_teacher_cpf(cls, value):
+
+        value = clean_string_field(value)
+
+        if validate_string(value):
+        
+            if not validate_cpf(value):
+
+                raise ValidationErrorMessage(ERROR_INVALID_CPF)
+            
+            value = unformat_cpf(value)
+
+        return value
+    
+
 class Student(BaseSchema):
     """
     - cpf: str

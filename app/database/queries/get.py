@@ -5,7 +5,10 @@ from sqlalchemy.orm import Session
 from constants.classes import(
     ERROR_CLASSES_GET_NOT_FOUND
 )
-from constants.user import ERROR_USER_GET_TEACHER_NOT_FOUND, LEVEL
+from constants.user import (
+    ERROR_USER_GET_TEACHER_NOT_FOUND, 
+    LEVEL
+)
 from database.models import(
     ClassModel,
     UserModel

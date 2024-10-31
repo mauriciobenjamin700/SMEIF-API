@@ -16,6 +16,10 @@ ERROR_STUDENT_TYPE = "Aluno deve ser uma instância de Student"
 
 ERROR_CLASSES_GET_NOT_FOUND = "Disciplina não encontrada"
 
+ERROR_CLASSES_GET_ALL_NOT_FOUND = "Nenhuma disciplina encontrada"
+
 ERROR_CLASS_ADD_CONFLICT = "Disciplina já cadastrada"
 
 MESSAGE_CLASS_ADD_SUCESS = "Disciplina cadastrada com sucesso"
+MESSAGE_CLASS_UPDATE_SUCESS = "Disciplina atualizada com sucesso"
+MESSAGE_CLASS_DELETE_SUCESS = "Disciplina deletada com sucesso"

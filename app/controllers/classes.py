@@ -5,10 +5,13 @@ from sqlalchemy.orm import Session
 from base import Repository
 from constants.classes import(
     ERROR_CLASS_ADD_CONFLICT,
-    MESSAGE_CLASS_ADD_SUCESS
+    ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID,
+    MESSAGE_CLASS_ADD_SUCESS,
+    MESSAGE_CLASS_DELETE_SUCESS,
+    MESSAGE_CLASS_UPDATE_SUCESS
 )
 from constants.user import(
-    ERROR_USER_GET_TEACHER_NOT_FOUND
+    ERROR_USER_GET_TEACHER_NOT_FOUND,
 )
 from database.models import(
     ClassModel,
@@ -23,13 +26,17 @@ from database.queries.get import (
     get_class_by_id,
     get_teacher_by_cpf
 )
-from database.queries.get_all import get_all_studants_by_class
+from database.queries.get_all import (
+    get_all_classes, 
+    get_all_studants_by_class
+)
 from schemas.base import BaseMessage
 from schemas.classes import (
     ClassRequest,
     ClassEventRequest,
     ClassStudentRequest,
-    ClassResponse
+    ClassResponse,
+    ClassUpdateRequest
 )
 from services.ids import id_generate
 from utils.messages import(
@@ -74,7 +81,7 @@ class ClassesUseCases(Repository):
             raise ServerError(e)
 
 
-    def get(self, class_id: str) -> BaseMessage:
+    def get(self, class_id: str) -> ClassResponse:
 
         try:
 
@@ -89,6 +96,70 @@ class ClassesUseCases(Repository):
         except Exception as e:
             raise ServerError(e)
         
+
+    def get_all(self) -> BaseMessage:
+
+        try:
+
+            classes = get_all_classes(self.db_session)
+
+            return [self._Model_to_Response(model) for model in classes]
+
+        except HTTPException:
+            raise
+
+        except Exception as e:
+            raise ServerError(e)
+        
+
+    def update(self, request: ClassUpdateRequest) -> BaseMessage:
+
+        try:
+
+            model = get_class_by_id(self.db_session, request.id)
+
+            for attribute, value in request.dict().items():
+
+                if attribute != "id" and value:
+
+                    setattr(model, attribute, value)
+
+
+            self.db_session.commit()
+            self.db_session.refresh(model)
+
+
+            return SucessMessage(MESSAGE_CLASS_UPDATE_SUCESS)
+
+
+        except HTTPException:
+            raise
+
+        except Exception as e:
+            raise ServerError(e)
+
+
+    def delete(self, class_id:str) -> BaseMessage:
+
+        try:
+
+            if not class_id:
+                
+                raise NotFoundErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
+            
+            model = get_class_by_id(self.db_session, class_id)
+
+            self.db_session.delete(model)
+            self.db_session.commit()
+            
+            return SucessMessage(MESSAGE_CLASS_DELETE_SUCESS)
+
+
+        except HTTPException:
+            raise
+
+        except Exception as e:
+            raise ServerError(e)
 
     # def add(self, request: ClassRequest) -> BaseMessage:
 

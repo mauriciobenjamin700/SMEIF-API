@@ -4,10 +4,15 @@ from sqlalchemy.orm import Session
 
 from database.models import(
     ChildModel,
-    ClassStudantModel
+    ClassStudantModel,
+    ClassModel
 )
 from schemas.classes import(
     Student
+)
+from utils.messages import NotFoundErrorMessage
+from constants.classes import (
+    ERROR_CLASSES_GET_ALL_NOT_FOUND,
 )
 
 
@@ -42,3 +47,12 @@ def get_all_studants_by_class(db_session: Session, class_id: str) -> list[Studen
 
     return studants   
 
+
+def get_all_classes(db_session: Session) -> list[ClassModel]:
+    
+    classes =  db_session.scalars(
+        select(ClassModel)
+    )
+
+    if not classes:
+        raise NotFoundErrorMessage(ERROR_CLASSES_GET_ALL_NOT_FOUND)
