@@ -66,8 +66,6 @@ class ClassRequest(BaseSchema):
         if not validate_string(value):
 
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_NAME)
-
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_NAME)
         
         return value
     
@@ -78,6 +76,7 @@ class ClassRequest(BaseSchema):
         value = clean_string_field(value)
 
         if not validate_string(value):
+
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_ROOM)
         
         return value
@@ -89,6 +88,7 @@ class ClassRequest(BaseSchema):
         value = clean_string_field(value)
 
         if not validate_string(value):
+
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
         
         if not validate_cpf(value):
@@ -140,12 +140,15 @@ class ClassEventRequest(BaseSchema):
         value = clean_string_field(value)
 
         if not validate_string(value):
+
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_START_DATE)
         
         if not validate_date(value):
+
             raise ValidationErrorMessage(ERROR_CLASSES_INVALID_FIELD_START_DATE)
 
         value = validate_date(value)
+
         return value
     
 
@@ -155,12 +158,15 @@ class ClassEventRequest(BaseSchema):
         value = clean_string_field(value)
 
         if not validate_string(value):
+
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_END_DATE)
         
         if not validate_date(value):
+
             raise ValidationErrorMessage(ERROR_CLASSES_INVALID_FIELD_END_DATE)
 
         value = validate_date(value)
+
         return value
 
 class ClassStudentRequest(BaseSchema):
@@ -199,6 +205,7 @@ class ClassStudentRequest(BaseSchema):
         value = clean_string_field(value)
 
         if not validate_string(value):
+
             raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
         
         if not validate_cpf(value):
@@ -237,6 +244,7 @@ class Student(BaseSchema):
         value = clean_string_field(value)
 
         if not validate_string(value):
+
             raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_CPF)
         return validate_cpf(value)
     
@@ -247,6 +255,7 @@ class Student(BaseSchema):
         value = clean_string_field(value)
 
         if not validate_string(value):
+
             raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_NAME)
         
         return value
@@ -254,9 +263,11 @@ class Student(BaseSchema):
 
     @field_validator("matriculation", mode="before")
     def validate_matriculation(cls, value):
+        
         value = clean_string_field(value)
 
         if not validate_string(value):
+
             raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION)
 
         return value
