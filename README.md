@@ -11,7 +11,7 @@ API do Sistema de Monitoramento de Alunos nas Escolas Públicas do Ensino Infant
 
 Você irá precisar do arquivo [.env](.env) contendo as variáveis de ambiente para executar o projeto.
 
-Se você é um associado ao projeto, basta acessar o drive clicando [aqui](https://drive.google.com/drive/u/0/folders/1q-S8q3qZWw3NEsd5agEdkV89KoPsbwhd) para obter tal arquivo. Pode-se copiar com base no arquivo aux clicando [aqui](docs/.env.txt)
+Se você é um associado ao projeto, basta acessar o drive clicando [aqui](https://drive.google.com/drive/u/0/folders/1q-S8q3qZWw3NEsd5agEdkV89KoPsbwhd) para obter tal arquivo.
 
 ## Comandos
 
