@@ -184,19 +184,12 @@ class NoteModel(Base):
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
 
-def create_tables(engine) -> bool:
+def create_tables():
     """
     Cria no banco todas as entidades necessárias para o sistema
     """
     try:
         Base.metadata.create_all(engine)
-        return True
+        print("Starting Database")
     except Exception as e:
         print(f"Erro ao criar entidades: {e}")
-        return False
-
-if __name__ == "__main__":
-
-    print("Starting Database")
-    success = create_tables(engine)
-    print(f"Database setup {'succeeded' if success else 'failed'}")
