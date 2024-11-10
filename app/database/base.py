@@ -3,7 +3,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.inspection import inspect
 
 
-class Base(DeclarativeBase):
+class BaseModel(DeclarativeBase):
     """
     Classe que permite conectar objetos a tabelas no banco de dados, além de mapealas para que a classe vire uma tabela no banco de dados
     
