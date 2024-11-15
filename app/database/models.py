@@ -28,13 +28,16 @@ class UserModel(BaseModel):
     """
     - cpf: str
     - name: str
+    - birth_date: datetime
     - phone: str
     - phone_optional: str | None
     - email: str
     - password: str
     - level: str
+    - address_id: str
 
     relationships:
+
     - address: AddressModel
     - child_parents: list[ChildParentsModel]
     """
@@ -61,7 +64,6 @@ class UserModel(BaseModel):
         back_populates="parent",
         uselist=True
     )
-
 
 
 class AddressModel(BaseModel):
@@ -102,10 +104,12 @@ class AddressModel(BaseModel):
         order_by="ChildModel.name"
     )
 
+
 class WarningModel(BaseModel):
     """
     - id: str
     - parent_cpf: str
+    - theme: str
     - text: str
     - file_path: str | None
     - date: datetime
@@ -115,6 +119,7 @@ class WarningModel(BaseModel):
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
     parent_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+    theme: Mapped[str] = mapped_column(String, nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
     file_path: Mapped[str] = mapped_column(String, nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
@@ -140,7 +145,7 @@ class ChildModel(BaseModel):
     cpf: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     birth_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    gender: Mapped[str] = mapped_column(CHAR, unique=False,nullable=False)
+    gender: Mapped[str] = mapped_column(CHAR(1), unique=False,nullable=False)
     address_id: Mapped[str] = mapped_column(String, ForeignKey("address.id"), nullable=False)
     dependencies: Mapped[str] = mapped_column(Text, unique=False, nullable=True)
 
@@ -200,8 +205,6 @@ class ClassModel(BaseModel):
     room: Mapped[str] = mapped_column(String, unique=False,nullable=False)
 
 
-
-
 class ClassStudantModel(BaseModel):
     """
     - id: str
@@ -216,6 +219,60 @@ class ClassStudantModel(BaseModel):
     child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
 
 
+class DisciplinesModel(BaseModel):
+    """
+    - id: str
+    - name: str
+    """
+    __tablename__ = 'disciplines'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+
+
+class ClassEventModel(BaseModel):
+    """
+    - id: str
+    - class_id: str
+    - discipline_id: str
+    - start_date: datetime
+    - end_date: datetime
+    """
+    __tablename__ = 'class_event'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
+    discipline_id: Mapped[str] = mapped_column(String, ForeignKey("disciplines.id"), nullable=False)
+    start_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    end_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
+class ClassTeacherModel(BaseModel):
+    """
+    - id: str
+    - user_cpf: str
+    - class_id: str
+    """
+    __tablename__ = 'class_teacher'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    user_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+    class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
+    
+
+
+class TeacherDisciplinesModel(BaseModel):
+    """
+    - id: str
+    - discipline_id: str
+    - teacher_cpf: str
+    """
+    __tablename__ = 'teacher_disciplines'
+
+    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    discipline_id: Mapped[str] = mapped_column(String, ForeignKey("disciplines.id"), nullable=False)
+    teacher_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+
 
 class PresenceModel(BaseModel):
     """
@@ -223,32 +280,31 @@ class PresenceModel(BaseModel):
     - class_event_id: str
     - child_cpf: str
     - type: str
-    - date: datetime
     """
     __tablename__ = 'presence'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
     class_event_id: Mapped[str] = mapped_column(String, ForeignKey("class_event.id"), nullable=False)
     child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
-    type: Mapped[str] = mapped_column(String, nullable=False) # P or F
-    date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    type: Mapped[str] = mapped_column(CHAR(1), nullable=False) # P or F
 
 
 class NoteModel(BaseModel):
     """
     - id: str
-    - class_event_id: str
+    - points: float
+    - discipline_id: str
+    - class_id: str
     - points: float
     - child_cpf: str
-    - date: datetime
     """
     __tablename__ = 'note'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
-    class_event_id: Mapped[str] = mapped_column(String, ForeignKey("class_event.id"), nullable=False)
     points: Mapped[float] = mapped_column(Float, nullable=False)
+    discipline_id: Mapped[str] = mapped_column(String, ForeignKey("disciplines.id"), nullable=False)
+    class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
     child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
-    date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
 
 def create_tables():
