@@ -7,7 +7,7 @@ from database.connection import Session
 from database.models import UserModel
 from main import app
 from schemas.user import UserLoginRequest, UserRequest, UserUpdateRequest
-from utils.cryptography import crypto
+from app.utils.security.cryptography import crypto
 
 
 @fixture

@@ -25,7 +25,7 @@ from constants.classes import (
     ERROR_STUDENT_TYPE
 )
 from schemas.base import BaseSchema
-from utils.messages import ValidationErrorMessage
+from app.utils.messages.messages import ValidationErrorMessage
 from utils.validate import(
     validate_date,
     validate_email,

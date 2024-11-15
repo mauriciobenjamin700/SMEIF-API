@@ -24,11 +24,11 @@ from schemas.user import (
     UserResponse,
     UserUpdateRequest
 )
-from utils.cryptography import (
+from app.utils.security.cryptography import (
     crypto,
     verify
 )
-from utils.messages import (
+from app.utils.messages.messages import (
     ServerError,
     SucessMessage,
     ErrorMessage

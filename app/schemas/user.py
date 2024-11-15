@@ -41,7 +41,7 @@ from utils.format import (
     unformat_cpf,
     unformat_phone
 )
-from utils.messages import ValidationErrorMessage
+from app.utils.messages.messages import ValidationErrorMessage
 
 
 class UserRequest(BaseSchema):

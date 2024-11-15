@@ -13,7 +13,7 @@ from database.models import(
     ClassModel,
     UserModel
 )
-from utils.messages import NotFoundErrorMessage
+from app.utils.messages.messages import NotFoundErrorMessage
 
 
 def get_teacher_by_cpf(db_session: Session, teacher_cpf:str) -> UserModel:

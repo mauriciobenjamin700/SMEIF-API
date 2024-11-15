@@ -33,7 +33,7 @@ USER_RESPONSE_EXAMPLE = {
     "level": 1
 }
 
-from utils.messages import generate_response, generate_responses_documentation
+from app.utils.messages.messages import generate_response, generate_responses_documentation
 
 
 ADD_RESPONSE_DESCRIPTION = f"""

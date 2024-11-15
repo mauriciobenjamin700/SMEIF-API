@@ -10,7 +10,7 @@ from database.models import(
 from schemas.classes import(
     Student
 )
-from utils.messages import NotFoundErrorMessage
+from app.utils.messages.messages import NotFoundErrorMessage
 from constants.classes import (
     ERROR_CLASSES_GET_ALL_NOT_FOUND,
 )

@@ -11,7 +11,7 @@ from constants.user import (
 from controllers.user import UserUseCases
 from database.models import UserModel
 from schemas.user import UserRequest
-from utils.cryptography import verify
+from app.utils.security.cryptography import verify
 
 def test_add_user_success(db_session, mock_UserRequest):
     uc = UserUseCases(db_session)

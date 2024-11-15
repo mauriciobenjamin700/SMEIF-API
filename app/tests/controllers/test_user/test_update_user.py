@@ -14,7 +14,7 @@ from schemas.user import (
     UserResponse,
     UserUpdateRequest
 )
-from utils.cryptography import verify
+from app.utils.security.cryptography import verify
 
 
 def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):

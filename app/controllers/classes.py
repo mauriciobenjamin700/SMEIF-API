@@ -39,7 +39,7 @@ from schemas.classes import (
     ClassUpdateRequest
 )
 from services.ids import id_generate
-from utils.messages import(
+from app.utils.messages.messages import(
     NotFoundErrorMessage,
     ServerError,
     SucessMessage
