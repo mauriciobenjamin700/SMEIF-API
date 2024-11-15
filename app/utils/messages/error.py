@@ -1,3 +1,17 @@
+"""
+## Mensagens de Erro
+
+### Funcs
+
+- BadRequest
+- Unauthorized
+- Forbidden
+- NotFound
+- Conflict
+- UnprocessableEntity
+- Server
+
+"""
 from fastapi import HTTPException
 
 

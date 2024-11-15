@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 def format_cpf(cpf:str) -> str:
     """
     Formata um CPF
@@ -69,3 +72,29 @@ def clean_string_field(string: str) -> str:
         - str: String limpa
     """
     return string.strip() if string else ""
+
+
+def format_date(date: datetime) -> str:
+    """
+    Formata uma data
+
+    - Args:
+        - date:: datetime: Data que será formatada
+
+    - Return:
+        - str: Data formatada
+    """
+    return date.strftime("%d/%m/%Y")
+
+
+def unformat_date(date: str) -> datetime:
+    """
+    Desformata uma data
+
+    - Args:
+        - date:: str: Data que será desformatada
+
+    - Return:
+        - datetime: Data desformatada
+    """
+    return datetime.strptime(date, "%d/%m/%Y")

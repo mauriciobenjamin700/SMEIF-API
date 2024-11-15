@@ -1,0 +1,5 @@
+ERROR_ADDRESS_REQUIRED_FIELD_STATE = "Estado é um campo obrigatório"
+ERROR_ADDRESS_REQUIRED_FIELD_CITY = "Cidade é um campo obrigatório"
+ERROR_ADDRESS_REQUIRED_FIELD_NEIGHBORHOOD = "Bairro é um campo obrigatório"
+ERROR_ADDRESS_REQUIRED_FIELD_STREET = "Rua é um campo obrigatório"
+ERROR_ADDRESS_REQUIRED_FIELD_HOUSE_NUMBER = "Número da casa é um campo obrigatório"

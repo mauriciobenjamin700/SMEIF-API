@@ -1,6 +1,27 @@
 """
 - LEVEL
--
+- GENDER
+- MESSAGE_USER_ADD_SUCESS
+- MESSAGE_USER_UPDATE_SUCESS
+- MESSAGE_USER_UPDATE_FAIL
+- MESSAGE_USER_DELETE_SUCESS
+- ERROR_USER_NOT_ID
+- ERROR_USER_NOT_FOUND_USER
+- ERROR_USER_NOT_FOUND_USERS
+- ERROR_USER_PASSWORD_WRONG
+- ERROR_USER_CPF_ALREADY_EXISTS
+- ERROR_USER_PHONE_ALREADY_EXISTS
+- ERROR_USER_EMAIL_ALREADY_EXISTS
+- ERROR_USER_LEVEL_INVALID
+- ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS
+- ERROR_USER_INVALID_OPTIONAL_PHONE
+- ERROR_USER_REQUIRED_FIELD_CPF
+- ERROR_USER_REQUIRED_FIELD_NAME
+- ERROR_USER_REQUIRED_FIELD_PHONE
+- ERROR_USER_REQUIRED_FIELD_EMAIL
+- ERROR_USER_REQUIRED_FIELD_PASSWORD
+- ERROR_USER_GET_TEACHER_NOT_FOUND
+
 """
 LEVEL = {
     "parent": 1,
@@ -8,27 +29,26 @@ LEVEL = {
     "coordination": 3,
     "admin": 4
 }
-MESSAGE_ADD_SUCESS = "Usuário cadastrado com sucesso"
-MESSAGE_UPDATE_SUCESS = "Usuário atualizado com sucesso"
-MESSAGE_UPDATE_FAIL = "Nenhum dado foi atualizado"
-MESSAGE_DELETE_SUCESS = "Usuário deletado com sucesso"
+GENDER = ['M', 'F', 'Z']
 
-ERROR_NOT_ID = "ID não informado"
-ERROR_NOT_FOUND_USER = "Usuário não encontrado"
-ERROR_NOT_FOUND_USERS = "Nenhum usuário encontrado"
-ERROR_PASSWORD_WRONG = "Senha inválida"
-ERROR_CPF_ALREADY_EXISTS = "CPF já cadastrado"
-ERROR_PHONE_ALREADY_EXISTS = "Telefone já cadastrado"
-ERROR_EMAIL_ALREADY_EXISTS = "Email já cadastrado"
+MESSAGE_USER_ADD_SUCESS = "Usuário cadastrado com sucesso"
+MESSAGE_USER_UPDATE_SUCESS = "Usuário atualizado com sucesso"
+MESSAGE_USER_UPDATE_FAIL = "Nenhum dado foi atualizado"
+MESSAGE_USER_DELETE_SUCESS = "Usuário deletado com sucesso"
+
+ERROR_USER_NOT_ID = "ID do usuário não informado"
+ERROR_USER_NOT_FOUND_USER = "Usuário não encontrado"
+ERROR_USER_NOT_FOUND_USERS = "Nenhum usuário encontrado"
+ERROR_USER_PASSWORD_WRONG = "Senha inválida"
+ERROR_USER_CPF_ALREADY_EXISTS = "CPF já cadastrado"
+ERROR_USER_PHONE_ALREADY_EXISTS = "Telefone já cadastrado"
+ERROR_USER_EMAIL_ALREADY_EXISTS = "Email já cadastrado"
 ERROR_USER_LEVEL_INVALID = "Nível de Acesso inválido"
-
-ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS = "Telefone e Telefone Opcional não podem ser iguais"
+ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS = "Telefone e Telefone Opcional não podem ser iguais"
 ERROR_USER_INVALID_OPTIONAL_PHONE = "Telefone opcional invalido"
-
 ERROR_USER_REQUIRED_FIELD_CPF = "CPF é obrigatório"
 ERROR_USER_REQUIRED_FIELD_NAME = "Nome é obrigatório"
 ERROR_USER_REQUIRED_FIELD_PHONE = "Telefone é obrigatório"
 ERROR_USER_REQUIRED_FIELD_EMAIL = "Email é obrigatório"
 ERROR_USER_REQUIRED_FIELD_PASSWORD = "Senha é obrigatória"
-
 ERROR_USER_GET_TEACHER_NOT_FOUND = "Professor não encontrado"

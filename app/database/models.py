@@ -29,46 +29,12 @@ class UserModel(BaseModel):
     - cpf: str
     - name: str
     - birth_date: datetime
+    - gender: str
     - phone: str
     - phone_optional: str | None
     - email: str
     - password: str
     - level: str
-    - address_id: str
-
-    relationships:
-
-    - address: AddressModel
-    - child_parents: list[ChildParentsModel]
-    """
-
-    __tablename__ = 'user'  
-    
-    cpf: Mapped[str] = mapped_column(String, primary_key=True)
-    name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
-    birth_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    phone: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    phone_optional: Mapped[str] = mapped_column(String, unique=False, nullable=True)
-    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String, unique= False, nullable=False)
-    level: Mapped[int] = mapped_column(Integer, unique=False ,nullable=False)
-    address_id: Mapped[str] = mapped_column(String, ForeignKey("address.id"), nullable=False)
-
-    address = relationship(
-        "AddressModel", 
-        back_populates="users",
-        uselist=False
-    )
-    child_parents = relationship(
-        "ChildParentModel",
-        back_populates="parent",
-        uselist=True
-    )
-
-
-class AddressModel(BaseModel):
-    """
-    - id: str
     - state: str
     - city: str
     - neighborhood: str
@@ -77,13 +43,20 @@ class AddressModel(BaseModel):
     - complement: str | None
 
     relationships:
-    - users: list[UserModel]
-    - children: list[ChildModel]
+    - child_parents: list[ChildParentsModel]
     """
 
-    __tablename__ = 'address'
-
-    id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    __tablename__ = 'user'  
+    
+    cpf: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
+    birth_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    gender: Mapped[str] = mapped_column(CHAR(1), unique=False,nullable=False)
+    phone: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    phone_optional: Mapped[str] = mapped_column(String, unique=False, nullable=True)
+    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String, unique= False, nullable=False)
+    level: Mapped[int] = mapped_column(Integer, unique=False ,nullable=False)
     state: Mapped[str] = mapped_column(String, nullable=False)
     city: Mapped[str] = mapped_column(String, nullable=False)
     neighborhood: Mapped[str] = mapped_column(String, nullable=False)
@@ -91,17 +64,10 @@ class AddressModel(BaseModel):
     house_number: Mapped[str] = mapped_column(String, nullable=False)
     complement: Mapped[str] = mapped_column(String, nullable=True)
 
-    users = relationship(
-        "UserModel",
-        back_populates="address",
-        uselist=True,
-        order_by="UserModel.name"
-    )
-    children = relationship(
-        "ChildModel",
-        back_populates="address",
-        uselist=True,
-        order_by="ChildModel.name"
+    child_parents = relationship(
+        "ChildParentModel",
+        back_populates="parent",
+        uselist=True
     )
 
 
@@ -136,7 +102,6 @@ class ChildModel(BaseModel):
     - dependencies: str | None
 
     relationships:
-    - address: AddressModel
     - child_parents: list[ChildParentsModel]
     """
     __tablename__ = 'child'
@@ -146,14 +111,14 @@ class ChildModel(BaseModel):
     name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     birth_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     gender: Mapped[str] = mapped_column(CHAR(1), unique=False,nullable=False)
-    address_id: Mapped[str] = mapped_column(String, ForeignKey("address.id"), nullable=False)
     dependencies: Mapped[str] = mapped_column(Text, unique=False, nullable=True)
+    state: Mapped[str] = mapped_column(String, nullable=False)
+    city: Mapped[str] = mapped_column(String, nullable=False)
+    neighborhood: Mapped[str] = mapped_column(String, nullable=False)
+    street: Mapped[str] = mapped_column(String, nullable=False)
+    house_number: Mapped[str] = mapped_column(String, nullable=False)
+    complement: Mapped[str] = mapped_column(String, nullable=True)
 
-    address = relationship(
-        "AddressModel",
-        back_populates="children",
-        uselist=False
-    )
     child_parents = relationship(
         "ChildParentsModel",
         back_populates="child",

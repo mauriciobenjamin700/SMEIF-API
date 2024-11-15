@@ -5,6 +5,8 @@
     - UserUpdateRequest
     - UserLoginRequest
 """
+from datetime import datetime
+from email.policy import default
 from pydantic import (
     Field,
     field_validator,
@@ -19,16 +21,16 @@ from constants.base import (
     ERROR_INVALID_PHONE_OPTIONAL
 )
 from constants.user import (
-    ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS,
-    ERROR_USER_INVALID_OPTIONAL_PHONE,
     ERROR_USER_LEVEL_INVALID,
+    ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS,
     ERROR_USER_REQUIRED_FIELD_CPF,
     ERROR_USER_REQUIRED_FIELD_EMAIL,
     ERROR_USER_REQUIRED_FIELD_NAME,
     ERROR_USER_REQUIRED_FIELD_PASSWORD,
-    ERROR_USER_REQUIRED_FIELD_PHONE, 
-    LEVEL
+    ERROR_USER_REQUIRED_FIELD_PHONE,
+    LEVEL 
 )
+from schemas.address import AddressRequest
 from schemas.base import BaseSchema
 from utils.validate import(
     validate_cpf,
@@ -38,10 +40,11 @@ from utils.validate import(
 )
 from utils.format import (
     clean_string_field,
+    format_date,
     unformat_cpf,
     unformat_phone
 )
-from app.utils.messages.messages import ValidationErrorMessage
+from utils.messages.error import UnprocessableEntity
 
 
 class UserRequest(BaseSchema):
@@ -56,11 +59,14 @@ class UserRequest(BaseSchema):
     """
     cpf: str = Field(title="cpf", description="CPF do usuário", examples=["123.456.789-00"])
     name: str = Field(title="name", description="Nome do usuário", examples=["John Doe"])
+    birth_date: str = Field(title="birth_date", description="Data de nascimento do usuário", examples=["01/01/2000"])
+    gender: str = Field(title="gender", description="Gênero do usuário", examples=["M", "F","Z"])
     phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"])
     phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 9000-0000"], default="")
     email: str = Field(title="email", description="E-mail do usuário", examples=["test@example.com"])
     password: str = Field(title="password", description="Senha do usuário", examples=["123456"])
     level: int = Field(title="level", description="Nível de acesso do usuário", examples=[f"{key}: {value}" for key, value in LEVEL.items()])
+    address: AddressRequest
 
 
     @field_validator("cpf", mode="before")
@@ -68,11 +74,11 @@ class UserRequest(BaseSchema):
         
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_CPF)
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_CPF)
 
         if not validate_cpf(value):
 
-            raise ValidationErrorMessage(ERROR_INVALID_CPF)
+            raise UnprocessableEntity(ERROR_INVALID_CPF)
         
         return unformat_cpf(value)
     
@@ -81,7 +87,7 @@ class UserRequest(BaseSchema):
         
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_NAME)
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_NAME)
         
         return value
     
@@ -90,11 +96,11 @@ class UserRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_PHONE)
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_PHONE)
         
         if not validate_phone_number(value):
 
-            raise ValidationErrorMessage(ERROR_INVALID_PHONE)
+            raise UnprocessableEntity(ERROR_INVALID_PHONE)
         
         return unformat_phone(value)
     
@@ -107,22 +113,22 @@ class UserRequest(BaseSchema):
 
             if not validate_phone_number(value):
 
-                raise ValidationErrorMessage(ERROR_INVALID_PHONE_OPTIONAL)
+                raise UnprocessableEntity(ERROR_INVALID_PHONE_OPTIONAL)
 
 
             phone = values.get("phone")
 
             if not validate_string(phone):
 
-                raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_PHONE)
+                raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_PHONE)
 
             if value == phone:
 
-                raise ValidationErrorMessage(ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS)
+                raise UnprocessableEntity(ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS)
             
             if not validate_phone_number(value):
 
-                raise ValidationErrorMessage(ERROR_INVALID_PHONE_OPTIONAL)
+                raise UnprocessableEntity(ERROR_INVALID_PHONE_OPTIONAL)
 
             values["phone_optional"] = unformat_phone(value)
         
@@ -136,11 +142,11 @@ class UserRequest(BaseSchema):
         
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_EMAIL)
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_EMAIL)
         
         if not validate_email(value):
 
-            raise ValidationErrorMessage(ERROR_INVALID_EMAIL)
+            raise UnprocessableEntity(ERROR_INVALID_EMAIL)
         
         return value
     
@@ -149,7 +155,7 @@ class UserRequest(BaseSchema):
         
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_PASSWORD)
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_PASSWORD)
         
         return value
     
@@ -158,8 +164,58 @@ class UserRequest(BaseSchema):
 
         if not value or value not in LEVEL.values():
 
-            raise ValidationErrorMessage(ERROR_USER_LEVEL_INVALID)
+            raise UnprocessableEntity(ERROR_USER_LEVEL_INVALID)
         
+        return value
+
+
+class UserDB(BaseSchema):
+    """
+    - cpf: str
+    - name: str
+    - birth_date: datetime
+    - gender: str
+    - phone: str
+    - phone_optional: str | None
+    - email: str
+    - password: str
+    - level: int
+    - state: str
+    - city: str
+    - neighborhood: str
+    - street: str
+    - house_number: str
+    - complement: str | None
+    """
+
+    cpf: str
+    name: str
+    birth_date: datetime
+    gender: str
+    phone: str
+    phone_optional: str | None
+    email: str
+    password: str
+    level: int
+    state: str
+    city: str
+    neighborhood: str
+    street: str
+    house_number: str
+    complement: str | None
+
+    @field_validator("phone_optional", mode="before")
+    def field_validate_phone_optional(cls, value) -> str:
+        if not value:
+            value = None
+
+        return value
+    
+    @field_validator("complement", mode="before")
+    def field_validate_complement(cls, value) -> str:
+        if not value:
+            value = None
+    
         return value
         
 class UserResponse(BaseSchema):
@@ -174,16 +230,38 @@ class UserResponse(BaseSchema):
 
     cpf: str = Field(title="cpf", description="CPF do usuário", examples=["123.456.789-00"])
     name: str = Field(title="name", description="Nome do usuário", examples=["John Doe"])
+    birth_date: str = Field(title="birth_date", description="Data de nascimento do usuário", examples=["01/01/2000"])
+    gender: str = Field(title="gender", description="Gênero do usuário", examples=["Masculino", "Feminino","Outros"])
     phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"])
     phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 00000-0000"], default="")
     email: str = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"])
     level: int = Field(title="level", description="Nível de acesso do usuário", examples=["1"])
+    state: str = Field(title="state", description="Estado do usuário", examples=["SP"])
+    city: str = Field(title="city", description="Cidade do usuário", examples=["São Paulo"])
+    neighborhood: str = Field(title="neighborhood", description="Bairro do usuário", examples=["Vila Maria"])
+    street: str = Field(title="street", description="Rua do usuário", examples=["Rua dos Bandeirantes"])
+    house_number: str = Field(title="house_number", description="Número da casa do usuário", examples=["100"])
+    complement: str = Field(title="complement", description="Complemento do endereço do usuário", examples=["Apartamento 201"])
+
 
     @field_validator("phone_optional", mode="before")
     def field_validate_phone_optional(cls, value) -> str:
         if not value:
             value = ""
 
+        return value
+
+    @field_validator("complement", mode="before")
+    def field_validate_complement(cls, value) -> str:
+        if not value:
+            value = ""
+        return value
+    
+    @field_validator("birth_date", mode="before")
+    def field_validate_birth_date(cls, value) -> str:
+        if isinstance(value, datetime):
+            value = format_date(value)
+        
         return value
 
 class UserUpdateRequest(BaseSchema):
@@ -200,6 +278,7 @@ class UserUpdateRequest(BaseSchema):
     email: str |  None = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"], default=None)
     password: str = Field(title="password", description="Senha do usuário", examples=["123456"], default=None)
     level: int = Field(title="level", description="Nível de acesso do usuário", examples=["2"], default=None)
+    address: AddressRequest | None = None
 
     @field_validator("name", mode="before")
     def field_validate_name(cls, value) -> str:
@@ -216,7 +295,7 @@ class UserUpdateRequest(BaseSchema):
 
             if not validate_phone_number(value):
 
-                raise ValidationErrorMessage(ERROR_INVALID_PHONE)
+                raise UnprocessableEntity(ERROR_INVALID_PHONE)
 
             value = unformat_phone(value)
 
@@ -232,7 +311,7 @@ class UserUpdateRequest(BaseSchema):
 
             if not validate_phone_number(value):
 
-                raise ValidationErrorMessage(ERROR_INVALID_PHONE_OPTIONAL)
+                raise UnprocessableEntity(ERROR_INVALID_PHONE_OPTIONAL)
 
             value = unformat_phone(value)
 
@@ -247,7 +326,7 @@ class UserUpdateRequest(BaseSchema):
 
             if not validate_email(value):
 
-                raise ValidationErrorMessage(ERROR_INVALID_EMAIL)
+                raise UnprocessableEntity(ERROR_INVALID_EMAIL)
 
             
         return value
@@ -267,7 +346,7 @@ class UserUpdateRequest(BaseSchema):
 
             if value not in LEVEL.values():
 
-                raise ValidationErrorMessage(ERROR_USER_LEVEL_INVALID)
+                raise UnprocessableEntity(ERROR_USER_LEVEL_INVALID)
         
         return value
 
@@ -287,11 +366,11 @@ class UserLoginRequest(BaseSchema):
 
         if not value:
 
-            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_CPF)
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_CPF)
         
         if not validate_cpf(value):
 
-            raise ValidationErrorMessage(ERROR_INVALID_CPF)
+            raise UnprocessableEntity(ERROR_INVALID_CPF)
 
         value = unformat_cpf(value)
         
@@ -305,6 +384,6 @@ class UserLoginRequest(BaseSchema):
 
         if not value:
 
-            raise ValidationErrorMessage(ERROR_USER_REQUIRED_FIELD_PASSWORD)
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_PASSWORD)
         
         return value
