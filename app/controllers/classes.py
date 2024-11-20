@@ -38,12 +38,8 @@ from schemas.classes import (
     ClassResponse,
     ClassUpdateRequest
 )
-from services.ids import id_generate
-from app.utils.messages.messages import(
-    NotFoundErrorMessage,
-    ServerError,
-    SucessMessage
-)
+from app.services.generator.ids import id_generate
+
 
 
 class ClassesUseCases(Repository):

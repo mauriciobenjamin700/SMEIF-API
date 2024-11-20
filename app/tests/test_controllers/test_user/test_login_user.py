@@ -8,7 +8,7 @@ from constants.user import (
 )
 from controllers.user import UserUseCases
 from schemas.user import UserLoginRequest, UserResponse
-from services.tokens import decode_token
+from app.services.security.tokens import decode_token
 
 
 def test_login_user_sucess(db_session, mock_user_on_db, mock_UserLoginRequest):

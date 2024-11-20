@@ -1,4 +1,4 @@
-from app.utils.messages.messages import generate_responses_documentation, generate_response
+from utils.messages.messages import generate_responses_documentation, generate_response
 
 
 

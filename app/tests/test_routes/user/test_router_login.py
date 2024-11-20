@@ -1,5 +1,5 @@
 from constants.user import MESSAGE_ADD_SUCESS
-from services.tokens import decode_token
+from app.services.security.tokens import decode_token
 from schemas.user import UserResponse
 
 

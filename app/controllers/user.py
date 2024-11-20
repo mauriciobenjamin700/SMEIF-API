@@ -33,7 +33,7 @@ from app.utils.messages.messages import (
     SucessMessage,
     ErrorMessage
 )
-from services.tokens import encode_token
+from app.services.security.tokens import encode_token
 
 
 class UserUseCases(Repository):
