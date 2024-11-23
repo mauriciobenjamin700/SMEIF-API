@@ -20,6 +20,6 @@ ERROR_CLASSES_GET_ALL_NOT_FOUND = "Nenhuma disciplina encontrada"
 
 ERROR_CLASS_ADD_CONFLICT = "Disciplina já cadastrada"
 
-MESSAGE_CLASS_ADD_SUCESS = "Disciplina cadastrada com sucesso"
-MESSAGE_CLASS_UPDATE_SUCESS = "Disciplina atualizada com sucesso"
-MESSAGE_CLASS_DELETE_SUCESS = "Disciplina deletada com sucesso"
+MESSAGE_CLASS_ADD_SUCCESS = "Disciplina cadastrada com sucesso"
+MESSAGE_CLASS_UPDATE_SUCCESS = "Disciplina atualizada com sucesso"
+MESSAGE_CLASS_DELETE_SUCCESS = "Disciplina deletada com sucesso"

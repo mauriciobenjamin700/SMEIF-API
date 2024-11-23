@@ -23,7 +23,7 @@ class AddressRequest(BaseSchema):
     - neighborhood: str
     - street: str
     - house_number: str
-    - complement: str = "
+    - complement: str = ""
     """
     state: str = Field(title="state", description="Estado", examples=["PI", "SP"])
     city: str = Field(title="city", description="Cidade", examples=["Teresina", "São Paulo"])

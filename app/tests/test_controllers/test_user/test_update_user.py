@@ -4,9 +4,9 @@ from pytest import raises
 
 from database.models import UserModel
 from constants.user import (
-    ERROR_NOT_FOUND_USER,
-    ERROR_NOT_ID,
-    MESSAGE_UPDATE_SUCESS, 
+    ERROR_USER_NOT_FOUND_USER,
+    ERROR_USER_NOT_ID,
+    MESSAGE_UPDATE_SUCCESS, 
     MESSAGE_UPDATE_FAIL
 )
 from controllers.user import UserUseCases
@@ -23,7 +23,7 @@ def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):
 
     response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest)
 
-    assert response.detail == MESSAGE_UPDATE_SUCESS
+    assert response.detail == MESSAGE_UPDATE_SUCCESS
 
     user = db_session.query(UserModel).filter_by(cpf=mock_user_on_db.cpf).first()
 
@@ -39,7 +39,7 @@ def test_update_user_level(db_session, mock_user_on_db, mock_UserUpdateRequest_l
 
     response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest_level)
 
-    assert response.detail  == MESSAGE_UPDATE_SUCESS
+    assert response.detail  == MESSAGE_UPDATE_SUCCESS
 
     user = db_session.query(UserModel).filter_by(cpf=mock_user_on_db.cpf).first()
 
@@ -70,7 +70,7 @@ def test_update_user_no_id(db_session, mock_user_on_db, mock_UserUpdateRequest):
         uc.update(None, mock_UserUpdateRequest)
 
     assert e.value.status_code == 400
-    assert e.value.detail == ERROR_NOT_ID
+    assert e.value.detail == ERROR_USER_NOT_ID
 
 def test_update_user_not_found(db_session, mock_user_on_db, mock_UserUpdateRequest):
     
@@ -80,4 +80,4 @@ def test_update_user_not_found(db_session, mock_user_on_db, mock_UserUpdateReque
             uc.update("12345678901", mock_UserUpdateRequest)
     
         assert e.value.status_code == 404
-        assert e.value.detail == ERROR_NOT_FOUND_USER
+        assert e.value.detail == ERROR_USER_NOT_FOUND_USER

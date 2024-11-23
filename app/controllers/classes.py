@@ -6,9 +6,9 @@ from base import Repository
 from constants.classes import(
     ERROR_CLASS_ADD_CONFLICT,
     ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID,
-    MESSAGE_CLASS_ADD_SUCESS,
-    MESSAGE_CLASS_DELETE_SUCESS,
-    MESSAGE_CLASS_UPDATE_SUCESS
+    MESSAGE_CLASS_ADD_SUCCESS,
+    MESSAGE_CLASS_DELETE_SUCCESS,
+    MESSAGE_CLASS_UPDATE_SUCCESS
 )
 from constants.user import(
     ERROR_USER_GET_TEACHER_NOT_FOUND,
@@ -68,7 +68,7 @@ class ClassesUseCases(Repository):
             self.db_session.commit()
             self.db_session.refresh(model)
 
-            return SucessMessage(MESSAGE_CLASS_ADD_SUCESS)
+            return SucessMessage(MESSAGE_CLASS_ADD_SUCCESS)
 
         except HTTPException:
             raise
@@ -125,7 +125,7 @@ class ClassesUseCases(Repository):
             self.db_session.refresh(model)
 
 
-            return SucessMessage(MESSAGE_CLASS_UPDATE_SUCESS)
+            return SucessMessage(MESSAGE_CLASS_UPDATE_SUCCESS)
 
 
         except HTTPException:
@@ -148,7 +148,7 @@ class ClassesUseCases(Repository):
             self.db_session.delete(model)
             self.db_session.commit()
             
-            return SucessMessage(MESSAGE_CLASS_DELETE_SUCESS)
+            return SucessMessage(MESSAGE_CLASS_DELETE_SUCCESS)
 
 
         except HTTPException:

@@ -3,17 +3,17 @@ from sqlalchemy.orm import Session
 
 
 from constants.user import (
-    MESSAGE_ADD_SUCESS, 
-    MESSAGE_DELETE_SUCESS,
-    ERROR_CPF_ALREADY_EXISTS,
-    ERROR_EMAIL_ALREADY_EXISTS,
-    ERROR_NOT_FOUND_USER, 
-    ERROR_NOT_FOUND_USERS, 
-    ERROR_NOT_ID, 
-    ERROR_PASSWORD_WRONG,
-    ERROR_PHONE_ALREADY_EXISTS, 
+    MESSAGE_USER_ADD_SUCCESS, 
+    MESSAGE_USER_DELETE_SUCCESS,
+    ERROR_USER_CPF_ALREADY_EXISTS,
+    ERROR_USER_EMAIL_ALREADY_EXISTS,
+    ERROR_USER_NOT_FOUND_USER, 
+    ERROR_USER_NOT_FOUND_USERS, 
+    ERROR_USER_NOT_ID, 
+    ERROR_USER_PASSWORD_WRONG,
+    ERROR_USER_PHONE_ALREADY_EXISTS, 
     MESSAGE_UPDATE_FAIL, 
-    MESSAGE_UPDATE_SUCESS
+    MESSAGE_UPDATE_SUCCESS
 )
 from controllers.base import Repository
 from database.models import UserModel
@@ -83,7 +83,7 @@ class UserUseCases(Repository):
             self.db_session.add(user)
             self.db_session.commit()
 
-            return SucessMessage(MESSAGE_ADD_SUCESS)
+            return SucessMessage(MESSAGE_USER_ADD_SUCCESS)
 
         except HTTPException:
             raise
@@ -188,7 +188,7 @@ class UserUseCases(Repository):
                 self.db_session.commit()
                 self.db_session.refresh(user)
 
-            return SucessMessage(MESSAGE_UPDATE_SUCESS) if updated else SucessMessage(MESSAGE_UPDATE_FAIL)
+            return SucessMessage(MESSAGE_UPDATE_SUCCESS) if updated else SucessMessage(MESSAGE_UPDATE_FAIL)
 
         except HTTPException:
             raise
@@ -218,7 +218,7 @@ class UserUseCases(Repository):
             self.db_session.delete(user)
             self.db_session.commit()
 
-            return SucessMessage(MESSAGE_DELETE_SUCESS)
+            return SucessMessage(MESSAGE_USER_DELETE_SUCCESS)
 
         except HTTPException:
             raise
@@ -246,10 +246,10 @@ class UserUseCases(Repository):
             user = self.db_session.query(UserModel).filter_by(cpf=acess.cpf).first()
 
             if not user:
-                raise ErrorMessage(404, ERROR_NOT_FOUND_USER)
+                raise ErrorMessage(404, ERROR_USER_NOT_FOUND_USER)
 
             if not verify(acess.password, user.password):
-                raise ErrorMessage(401, ERROR_PASSWORD_WRONG)
+                raise ErrorMessage(401, ERROR_USER_PASSWORD_WRONG)
             
             data = self._map_UserModel_to_UserResponse(user)
             
@@ -271,7 +271,7 @@ class UserUseCases(Repository):
         
                 if user:
                     
-                    raise ErrorMessage(409, ERROR_CPF_ALREADY_EXISTS)
+                    raise ErrorMessage(409, ERROR_USER_CPF_ALREADY_EXISTS)
                 
             if phone:
             
@@ -279,7 +279,7 @@ class UserUseCases(Repository):
 
                 if user:
                     
-                    raise ErrorMessage(409, ERROR_PHONE_ALREADY_EXISTS)
+                    raise ErrorMessage(409, ERROR_USER_PHONE_ALREADY_EXISTS)
                 
             if email:
 
@@ -287,19 +287,19 @@ class UserUseCases(Repository):
                 
                 if user:
                     
-                    raise ErrorMessage(409, ERROR_EMAIL_ALREADY_EXISTS)
+                    raise ErrorMessage(409, ERROR_USER_EMAIL_ALREADY_EXISTS)
 
             
 
     def _get(self, id: str) -> UserModel:
 
         if not id:
-            raise ErrorMessage(400, ERROR_NOT_ID)
+            raise ErrorMessage(400, ERROR_USER_NOT_ID)
         
         user = self.db_session.query(UserModel).filter_by(cpf=id).first()
 
         if not user:
-            raise ErrorMessage(404, ERROR_NOT_FOUND_USER)
+            raise ErrorMessage(404, ERROR_USER_NOT_FOUND_USER)
         
         return user
     
@@ -308,7 +308,7 @@ class UserUseCases(Repository):
         users = self.db_session.query(UserModel).all()
 
         if not users:
-            raise ErrorMessage(404, ERROR_NOT_FOUND_USERS)
+            raise ErrorMessage(404, ERROR_USER_NOT_FOUND_USERS)
         
         return users
     

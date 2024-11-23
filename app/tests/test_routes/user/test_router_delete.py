@@ -1,4 +1,4 @@
-from constants.user import MESSAGE_DELETE_SUCESS
+from constants.user import MESSAGE_DELETE_SUCCESS
 from schemas.user import UserResponse
 
 def test_router_user_delete(mock_user_on_db, api):
@@ -8,4 +8,4 @@ def test_router_user_delete(mock_user_on_db, api):
     assert response.status_code == 200
     data = response.json()
 
-    assert data["detail"] == MESSAGE_DELETE_SUCESS
+    assert data["detail"] == MESSAGE_DELETE_SUCCESS

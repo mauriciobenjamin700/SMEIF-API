@@ -3,7 +3,7 @@ from pytest import raises
 
 
 from constants.user import (
-    MESSAGE_ADD_SUCESS,
+    MESSAGE_ADD_SUCCESS,
     ERROR_CPF_ALREADY_EXISTS,
     ERROR_EMAIL_ALREADY_EXISTS,
     ERROR_PHONE_ALREADY_EXISTS
@@ -20,7 +20,7 @@ def test_add_user_success(db_session, mock_UserRequest):
 
     response = uc.add(user)
 
-    assert response.detail == MESSAGE_ADD_SUCESS
+    assert response.detail == MESSAGE_ADD_SUCCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 
@@ -52,7 +52,7 @@ def test_add_user_fail_phone_exits(db_session, mock_UserRequest):
 
     response = uc.add(user)
 
-    assert response.detail == MESSAGE_ADD_SUCESS
+    assert response.detail == MESSAGE_ADD_SUCCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 
@@ -80,7 +80,7 @@ def test_add_user_fail_email_exits(db_session, mock_UserRequest):
 
     response = uc.add(user)
 
-    assert response.detail == MESSAGE_ADD_SUCESS
+    assert response.detail == MESSAGE_ADD_SUCCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 

@@ -3,8 +3,8 @@ from pytest import raises
 
 
 from constants.user import (
-    ERROR_NOT_FOUND_USER,
-    ERROR_PASSWORD_WRONG
+    ERROR_USER_NOT_FOUND_USER,
+    ERROR_USER_PASSWORD_WRONG
 )
 from controllers.user import UserUseCases
 from schemas.user import UserLoginRequest, UserResponse
@@ -39,7 +39,7 @@ def test_login_user_fail_not_found(db_session, mock_UserLoginRequest):
         uc.login(mock_UserLoginRequest)
 
     assert e.value.status_code == 404
-    assert e.value.detail == ERROR_NOT_FOUND_USER
+    assert e.value.detail == ERROR_USER_NOT_FOUND_USER
 
 
 def test_login_user_fail_password_wrong(db_session, mock_user_on_db, mock_UserLoginRequest):
@@ -55,4 +55,4 @@ def test_login_user_fail_password_wrong(db_session, mock_user_on_db, mock_UserLo
         uc.login(login)
 
     assert e.value.status_code == 401
-    assert e.value.detail == ERROR_PASSWORD_WRONG
+    assert e.value.detail == ERROR_USER_PASSWORD_WRONG

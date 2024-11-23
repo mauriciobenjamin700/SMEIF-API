@@ -3,8 +3,8 @@ from pytest import raises
 
 
 from constants.user import (
-    ERROR_NOT_FOUND_USER, 
-    ERROR_NOT_ID
+    ERROR_USER_NOT_FOUND_USER, 
+    ERROR_USER_NOT_ID
 )
 from controllers.user import UserUseCases
 from schemas.user import UserResponse
@@ -32,7 +32,7 @@ def test_get_user_fail_no_id(db_session):
         uc.get(None)
 
     assert e.value.status_code == 400
-    assert e.value.detail == ERROR_NOT_ID
+    assert e.value.detail == ERROR_USER_NOT_ID
 
 
 def test_get_user_fail_not_found(db_session):
@@ -42,4 +42,4 @@ def test_get_user_fail_not_found(db_session):
         uc.get("999.999.999-99")
 
     assert e.value.status_code == 404
-    assert e.value.detail == ERROR_NOT_FOUND_USER
+    assert e.value.detail == ERROR_USER_NOT_FOUND_USER

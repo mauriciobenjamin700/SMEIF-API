@@ -7,7 +7,7 @@ from database.connection import Session
 from database.models import UserModel
 from main import app
 from schemas.user import UserLoginRequest, UserRequest, UserUpdateRequest
-from app.utils.security.cryptography import crypto
+from services.security.password import protect
 
 
 @fixture
@@ -62,7 +62,7 @@ def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
     
     request = UserRequest(**mock_UserRequest.dict())
 
-    request.password = crypto(request.password)
+    request.password = protect(request.password)
 
     user = UserModel(**request.dict())
 

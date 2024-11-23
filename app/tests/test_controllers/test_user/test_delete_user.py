@@ -3,9 +3,9 @@ from pytest import raises
 
 
 from constants.user import (
-    ERROR_NOT_ID,
-    ERROR_NOT_FOUND_USER,
-    MESSAGE_DELETE_SUCESS
+    ERROR_USER_NOT_ID,
+    ERROR_USER_NOT_FOUND_USER,
+    MESSAGE_DELETE_SUCCESS
 )
 from controllers.user import UserUseCases
 
@@ -16,7 +16,7 @@ def test_delete_user_sucess(db_session, mock_user_on_db):
 
     response = uc.delete(mock_user_on_db.cpf)
 
-    assert response.detail == MESSAGE_DELETE_SUCESS
+    assert response.detail == MESSAGE_DELETE_SUCCESS
 
 
 def test_delete_user_fail_no_id(db_session):
@@ -27,7 +27,7 @@ def test_delete_user_fail_no_id(db_session):
         uc.delete(None)
 
     assert e.value.status_code == 400
-    assert e.value.detail == ERROR_NOT_ID
+    assert e.value.detail == ERROR_USER_NOT_ID
 
 
 def test_delete_user_fail_not_found(db_session):
@@ -38,4 +38,4 @@ def test_delete_user_fail_not_found(db_session):
         uc.delete("None")
 
     assert e.value.status_code == 404
-    assert e.value.detail == ERROR_NOT_FOUND_USER
+    assert e.value.detail == ERROR_USER_NOT_FOUND_USER

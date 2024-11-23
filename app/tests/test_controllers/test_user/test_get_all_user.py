@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from pytest import raises
 
 
-from constants.user import ERROR_NOT_FOUND_USERS
+from constants.user import ERROR_USER_NOT_FOUND_USERS
 from controllers.user import UserUseCases
 from schemas.user import UserResponse
 
@@ -33,4 +33,4 @@ def test_get_all_user_fail_not_found(db_session):
         uc.get_all()
 
     assert e.value.status_code == 404
-    assert e.value.detail == ERROR_NOT_FOUND_USERS
+    assert e.value.detail == ERROR_USER_NOT_FOUND_USERS

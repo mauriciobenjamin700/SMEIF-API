@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 crypt_context = CryptContext(schemes=['sha256_crypt'])
 
 
-def crypto(value: str) -> str:
+def protect(value: str) -> str:
     """
     Codifica (hashea) um valor
     

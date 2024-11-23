@@ -5,14 +5,14 @@ from constants.base import ERROR_SERVER_ERROR
 from constants.user import (
     ERROR_CPF_ALREADY_EXISTS, 
     ERROR_EMAIL_ALREADY_EXISTS,
-    ERROR_NOT_FOUND_USER,
-    ERROR_NOT_FOUND_USERS,
-    ERROR_NOT_ID,
-    ERROR_PASSWORD_WRONG, 
+    ERROR_USER_NOT_FOUND_USER,
+    ERROR_USER_NOT_FOUND_USERS,
+    ERROR_USER_NOT_ID,
+    ERROR_USER_PASSWORD_WRONG, 
     ERROR_PHONE_ALREADY_EXISTS, 
-    MESSAGE_ADD_SUCESS,
-    MESSAGE_DELETE_SUCESS,
-    MESSAGE_UPDATE_SUCESS
+    MESSAGE_ADD_SUCCESS,
+    MESSAGE_DELETE_SUCCESS,
+    MESSAGE_UPDATE_SUCCESS
 )
 
 USER_REQUEST_EXAMPLE =         {
@@ -40,7 +40,7 @@ ADD_RESPONSE_DESCRIPTION = f"""
 
 - Exemplo de resposta:
 
-            "detail": "{MESSAGE_ADD_SUCESS}"
+            "detail": "{MESSAGE_ADD_SUCCESS}"
         
 
 """
@@ -63,7 +63,7 @@ Adiciona um novo usuário ao banco de dados.
 
 ADD_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, MESSAGE_ADD_SUCESS),
+        generate_response(200, MESSAGE_ADD_SUCCESS),
         generate_response(409, ERROR_CPF_ALREADY_EXISTS),
         generate_response(409, ERROR_PHONE_ALREADY_EXISTS),
         generate_response(409, ERROR_EMAIL_ALREADY_EXISTS),
@@ -100,8 +100,8 @@ Busca um usuário no banco de dados.
 GET_RESPONSES = generate_responses_documentation(
     [
         generate_response(200, str(USER_RESPONSE_EXAMPLE)),
-        generate_response(404, ERROR_NOT_ID),
-        generate_response(404, ERROR_NOT_FOUND_USER),
+        generate_response(404, ERROR_USER_NOT_ID),
+        generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
@@ -136,7 +136,7 @@ LIST_DESCRIPTION="""""" + LIST_RESPONSE_DESCRIPTION
 LIST_RESPONSES = generate_responses_documentation(
     [
         generate_response(200, str([USER_RESPONSE_EXAMPLE, USER_RESPONSE_EXAMPLE])),
-        generate_response(404, ERROR_NOT_FOUND_USERS),
+        generate_response(404, ERROR_USER_NOT_FOUND_USERS),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
@@ -146,7 +146,7 @@ UPDATE_RESPONSE_DESCRIPTION = f"""
 
 - Exemplo de resposta:
 
-        "detail": "{MESSAGE_UPDATE_SUCESS}"
+        "detail": "{MESSAGE_UPDATE_SUCCESS}"
 
 
 """
@@ -167,9 +167,9 @@ UPDATE_DESCRIPTION="""
 
 UPDATE_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, MESSAGE_UPDATE_SUCESS),
-        generate_response(404, ERROR_NOT_ID),
-        generate_response(404, ERROR_NOT_FOUND_USER),
+        generate_response(200, MESSAGE_UPDATE_SUCCESS),
+        generate_response(404, ERROR_USER_NOT_ID),
+        generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
@@ -177,7 +177,7 @@ UPDATE_RESPONSES = generate_responses_documentation(
 DELETE_RESPONSE_DESCRIPTION = f"""
 - Exemplo de resposta:
     
-            "detail": "{MESSAGE_DELETE_SUCESS}"
+            "detail": "{MESSAGE_DELETE_SUCCESS}"
 
 """
 DELETE_DESCRIPTION="""
@@ -191,9 +191,9 @@ Deleta um usuário no banco de dados.
 """ + DELETE_RESPONSE_DESCRIPTION
 DELETE_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, MESSAGE_DELETE_SUCESS),
-        generate_response(404, ERROR_NOT_ID),
-        generate_response(404, ERROR_NOT_FOUND_USER),
+        generate_response(200, MESSAGE_DELETE_SUCCESS),
+        generate_response(404, ERROR_USER_NOT_ID),
+        generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
@@ -220,8 +220,8 @@ Realiza o login de um usuário e retorna um token de autenticação.
 LOGIN_RESPONSES = generate_responses_documentation(
     [
         generate_response(200, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"),
-        generate_response(404, ERROR_NOT_FOUND_USER),
-        generate_response(401, ERROR_PASSWORD_WRONG),
+        generate_response(404, ERROR_USER_NOT_FOUND_USER),
+        generate_response(401, ERROR_USER_PASSWORD_WRONG),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )

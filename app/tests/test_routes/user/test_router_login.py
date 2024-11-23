@@ -1,4 +1,4 @@
-from constants.user import MESSAGE_ADD_SUCESS
+from constants.user import MESSAGE_ADD_SUCCESS
 from app.services.security.tokens import decode_token
 from schemas.user import UserResponse
 

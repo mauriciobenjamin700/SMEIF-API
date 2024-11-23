@@ -1,4 +1,4 @@
-from constants.user import MESSAGE_ADD_SUCESS
+from constants.user import MESSAGE_ADD_SUCCESS
 
 
 def test_router_user_add_sucess(clean_data,api,mock_UserRequest):
@@ -8,4 +8,4 @@ def test_router_user_add_sucess(clean_data,api,mock_UserRequest):
     assert response.status_code == 200
     data = response.json()
 
-    assert data["detail"] == MESSAGE_ADD_SUCESS
+    assert data["detail"] == MESSAGE_ADD_SUCCESS
