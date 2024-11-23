@@ -18,7 +18,7 @@ from fastapi import HTTPException
 from constants.base import ERROR_SERVER_ERROR
 
 
-def BadRequest(errors: dict) -> HTTPException:
+def BadRequest(errors: str) -> HTTPException:
     return HTTPException(status_code=400, detail=errors)
 
 
@@ -38,7 +38,7 @@ def Conflict(detail:str) -> HTTPException:
     return HTTPException(status_code=409, detail=detail)
 
 
-def UnprocessableEntity(errors: dict) -> HTTPException:
+def UnprocessableEntity(errors: str) -> HTTPException:
     return HTTPException(status_code=422, detail=errors)
 
 

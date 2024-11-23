@@ -6,7 +6,6 @@
     - UserLoginRequest
 """
 from datetime import datetime
-from email.policy import default
 from pydantic import (
     Field,
     field_validator,
@@ -23,6 +22,7 @@ from constants.base import (
 from constants.user import (
     ERROR_USER_LEVEL_INVALID,
     ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS,
+    ERROR_USER_REQUIRED_FIELD_ADDRESS,
     ERROR_USER_REQUIRED_FIELD_CPF,
     ERROR_USER_REQUIRED_FIELD_EMAIL,
     ERROR_USER_REQUIRED_FIELD_NAME,
@@ -56,6 +56,7 @@ class UserRequest(BaseSchema):
     - email: str
     - password: str
     - level: int
+    - address: AddressRequest
     """
     cpf: str = Field(title="cpf", description="CPF do usuário", examples=["123.456.789-00"])
     name: str = Field(title="name", description="Nome do usuário", examples=["John Doe"])
@@ -66,7 +67,7 @@ class UserRequest(BaseSchema):
     email: str = Field(title="email", description="E-mail do usuário", examples=["test@example.com"])
     password: str = Field(title="password", description="Senha do usuário", examples=["123456"])
     level: int = Field(title="level", description="Nível de acesso do usuário", examples=[f"{key}: {value}" for key, value in LEVEL.items()])
-    address: AddressRequest
+    address: AddressRequest = Field(title="address", description="Endereço do usuário")
 
 
     @field_validator("cpf", mode="before")
@@ -167,6 +168,15 @@ class UserRequest(BaseSchema):
             raise UnprocessableEntity(ERROR_USER_LEVEL_INVALID)
         
         return value
+    
+    @field_validator("address", mode="before")
+    def field_validate_address(cls, value) -> AddressRequest:
+            
+            if not value:
+    
+                raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_ADDRESS)
+            
+            return value
 
 
 class UserDB(BaseSchema):
@@ -222,10 +232,18 @@ class UserResponse(BaseSchema):
     """
     - cpf: str
     - name: str
+    - birth_date: str
+    - gender: str [M, F , Z]
     - phone: str
     - phone_optional: str = ""
     - email: str
     - level: int
+    - state: str
+    - city: str
+    - neighborhood: str
+    - street: str
+    - house_number: str
+    - complement: str = ""
     """
 
     cpf: str = Field(title="cpf", description="CPF do usuário", examples=["123.456.789-00"])
@@ -271,14 +289,16 @@ class UserUpdateRequest(BaseSchema):
     - phone_optional: str | None
     - email: str | None
     - password: str | None
+    - level: int | None
+    - address: AddressRequest | None
     """
     name: str | None = Field(title="name", description="Nome do usuário", examples=["John Doe"], default=None)
     phone: str | None = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"], default=None)
     phone_optional: str | None = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 9000-0000"], default=None)
     email: str |  None = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"], default=None)
-    password: str = Field(title="password", description="Senha do usuário", examples=["123456"], default=None)
-    level: int = Field(title="level", description="Nível de acesso do usuário", examples=["2"], default=None)
-    address: AddressRequest | None = None
+    password: str | None = Field(title="password", description="Senha do usuário", examples=["123456"], default=None)
+    level: int | None = Field(title="level", description="Nível de acesso do usuário", examples=[1,2], default=None)
+    address: AddressRequest | None = Field(title="address", description="Endereço do usuário", default=None)
 
     @field_validator("name", mode="before")
     def field_validate_name(cls, value) -> str:
