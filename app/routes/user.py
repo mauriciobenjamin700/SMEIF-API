@@ -5,7 +5,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 
-from controllers.user import UserUseCases
+from controllers.user import UserController
 from schemas.user import(
     UserRequest,
     UserResponse,
@@ -44,7 +44,7 @@ async def add_user(
     db_session: Session = Depends(db_session),
 ) -> BaseMessage:    
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.add(user)
 
@@ -56,7 +56,7 @@ async def get_user(
     db_session: Session = Depends(db_session)
 ) -> UserResponse:
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.get(user_id)
 
@@ -67,7 +67,7 @@ async def list_users(
     db_session: Session = Depends(db_session)
 ) -> list[UserResponse]:
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.get_all()
 
@@ -81,7 +81,7 @@ async def update_user(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.update(user_id, update)
 
@@ -94,7 +94,7 @@ async def delete_user(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
     
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.delete(user_id)
 
@@ -107,7 +107,7 @@ async def login(
     db_session: Session = Depends(db_session)
 ) -> str:
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.login(user)
 

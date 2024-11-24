@@ -108,7 +108,6 @@ class UserRequest(BaseSchema):
 
             raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_BIRTH_DATE)
         
-        print(value)
         if not validate_date(value):
 
             raise UnprocessableEntity(ERROR_INVALID_FORMAT_BIRTH_DATE)

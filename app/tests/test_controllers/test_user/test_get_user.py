@@ -6,13 +6,13 @@ from constants.user import (
     ERROR_USER_NOT_FOUND_USER, 
     ERROR_USER_NOT_ID
 )
-from controllers.user import UserUseCases
+from controllers.user import UserController
 from schemas.user import UserResponse
 
 
 def test_get_user_success(db_session, mock_user_on_db):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     user = uc.get(mock_user_on_db.cpf)
 
@@ -26,7 +26,7 @@ def test_get_user_success(db_session, mock_user_on_db):
 
 
 def test_get_user_fail_no_id(db_session):
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     with raises(HTTPException) as e:
         uc.get(None)
@@ -36,7 +36,7 @@ def test_get_user_fail_no_id(db_session):
 
 
 def test_get_user_fail_not_found(db_session):
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     with raises(HTTPException) as e:
         uc.get("999.999.999-99")

@@ -144,14 +144,11 @@ def is_adult(birth_date: str) -> bool:
         parsed_date = datetime.strptime(birth_date, '%Y-%m-%d')
 
         if parsed_date >= datetime.now():
-            print('Data de nascimento inválida')
             result =  False
 
         elif datetime.now().year - parsed_date.year < 18:
-            print('Você é menor de idade')
             result =  False
     else:
-        print('Data de nascimento inválida')
         result =  False
 
     return result

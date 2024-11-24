@@ -1,9 +1,8 @@
-from constants.user import MESSAGE_ADD_SUCCESS
-from app.services.security.tokens import decode_token
+from services.security.tokens import decode_token
 from schemas.user import UserResponse
 
 
-def test_router_user_login_sucess(api,mock_user_on_db, mock_UserLoginRequest):
+def test_router_user_login_success(api,mock_user_on_db, mock_UserLoginRequest):
 
     response = api.post(f"/user/login?user_id={mock_user_on_db.cpf}", json=mock_UserLoginRequest.dict())
 

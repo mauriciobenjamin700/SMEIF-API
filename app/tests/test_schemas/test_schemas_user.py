@@ -236,7 +236,6 @@ def test_UserRequest_fail_birth_date_young(mock_user_data):
 
     data = mock_user_data
     data['birth_date'] = datetime.now().strftime("%Y-%m-%d")
-    print(data['birth_date'])
 
     with raises(HTTPException) as e:
         UserRequest(**data)

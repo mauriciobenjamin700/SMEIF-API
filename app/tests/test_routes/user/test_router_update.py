@@ -1,5 +1,4 @@
-import json
-from constants.user import MESSAGE_UPDATE_SUCCESS
+from constants.user import MESSAGE_USER_UPDATE_SUCCESS
 from schemas.user import UserResponse
 
 
@@ -10,7 +9,7 @@ def test_router_user_update(mock_user_on_db, mock_UserUpdateRequest_level,api):
     assert response.status_code == 200
     data = response.json()
 
-    assert data["detail"] == MESSAGE_UPDATE_SUCCESS
+    assert data["detail"] == MESSAGE_USER_UPDATE_SUCCESS
 
     response = api.get(f"/user/get?user_id={mock_user_on_db.cpf}")
 

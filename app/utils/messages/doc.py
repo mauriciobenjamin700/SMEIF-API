@@ -25,7 +25,6 @@ def generate_responses_documentation(responses_list: list[Response]) -> dict:
     for response in responses_list:
         status_code = response.status_code
         content = response.body if response.body else {"detail": "Success"}
-        #print("linha 56", content)
         if status_code not in responses:
             responses[status_code] = {
                 "description": "Erro" if status_code >= 400 else "Sucesso",

@@ -65,7 +65,7 @@ class UserModel(BaseModel):
     complement: Mapped[str] = mapped_column(String, nullable=True)
 
     child_parents = relationship(
-        "ChildParentModel",
+        "ChildParentsModel",
         back_populates="parent",
         uselist=True
     )

@@ -46,13 +46,9 @@ def send_email(to_email: str, msg: MIMEMultipart) -> str:
 
         msg = f"Email enviado com sucesso para {to_email}"
 
-        print(msg)
-
         return msg
     except Exception as e:
         
         msg = f"Falha ao enviar email: {e}"
-
-        print(msg)
 
         raise Exception(msg)

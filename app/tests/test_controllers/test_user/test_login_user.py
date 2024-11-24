@@ -6,14 +6,14 @@ from constants.user import (
     ERROR_USER_NOT_FOUND_USER,
     ERROR_USER_PASSWORD_WRONG
 )
-from controllers.user import UserUseCases
+from controllers.user import UserController
 from schemas.user import UserLoginRequest, UserResponse
-from app.services.security.tokens import decode_token
+from services.security.tokens import decode_token
 
 
-def test_login_user_sucess(db_session, mock_user_on_db, mock_UserLoginRequest):
+def test_login_user_success(db_session, mock_user_on_db, mock_UserLoginRequest):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.login(mock_UserLoginRequest)
 
@@ -33,7 +33,7 @@ def test_login_user_sucess(db_session, mock_user_on_db, mock_UserLoginRequest):
 
 def test_login_user_fail_not_found(db_session, mock_UserLoginRequest):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     with raises(HTTPException) as e:
         uc.login(mock_UserLoginRequest)
@@ -49,7 +49,7 @@ def test_login_user_fail_password_wrong(db_session, mock_user_on_db, mock_UserLo
         password="654321"
     )
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     with raises(HTTPException) as e:
         uc.login(login)

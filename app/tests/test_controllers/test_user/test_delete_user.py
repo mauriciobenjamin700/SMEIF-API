@@ -5,23 +5,23 @@ from pytest import raises
 from constants.user import (
     ERROR_USER_NOT_ID,
     ERROR_USER_NOT_FOUND_USER,
-    MESSAGE_DELETE_SUCCESS
+    MESSAGE_USER_DELETE_SUCCESS
 )
-from controllers.user import UserUseCases
+from controllers.user import UserController
 
 
-def test_delete_user_sucess(db_session, mock_user_on_db):
+def test_delete_user_success(db_session, mock_user_on_db):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.delete(mock_user_on_db.cpf)
 
-    assert response.detail == MESSAGE_DELETE_SUCCESS
+    assert response.detail == MESSAGE_USER_DELETE_SUCCESS
 
 
 def test_delete_user_fail_no_id(db_session):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     with raises(HTTPException) as e:
         uc.delete(None)
@@ -32,7 +32,7 @@ def test_delete_user_fail_no_id(db_session):
 
 def test_delete_user_fail_not_found(db_session):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     with raises(HTTPException) as e:
         uc.delete("None")

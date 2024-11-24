@@ -25,7 +25,7 @@ from constants.classes import (
     ERROR_STUDENT_TYPE
 )
 from schemas.base import BaseSchema
-from app.utils.messages.messages import ValidationErrorMessage
+from utils.messages.error import UnprocessableEntity
 from utils.validate import(
     validate_date,
     validate_email,
@@ -64,7 +64,7 @@ class ClassRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_NAME)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_NAME)
         
         return value
     
@@ -76,7 +76,7 @@ class ClassRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_ROOM)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_ROOM)
         
         return value
     
@@ -88,11 +88,11 @@ class ClassRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
         
         if not validate_cpf(value):
 
-            raise ValidationErrorMessage(ERROR_INVALID_CPF)
+            raise UnprocessableEntity(ERROR_INVALID_CPF)
         
         return unformat_cpf(value)
     
@@ -128,7 +128,7 @@ class ClassEventRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
 
         return value
     
@@ -140,11 +140,11 @@ class ClassEventRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_START_DATE)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_START_DATE)
         
         if not validate_date(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_INVALID_FIELD_START_DATE)
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_START_DATE)
 
         value = validate_date(value)
 
@@ -158,11 +158,11 @@ class ClassEventRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_END_DATE)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_END_DATE)
         
         if not validate_date(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_INVALID_FIELD_END_DATE)
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_END_DATE)
 
         value = validate_date(value)
 
@@ -193,7 +193,7 @@ class ClassStudentRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
 
         return value
     
@@ -205,11 +205,11 @@ class ClassStudentRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
         
         if not validate_cpf(value):
 
-            raise ValidationErrorMessage(ERROR_INVALID_CPF)
+            raise UnprocessableEntity(ERROR_INVALID_CPF)
         
         return unformat_cpf(value)
     
@@ -253,7 +253,7 @@ class ClassUpdateRequest(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
 
         return value
     
@@ -283,7 +283,7 @@ class ClassUpdateRequest(BaseSchema):
         
             if not validate_cpf(value):
 
-                raise ValidationErrorMessage(ERROR_INVALID_CPF)
+                raise UnprocessableEntity(ERROR_INVALID_CPF)
             
             value = unformat_cpf(value)
 
@@ -320,7 +320,7 @@ class Student(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_CPF)
+            raise UnprocessableEntity(ERROR_STUDENT_REQUIRED_FIELD_CPF)
         return validate_cpf(value)
     
 
@@ -331,7 +331,7 @@ class Student(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_NAME)
+            raise UnprocessableEntity(ERROR_STUDENT_REQUIRED_FIELD_NAME)
         
         return value
     
@@ -343,7 +343,7 @@ class Student(BaseSchema):
 
         if not validate_string(value):
 
-            raise ValidationErrorMessage(ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION)
+            raise UnprocessableEntity(ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION)
 
         return value
 
@@ -396,7 +396,7 @@ class ClassResponse(ClassRequest):
     def validate_teacher_email(cls, value):
         
         if not validate_email(value):
-            raise ValidationErrorMessage(ERROR_INVALID_EMAIL)
+            raise UnprocessableEntity(ERROR_INVALID_EMAIL)
 
         return value
 
@@ -408,6 +408,6 @@ class ClassResponse(ClassRequest):
         
         for student in value:
             if not isinstance(student, Student):
-                raise ValidationErrorMessage(ERROR_STUDENT_TYPE)
+                raise UnprocessableEntity(ERROR_STUDENT_TYPE)
         
         return value

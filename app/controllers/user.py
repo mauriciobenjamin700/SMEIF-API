@@ -15,10 +15,10 @@ from constants.user import (
     MESSAGE_USER_UPDATE_FAIL, 
     MESSAGE_USER_UPDATE_SUCCESS
 )
-from controllers.base import Repository
 from database.models import UserModel
 from schemas.base import BaseMessage
 from schemas.user import (
+    UserDB,
     UserLoginRequest,
     UserRequest,
     UserResponse,
@@ -39,7 +39,7 @@ from utils.messages.error import (
 )
 
 
-class UserUseCases(Repository):
+class UserController():
     """
     - Attributes:
         - db_session: Sessão de conexão com o banco de dados
@@ -80,8 +80,10 @@ class UserUseCases(Repository):
             )
             
             request.password = protect(request.password)
+
+            to_db = UserDB(**request.dict(), **request.address.dict())
             
-            user = UserModel(**request.dict())
+            user = UserModel(**to_db.dict())
 
             self.db_session.add(user)
             self.db_session.commit()

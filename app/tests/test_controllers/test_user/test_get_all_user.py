@@ -3,13 +3,13 @@ from pytest import raises
 
 
 from constants.user import ERROR_USER_NOT_FOUND_USERS
-from controllers.user import UserUseCases
+from controllers.user import UserController
 from schemas.user import UserResponse
 
 
 def test_get_all_user_success(db_session, mock_user_on_db):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     users = uc.get_all()
 
@@ -27,7 +27,7 @@ def test_get_all_user_success(db_session, mock_user_on_db):
 
 
 def test_get_all_user_fail_not_found(db_session):
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     with raises(HTTPException) as e:
         uc.get_all()

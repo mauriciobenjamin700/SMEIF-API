@@ -3,24 +3,24 @@ from pytest import raises
 
 
 from constants.user import (
-    MESSAGE_ADD_SUCCESS,
-    ERROR_CPF_ALREADY_EXISTS,
-    ERROR_EMAIL_ALREADY_EXISTS,
-    ERROR_PHONE_ALREADY_EXISTS
+    MESSAGE_USER_ADD_SUCCESS,
+    ERROR_USER_CPF_ALREADY_EXISTS,
+    ERROR_USER_EMAIL_ALREADY_EXISTS,
+    ERROR_USER_PHONE_ALREADY_EXISTS
 )
-from controllers.user import UserUseCases
+from controllers.user import UserController
 from database.models import UserModel
 from schemas.user import UserRequest
-from app.utils.security.cryptography import verify
+from services.security.password import verify
 
 def test_add_user_success(db_session, mock_UserRequest):
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     user = UserRequest(**mock_UserRequest.dict())
 
     response = uc.add(user)
 
-    assert response.detail == MESSAGE_ADD_SUCCESS
+    assert response.detail == MESSAGE_USER_ADD_SUCCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 
@@ -34,7 +34,7 @@ def test_add_user_success(db_session, mock_UserRequest):
 
 
 def test_add_user_fail_cpf_exits(db_session, mock_user_on_db):
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     user = UserRequest(**mock_user_on_db.dict())
 
@@ -42,17 +42,17 @@ def test_add_user_fail_cpf_exits(db_session, mock_user_on_db):
         uc.add(user)
 
     assert e.value.status_code == 409
-    assert e.value.detail == ERROR_CPF_ALREADY_EXISTS
+    assert e.value.detail == ERROR_USER_CPF_ALREADY_EXISTS
 
 
 def test_add_user_fail_phone_exits(db_session, mock_UserRequest):
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     user = UserRequest(**mock_UserRequest.dict())
 
     response = uc.add(user)
 
-    assert response.detail == MESSAGE_ADD_SUCCESS
+    assert response.detail == MESSAGE_USER_ADD_SUCCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 
@@ -70,17 +70,17 @@ def test_add_user_fail_phone_exits(db_session, mock_UserRequest):
         uc.add(user)
 
     assert e.value.status_code == 409
-    assert e.value.detail == ERROR_PHONE_ALREADY_EXISTS
+    assert e.value.detail == ERROR_USER_PHONE_ALREADY_EXISTS
 
 
 def test_add_user_fail_email_exits(db_session, mock_UserRequest):
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     user = UserRequest(**mock_UserRequest.dict())
 
     response = uc.add(user)
 
-    assert response.detail == MESSAGE_ADD_SUCCESS
+    assert response.detail == MESSAGE_USER_ADD_SUCCESS
 
     user_in_db = db_session.query(UserModel).filter(UserModel.cpf == user.cpf).first()
 
@@ -99,4 +99,4 @@ def test_add_user_fail_email_exits(db_session, mock_UserRequest):
         uc.add(user)
 
     assert e.value.status_code == 409
-    assert e.value.detail == ERROR_EMAIL_ALREADY_EXISTS
+    assert e.value.detail == ERROR_USER_EMAIL_ALREADY_EXISTS

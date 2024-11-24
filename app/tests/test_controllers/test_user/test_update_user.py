@@ -6,24 +6,23 @@ from database.models import UserModel
 from constants.user import (
     ERROR_USER_NOT_FOUND_USER,
     ERROR_USER_NOT_ID,
-    MESSAGE_UPDATE_SUCCESS, 
-    MESSAGE_UPDATE_FAIL
+    MESSAGE_USER_UPDATE_SUCCESS, 
+    MESSAGE_USER_UPDATE_FAIL
 )
-from controllers.user import UserUseCases
+from controllers.user import UserController
 from schemas.user import (
-    UserResponse,
     UserUpdateRequest
 )
-from app.utils.security.cryptography import verify
+from services.security.password import verify
 
 
-def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):
+def test_update_user_success(db_session, mock_user_on_db,mock_UserUpdateRequest):
     
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest)
 
-    assert response.detail == MESSAGE_UPDATE_SUCCESS
+    assert response.detail == MESSAGE_USER_UPDATE_SUCCESS
 
     user = db_session.query(UserModel).filter_by(cpf=mock_user_on_db.cpf).first()
 
@@ -35,11 +34,11 @@ def test_update_user_sucess(db_session, mock_user_on_db,mock_UserUpdateRequest):
 
 def test_update_user_level(db_session, mock_user_on_db, mock_UserUpdateRequest_level):
     
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest_level)
 
-    assert response.detail  == MESSAGE_UPDATE_SUCCESS
+    assert response.detail  == MESSAGE_USER_UPDATE_SUCCESS
 
     user = db_session.query(UserModel).filter_by(cpf=mock_user_on_db.cpf).first()
 
@@ -48,7 +47,7 @@ def test_update_user_level(db_session, mock_user_on_db, mock_UserUpdateRequest_l
 
 def test_update_user_not_updated(db_session, mock_user_on_db):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     update = UserUpdateRequest(
         name=mock_user_on_db.name,
@@ -59,12 +58,12 @@ def test_update_user_not_updated(db_session, mock_user_on_db):
 
     response = uc.update(mock_user_on_db.cpf, update)
 
-    assert response.detail  == MESSAGE_UPDATE_FAIL
+    assert response.detail  == MESSAGE_USER_UPDATE_FAIL
 
 
 def test_update_user_no_id(db_session, mock_user_on_db, mock_UserUpdateRequest):
 
-    uc = UserUseCases(db_session)
+    uc = UserController(db_session)
 
     with raises(HTTPException) as e:
         uc.update(None, mock_UserUpdateRequest)
@@ -74,7 +73,7 @@ def test_update_user_no_id(db_session, mock_user_on_db, mock_UserUpdateRequest):
 
 def test_update_user_not_found(db_session, mock_user_on_db, mock_UserUpdateRequest):
     
-        uc = UserUseCases(db_session)
+        uc = UserController(db_session)
     
         with raises(HTTPException) as e:
             uc.update("12345678901", mock_UserUpdateRequest)
