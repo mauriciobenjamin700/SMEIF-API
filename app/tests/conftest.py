@@ -6,8 +6,14 @@ from constants.user import LEVEL
 from database.connection import Session
 from database.models import UserModel
 from main import app
-from schemas.user import UserLoginRequest, UserRequest, UserUpdateRequest
-from utils.cryptography import crypto
+from schemas.address import AddressRequest
+from schemas.user import (
+    UserDB,
+    UserLoginRequest, 
+    UserRequest, 
+    UserUpdateRequest
+)
+from services.security.password import protect
 
 
 @fixture
@@ -47,14 +53,50 @@ def clean_data():
 
 
 @fixture
-def mock_UserRequest() -> UserRequest:
+def mock_address_data():
+    data = {}
+    data["state"] = "PI"
+    data["city"] = "Teresina"
+    data["neighborhood"] = "Centro"
+    data["street"] = "Rua A"
+    data["house_number"] = "123"
+    data["complement"] = "Ultima Casa da Esquina"
+
+    return data
+
+@fixture
+def mock_user_data(mock_address_data) -> dict:
+    data = {}
+    data["cpf"] = "123.456.789-00"
+    data["name"] = "John Doe"
+    data["birth_date"]="1990-01-01"
+    data["gender"] = "M"
+    data["phone"] = "90900000001"  # Número de telefone no formato correto
+    data["phone_optional"] = "90900000000"  # Número de telefone no formato correto
+    data["email"] = "test@example.com"
+    data["password"] = "123456"
+    data["level"] = 1
+    data["address"] = AddressRequest(**mock_address_data)
+
+    return data
+
+
+@fixture
+def mock_AddressRequest(mock_address_data) -> AddressRequest:
+    return AddressRequest(**mock_address_data)
+
+@fixture
+def mock_UserRequest(mock_AddressRequest) -> UserRequest:
     return UserRequest(
         cpf="123.456.789-00",
         name="John Doe",
+        birth_date="1990-01-01",
+        gender="M",
         phone="(00) 90000-0000",
         email="john.doe@gmail.com",
         password="123456",
-        level=LEVEL["parent"]
+        level=LEVEL["parent"],
+        address=AddressRequest(**mock_AddressRequest.dict())
     )
 
 @fixture
@@ -62,9 +104,11 @@ def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
     
     request = UserRequest(**mock_UserRequest.dict())
 
-    request.password = crypto(request.password)
+    request.password = protect(request.password)
 
-    user = UserModel(**request.dict())
+    to_db = UserDB(**request.dict(), **request.address.dict())
+
+    user = UserModel(**to_db.dict())
 
     db_session.add(user)
     db_session.commit()
@@ -80,7 +124,16 @@ def mock_UserUpdateRequest() -> UserUpdateRequest:
         phone_optional="(00) 91111-1111",
         phone="(00) 90000-0066",
         email="jane.doe@gmail.com",
-        password="654321"
+        password="654321",
+        level=LEVEL["parent"],
+        address=AddressRequest(
+            state="PI",
+            city="Picos",
+            neighborhood="Junco",
+            street="Rua A",
+            house_number="123",
+            complement="Ultima Casa"
+        )
     )
 
     return update

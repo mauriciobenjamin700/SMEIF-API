@@ -3,39 +3,39 @@ from sqlalchemy.orm import Session
 
 
 from constants.user import (
-    MESSAGE_ADD_SUCESS, 
-    MESSAGE_DELETE_SUCESS,
-    ERROR_CPF_ALREADY_EXISTS,
-    ERROR_EMAIL_ALREADY_EXISTS,
-    ERROR_NOT_FOUND_USER, 
-    ERROR_NOT_FOUND_USERS, 
-    ERROR_NOT_ID, 
-    ERROR_PASSWORD_WRONG,
-    ERROR_PHONE_ALREADY_EXISTS, 
-    MESSAGE_UPDATE_FAIL, 
-    MESSAGE_UPDATE_SUCESS
+    MESSAGE_USER_ADD_SUCCESS, 
+    MESSAGE_USER_DELETE_SUCCESS,
+    ERROR_USER_PASSWORD_WRONG,
+    MESSAGE_USER_UPDATE_FAIL, 
+    MESSAGE_USER_UPDATE_SUCCESS
 )
-from controllers.base import Repository
 from database.models import UserModel
+from database.queries.existence import check_user_existence
+from database.queries.get import get_user_by_cpf
+from database.queries.get_all import get_all_users
+from schemas.base import BaseMessage
 from schemas.user import (
+    AccessToken,
+    UserDB,
     UserLoginRequest,
     UserRequest,
     UserResponse,
     UserUpdateRequest
 )
-from utils.cryptography import (
-    crypto,
+from services.security.password import (
+    protect,
     verify
 )
-from utils.messages import (
-    ServerError,
-    SucessMessage,
-    ErrorMessage
+from services.security.tokens import encode_token
+from utils.format import format_date, format_phone
+from utils.messages.success import Success
+from utils.messages.error import (
+    Server,
+    Unauthorized
 )
-from services.tokens import encode_token
 
 
-class UserUseCases(Repository):
+class UserController():
     """
     - Attributes:
         - db_session: Sessão de conexão com o banco de dados
@@ -51,7 +51,7 @@ class UserUseCases(Repository):
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
-    def add(self, request: UserRequest) -> dict:
+    def add(self, request: UserRequest) -> BaseMessage:
         """
         Adiciona um Usuário ao banco de dados
 
@@ -69,26 +69,24 @@ class UserUseCases(Repository):
         """
         try:
 
-            self._check_existence(
-                request.cpf, 
-                request.phone, 
-                request.email
-            )
+            check_user_existence(self.db_session, request.cpf, request.phone, request.email)
             
-            request.password = crypto(request.password)
+            request.password = protect(request.password)
+
+            to_db = UserDB(**request.dict(), **request.address.dict())
             
-            user = UserModel(**request.dict())
+            user = UserModel(**to_db.dict())
 
             self.db_session.add(user)
             self.db_session.commit()
 
-            return SucessMessage(MESSAGE_ADD_SUCESS)
+            return Success(MESSAGE_USER_ADD_SUCCESS)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
 
     def get(self, id: str)  -> UserResponse:
         """
@@ -107,15 +105,14 @@ class UserUseCases(Repository):
         """
         try:
 
-            user = self._get(id)
-
+            user = get_user_by_cpf(self.db_session,id)
             return self._map_UserModel_to_UserResponse(user)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
 
 
     def get_all(self) -> list[UserResponse]:
@@ -134,7 +131,7 @@ class UserUseCases(Repository):
         """
         try:
 
-            users = self._get_all()
+            users = get_all_users(self.db_session)
 
             return self._map_list_UserModel_to_list_UserResponse(users)
 
@@ -142,9 +139,9 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
         
-    def update(self, id:str, request: UserUpdateRequest) -> dict:
+    def update(self, id:str, request: UserUpdateRequest) -> BaseMessage:
         """
         Atualiza os dados de um usuário
 
@@ -157,13 +154,13 @@ class UserUseCases(Repository):
             - dict: {"detail": "Nenhum dado foi atualizado"}
 
         - Raises:
-            - HTTPException: 400 - ID não informado
+            - HTTPException: 400 - CPF é obrigatório
             - HTTPException: 404 - Usuário não encontrado
             - HTTPException: 500 - Erro no servidor
         """
         try:
                 
-            user = self._get(id)
+            user = get_user_by_cpf(self.db_session, id)
 
             updated = False
 
@@ -173,7 +170,23 @@ class UserUseCases(Repository):
 
                     if field == "password":
 
-                        value = crypto(value)
+                        value = protect(value)
+
+                    elif field == "address": # Endereço é um objeto, por isso temos que iterar sobre ele e seus atributos
+                            
+                        for address_field, address_value in value.items(): # Quando o campo endereço é fragmentado, ele vira um dict
+
+                            if address_value:
+
+                                value_in_field =  getattr(user, address_field)
+
+                                if address_value != value_in_field:
+
+                                    setattr(user, address_field, address_value)
+                                    updated = True
+
+                        continue # Depois de atualizar o endereço, o campo address não tem mais valor e será ignorado
+    
 
                     value_in_field =  getattr(user, field)
 
@@ -187,15 +200,15 @@ class UserUseCases(Repository):
                 self.db_session.commit()
                 self.db_session.refresh(user)
 
-            return SucessMessage(MESSAGE_UPDATE_SUCESS) if updated else SucessMessage(MESSAGE_UPDATE_FAIL)
+            return Success(MESSAGE_USER_UPDATE_SUCCESS) if updated else Success(MESSAGE_USER_UPDATE_FAIL)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
 
-    def delete(self, id: str) -> dict:
+    def delete(self, id: str) -> BaseMessage:
         """
         Deleta um usuário
 
@@ -206,31 +219,31 @@ class UserUseCases(Repository):
             - dict: {"detail": "Usuário deletado com sucesso"}
 
         - Raises:
-            - HTTPException: 400 - ID não informado
+            - HTTPException: 400 - CPF é obrigatório
             - HTTPException: 404 - Usuário não encontrado
             - HTTPException: 500 - Erro no servidor
         """
         try:
 
-            user = self._get(id)
+            user = get_user_by_cpf(self.db_session, id)
 
             self.db_session.delete(user)
             self.db_session.commit()
 
-            return SucessMessage(MESSAGE_DELETE_SUCESS)
+            return Success(MESSAGE_USER_DELETE_SUCCESS)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
         
-    def login(self, acess: UserLoginRequest) -> str:
+    def login(self, access: UserLoginRequest) -> AccessToken:
         """
         Realiza o login de um usuário
 
         - Args:
-            - acess: Objeto com os dados de login
+            - access: Objeto com os dados de login
 
         - Returns:
             - str: Token de autenticação
@@ -242,83 +255,41 @@ class UserUseCases(Repository):
         """
         try:
 
-            user = self.db_session.query(UserModel).filter_by(cpf=acess.cpf).first()
+            user = get_user_by_cpf(self.db_session, access.cpf)
 
-            if not user:
-                raise ErrorMessage(404, ERROR_NOT_FOUND_USER)
+            if not verify(access.password, user.password):
 
-            if not verify(acess.password, user.password):
-                raise ErrorMessage(401, ERROR_PASSWORD_WRONG)
+                raise Unauthorized(ERROR_USER_PASSWORD_WRONG)
             
             data = self._map_UserModel_to_UserResponse(user)
             
             token = encode_token(data.dict())
             
-            return token
+            return AccessToken(token=token)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise ServerError(e)
-        
-    def _check_existence(self, cpf: str | None, phone: str | None, email: str | None) -> None:
-            
-            if cpf:
-            
-                user = self.db_session.query(UserModel).filter_by(cpf=cpf).first()
-        
-                if user:
-                    
-                    raise ErrorMessage(409, ERROR_CPF_ALREADY_EXISTS)
-                
-            if phone:
-            
-                user = self.db_session.query(UserModel).filter_by(phone=phone).first()
+            raise Server(e)
 
-                if user:
-                    
-                    raise ErrorMessage(409, ERROR_PHONE_ALREADY_EXISTS)
-                
-            if email:
-
-                user = self.db_session.query(UserModel).filter_by(email=email).first()
-                
-                if user:
-                    
-                    raise ErrorMessage(409, ERROR_EMAIL_ALREADY_EXISTS)
-
-            
-
-    def _get(self, id: str) -> UserModel:
-
-        if not id:
-            raise ErrorMessage(400, ERROR_NOT_ID)
-        
-        user = self.db_session.query(UserModel).filter_by(cpf=id).first()
-
-        if not user:
-            raise ErrorMessage(404, ERROR_NOT_FOUND_USER)
-        
-        return user
-    
-    def _get_all(self) -> list[UserModel]:
-
-        users = self.db_session.query(UserModel).all()
-
-        if not users:
-            raise ErrorMessage(404, ERROR_NOT_FOUND_USERS)
-        
-        return users
     
     def _map_UserModel_to_UserResponse(self, user: UserModel) -> UserResponse:
         return UserResponse(
             cpf=user.cpf,
             name=user.name,
-            phone=user.phone,
-            phone_optional=user.phone_optional,
+            birth_date=format_date(user.birth_date),
+            gender=user.gender,
+            phone=format_phone(user.phone),
+            phone_optional= format_phone(user.phone_optional) if user.phone_optional else "",
             email=user.email,
-            level=user.level
+            level=user.level,
+            state=user.state,
+            city=user.city,
+            neighborhood=user.neighborhood,
+            street=user.street,
+            house_number=user.house_number,
+            complement=user.complement if user.complement else ""
         )
     
     def _map_list_UserModel_to_list_UserResponse(self, users: list[UserModel]) -> list[UserResponse]:

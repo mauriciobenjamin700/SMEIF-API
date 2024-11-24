@@ -13,3 +13,6 @@ class BaseSchema(BaseModel):
             result[k] = v
         return result
 
+
+class BaseMessage(BaseSchema):
+    detail: str

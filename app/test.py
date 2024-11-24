@@ -1,4 +1,4 @@
-from utils.messages import generate_responses_documentation, generate_response
+from utils.messages.doc import generate_responses_documentation, generate_response
 
 
 
@@ -8,5 +8,3 @@ doc = generate_responses_documentation(
         generate_response(409, "CPF already exists")
     ]
 )
-
-print(doc)

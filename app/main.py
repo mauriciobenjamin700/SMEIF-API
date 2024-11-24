@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 
+from database.models import create_tables
 from routes.user import router as user_router
 
 
@@ -28,7 +29,13 @@ def main():
 
 # Executando o servidor
 if __name__ == "__main__":
-    config = uvicorn.Config("main:app", port=5000,
-                            host='0.0.0.0', log_level="info", reload=True)
+
+    create_tables()
+
+    config = uvicorn.Config("main:app", 
+                            port=5000,
+                            host='0.0.0.0', 
+                            log_level="info", 
+                            reload=True)
     server = uvicorn.Server(config)
     server.run()

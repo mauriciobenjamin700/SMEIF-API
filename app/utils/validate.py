@@ -1,47 +1,36 @@
+"""
+- base_validation
+- validate_string_field
+- validate_cpf
+- validade_email
+- validate_date
+- validate_phone_number
+
+"""
 from datetime import datetime
-from fastapi import HTTPException
 from re import (
     match,
     sub
 )
 
 
-def base_validation(field: str, field_name) -> str:
+def validate_string(string: str) -> bool:
 
-    if not field:
-        raise HTTPException(400, f"Campo {field_name} vazio")
+    result = True
 
-    elif isinstance(field, str):
-        if field.strip() == "":
-            raise HTTPException(400, f"Campo {field_name} vazio")
-    
-    return field
+    if not string:
+        result = False
+
+    elif not isinstance(string, str):
+        result = False
+
+    elif len(string.strip()) == 0:
+        result = False                      
+
+    return result
     
 
-def validate_string_field(field: str) -> str | None:
-    """
-    Valida um campo de texto.
-    
-    - Args:
-        - field: str: Campo de texto que será validado
-        
-    - Return:
-        - str: Casoo o campo não esteja vazio
-        - None: Caso o campo esteja vazio
-    
-    """
-    
-    if isinstance(field, str):
-
-        field = field.strip()
-
-        if len(field) == 0:
-            
-            field = None
-    
-    return field
-
-def validate_cpf(string:str) -> str:
+def validate_cpf(string:str) -> bool:
     """
     Valida um CPF ou CNPJ
     
@@ -49,25 +38,26 @@ def validate_cpf(string:str) -> str:
         - string:: str: String que será validada para ser, CPF ou CNPJ
         
     - Return:
-        - dict[str, str]: Dicionário com a informação sobre o tipo de identidade (CPF ou CNPJ) e o número da identidade
-            - chaves: 
-                - identity, 
-                - number
+        - str: CPF formatado (apenas números)
+    
+    - Raises:
         - HTTPException: Caso o tamanho da string seja inválido para ser um CPF ou CNPJ
     
     """
 
     identity = "".join([number for number in string if number.isnumeric()])
+
+    result = False
     
     if len(identity) == 11: #Caso seja um CPF
 
-        return  identity
-
-    
-    raise HTTPException(400,"CPF inválido")
+        result = True
 
 
-def validate_email(email:str) -> str:
+    return result
+
+
+def validate_email(email:str) -> bool:
     """
     Valida um email
     
@@ -83,12 +73,15 @@ def validate_email(email:str) -> str:
     """
     email = email.replace(" ", "").lower()
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-    if not match(email_regex, email):
-        raise HTTPException(400, "Email inválido")
-    
-    return email
 
-def validate_date(date:str) -> str:
+    result = True
+
+    if not match(email_regex, email):
+        result = False
+    
+    return result
+
+def validate_date(date:str) -> bool:
     """
     Valida uma data no formato YYYY-MM-DD
     
@@ -96,34 +89,100 @@ def validate_date(date:str) -> str:
         - date:: str: Data que será validada
         
     - Return:
-        - str: Data formatada
-    
-    - Raises:    
-        - HTTPException: 400 - Data invalida
+        - bool: True se o formato estiver correto e False caso contrario
     
     """
-    
-    if type(date) != str:
-        raise HTTPException(400, "Tipo de data inválida")
 
-    # Definindo o formato esperado de data (YYYY-MM-DD)
+    result = True
+
     date_format = r'\d{4}-\d{2}-\d{2}'
     
-    # Verificando se a data fornecida corresponde ao formato esperado
-    if match(date_format, date):
-        # Convertendo a data para um objeto datetime
+    if not match(date_format, date):
+
+        result =  False
+    
+    return result
+
+
+def is_in_future(date: str) -> bool:
+    """
+    Verifica se a data está no futuro.
+
+    - Args:
+        - date: str: Data que será validada
+
+    - Return:
+        - bool: True se a data está no futuro, False caso contrário
+    """
+    result = True
+    
+    if type(date) == str:
         parsed_date = datetime.strptime(date, '%Y-%m-%d')
-        # Verificando se a data de nascimento é no passado
+
+        if parsed_date > datetime.now():
+            result =  False
+    
+    return result
+
+
+def is_adult(birth_date: str) -> bool:
+    """
+    Verifica se a data de nascimento está no passado e se a pessoa é maior de idade.
+
+    - Args:
+        - birth_date: str: Data de nascimento no formato 'YYYY-MM-DD'
+
+    - Return:
+        - bool: True se a pessoa é maior de idade, False caso contrário
+    """
+    result = True
+
+    date_format = r'\d{4}-\d{2}-\d{2}'
+
+    if match(date_format, birth_date):
+
+        parsed_date = datetime.strptime(birth_date, '%Y-%m-%d')
+
         if parsed_date >= datetime.now():
-            raise HTTPException(400,'A data de nascimento não pode estar no futuro')
-        if datetime.now().year - parsed_date.year < 18:
-            raise HTTPException(400,'O usuário deve ser maior de idade')
+            result =  False
+
+        elif datetime.now().year - parsed_date.year < 18:
+            result =  False
     else:
-        raise HTTPException(400,'Formato de data inválido. Use o formato YYYY-MM-DD')
+        result =  False
+
+    return result
+
+
+def is_young(birth_date: str):
+    """
+    Verifica se a data de nascimento está no passado e se a pessoa é menor de idade.
+
+    - Args:
+        - birth_date: str: Data de nascimento no formato 'YYYY-MM-DD'
+
+    - Return:
+        - bool: True se a pessoa é menor de idade, False caso contrário
+    """
+    result = True
+
+    date_format = r'\d{4}-\d{2}-\d{2}'
+
+    if match(date_format, birth_date):
+
+        parsed_date = datetime.strptime(birth_date, '%Y-%m-%d')
+
+        if parsed_date >= datetime.now():
+            result =  False
+
+        elif datetime.now().year - parsed_date.year > 18:
+            result =  False
+    else:
+        result =  False
+
+    return result
     
-    return date
-    
-def validate_phone_number(phone_number: str) -> str:
+def validate_phone_number(phone_number: str) -> bool:
     """
     Remove todos os caracteres especiais de um número de telefone e valida o formato.
     
@@ -136,6 +195,11 @@ def validate_phone_number(phone_number: str) -> str:
     - Raises:    
         - HTTPException: 400 - Número de telefone inválido
     """
+
+    if not isinstance(phone_number, str):
+        return False
+    
+    result = True
     
     # Removendo todos os caracteres que não são dígitos
     cleaned_number = sub(r'\D', '', phone_number)
@@ -145,6 +209,7 @@ def validate_phone_number(phone_number: str) -> str:
     
     # Verificando se o número de telefone limpo corresponde ao formato esperado
     if not match(phone_regex, cleaned_number):
-        raise HTTPException(400, 'Número de telefone inválido. Deve conter 11 dígitos no formato correto (XX9XXXXXXXX)')
+        result = False
+        # raise HTTPException(400, 'Número de telefone inválido. Deve conter 11 dígitos no formato correto (XX9XXXXXXXX)')
     
-    return str(cleaned_number)
+    return result
