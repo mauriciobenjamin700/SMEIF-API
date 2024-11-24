@@ -12,7 +12,7 @@
 - ERROR_USER_CPF_ALREADY_EXISTS
 - ERROR_USER_PHONE_ALREADY_EXISTS
 - ERROR_USER_EMAIL_ALREADY_EXISTS
-- ERROR_USER_LEVEL_INVALID
+- ERROR_USER_INVALID_LEVEL
 - ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS
 - ERROR_USER_INVALID_OPTIONAL_PHONE
 - ERROR_USER_REQUIRED_FIELD_CPF
@@ -39,16 +39,28 @@ MESSAGE_USER_DELETE_SUCCESS = "Usuário deletado com sucesso"
 ERROR_USER_NOT_ID = "ID do usuário não informado"
 ERROR_USER_NOT_FOUND_USER = "Usuário não encontrado"
 ERROR_USER_NOT_FOUND_USERS = "Nenhum usuário encontrado"
-ERROR_USER_NOT_ID = "Senha inválida"
+
+
 ERROR_USER_PASSWORD_WRONG = "Senha inválida"
+
+
 ERROR_USER_CPF_ALREADY_EXISTS = "CPF já cadastrado"
 ERROR_USER_PHONE_ALREADY_EXISTS = "Telefone já cadastrado"
 ERROR_USER_EMAIL_ALREADY_EXISTS = "Email já cadastrado"
-ERROR_USER_LEVEL_INVALID = "Nível de Acesso inválido"
-ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS = "Telefone e Telefone Opcional não podem ser iguais"
+
+
+ERROR_USER_INVALID_LEVEL = "Nível de Acesso inválido"
 ERROR_USER_INVALID_OPTIONAL_PHONE = "Telefone opcional invalido"
+ERROR_USER_INVALID_BIRTHDATE = "O usuário deve ter mais de 18 anos"
+
+
+ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS = "Telefone e Telefone Opcional não podem ser iguais"
+
+
 ERROR_USER_REQUIRED_FIELD_CPF = "CPF é obrigatório"
 ERROR_USER_REQUIRED_FIELD_NAME = "Nome é obrigatório"
+ERROR_USER_REQUIRED_FIELD_BIRTH_DATE = "Data de nascimento é obrigatória"
+ERROR_USER_REQUIRED_FIELD_GENDER = "Gênero é obrigatório"
 ERROR_USER_REQUIRED_FIELD_PHONE = "Telefone é obrigatório"
 ERROR_USER_REQUIRED_FIELD_EMAIL = "Email é obrigatório"
 ERROR_USER_REQUIRED_FIELD_PASSWORD = "Senha é obrigatória"

@@ -3,16 +3,16 @@ from fastapi import Response
 
 from constants.base import ERROR_SERVER_ERROR
 from constants.user import (
-    ERROR_CPF_ALREADY_EXISTS, 
-    ERROR_EMAIL_ALREADY_EXISTS,
+    ERROR_USER_CPF_ALREADY_EXISTS, 
+    ERROR_USER_EMAIL_ALREADY_EXISTS,
     ERROR_USER_NOT_FOUND_USER,
     ERROR_USER_NOT_FOUND_USERS,
     ERROR_USER_NOT_ID,
     ERROR_USER_PASSWORD_WRONG, 
-    ERROR_PHONE_ALREADY_EXISTS, 
-    MESSAGE_ADD_SUCCESS,
-    MESSAGE_DELETE_SUCCESS,
-    MESSAGE_UPDATE_SUCCESS
+    ERROR_USER_PHONE_ALREADY_EXISTS, 
+    MESSAGE_USER_ADD_SUCCESS,
+    MESSAGE_USER_DELETE_SUCCESS,
+    MESSAGE_USER_UPDATE_SUCCESS
 )
 
 USER_REQUEST_EXAMPLE =         {
@@ -33,14 +33,14 @@ USER_RESPONSE_EXAMPLE = {
     "level": 1
 }
 
-from app.utils.messages.messages import generate_response, generate_responses_documentation
+from utils.messages.doc import generate_response, generate_responses_documentation
 
 
 ADD_RESPONSE_DESCRIPTION = f"""
 
 - Exemplo de resposta:
 
-            "detail": "{MESSAGE_ADD_SUCCESS}"
+            "detail": "{MESSAGE_USER_ADD_SUCCESS}"
         
 
 """
@@ -63,10 +63,10 @@ Adiciona um novo usuário ao banco de dados.
 
 ADD_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, MESSAGE_ADD_SUCCESS),
-        generate_response(409, ERROR_CPF_ALREADY_EXISTS),
-        generate_response(409, ERROR_PHONE_ALREADY_EXISTS),
-        generate_response(409, ERROR_EMAIL_ALREADY_EXISTS),
+        generate_response(200, MESSAGE_USER_ADD_SUCCESS),
+        generate_response(409, ERROR_USER_CPF_ALREADY_EXISTS),
+        generate_response(409, ERROR_USER_PHONE_ALREADY_EXISTS),
+        generate_response(409, ERROR_USER_EMAIL_ALREADY_EXISTS),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
@@ -146,7 +146,7 @@ UPDATE_RESPONSE_DESCRIPTION = f"""
 
 - Exemplo de resposta:
 
-        "detail": "{MESSAGE_UPDATE_SUCCESS}"
+        "detail": "{MESSAGE_USER_ADD_SUCCESS}"
 
 
 """
@@ -167,7 +167,7 @@ UPDATE_DESCRIPTION="""
 
 UPDATE_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, MESSAGE_UPDATE_SUCCESS),
+        generate_response(200, MESSAGE_USER_UPDATE_SUCCESS),
         generate_response(404, ERROR_USER_NOT_ID),
         generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(500, ERROR_SERVER_ERROR)
@@ -177,7 +177,7 @@ UPDATE_RESPONSES = generate_responses_documentation(
 DELETE_RESPONSE_DESCRIPTION = f"""
 - Exemplo de resposta:
     
-            "detail": "{MESSAGE_DELETE_SUCCESS}"
+            "detail": "{MESSAGE_USER_DELETE_SUCCESS}"
 
 """
 DELETE_DESCRIPTION="""
@@ -191,7 +191,7 @@ Deleta um usuário no banco de dados.
 """ + DELETE_RESPONSE_DESCRIPTION
 DELETE_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, MESSAGE_DELETE_SUCCESS),
+        generate_response(200, MESSAGE_USER_DELETE_SUCCESS),
         generate_response(404, ERROR_USER_NOT_ID),
         generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(500, ERROR_SERVER_ERROR)

@@ -15,25 +15,33 @@ from pydantic import (
 
 from constants.base import (
     ERROR_INVALID_CPF, 
-    ERROR_INVALID_EMAIL, 
+    ERROR_INVALID_EMAIL,
+    ERROR_INVALID_FORMAT_BIRTH_DATE,
+    ERROR_INVALID_FORMAT_GENDER, 
     ERROR_INVALID_PHONE, 
     ERROR_INVALID_PHONE_OPTIONAL
 )
 from constants.user import (
-    ERROR_USER_LEVEL_INVALID,
+    ERROR_USER_INVALID_BIRTHDATE,
+    ERROR_USER_INVALID_LEVEL,
     ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS,
     ERROR_USER_REQUIRED_FIELD_ADDRESS,
+    ERROR_USER_REQUIRED_FIELD_BIRTH_DATE,
     ERROR_USER_REQUIRED_FIELD_CPF,
     ERROR_USER_REQUIRED_FIELD_EMAIL,
+    ERROR_USER_REQUIRED_FIELD_GENDER,
     ERROR_USER_REQUIRED_FIELD_NAME,
     ERROR_USER_REQUIRED_FIELD_PASSWORD,
     ERROR_USER_REQUIRED_FIELD_PHONE,
+    GENDER,
     LEVEL 
 )
 from schemas.address import AddressRequest
 from schemas.base import BaseSchema
 from utils.validate import(
+    is_adult,
     validate_cpf,
+    validate_date,
     validate_email,
     validate_phone_number,
     validate_string
@@ -60,7 +68,7 @@ class UserRequest(BaseSchema):
     """
     cpf: str = Field(title="cpf", description="CPF do usuário", examples=["123.456.789-00"])
     name: str = Field(title="name", description="Nome do usuário", examples=["John Doe"])
-    birth_date: str = Field(title="birth_date", description="Data de nascimento do usuário", examples=["01/01/2000"])
+    birth_date: str = Field(title="birth_date", description="Data de nascimento do usuário", examples=["2000-12-25"])
     gender: str = Field(title="gender", description="Gênero do usuário", examples=["M", "F","Z"])
     phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"])
     phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 9000-0000"], default="")
@@ -89,6 +97,39 @@ class UserRequest(BaseSchema):
         if not validate_string(value):
 
             raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_NAME)
+        
+        return value
+    
+
+    @field_validator("birth_date", mode="before")
+    def field_validate_birth_date(cls, value) -> str:
+        
+        if not validate_string(value):
+
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_BIRTH_DATE)
+        
+        print(value)
+        if not validate_date(value):
+
+            raise UnprocessableEntity(ERROR_INVALID_FORMAT_BIRTH_DATE)
+        
+        if not is_adult(value):
+
+            raise UnprocessableEntity(ERROR_USER_INVALID_BIRTHDATE)
+        
+        return value
+    
+
+    @field_validator("gender", mode="before")
+    def field_validate_gender(cls, value) -> str:
+        
+        if not validate_string(value):
+
+            raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_GENDER)
+        
+        if value not in GENDER:
+
+            raise UnprocessableEntity(ERROR_INVALID_FORMAT_GENDER)
         
         return value
     
@@ -165,7 +206,7 @@ class UserRequest(BaseSchema):
 
         if not value or value not in LEVEL.values():
 
-            raise UnprocessableEntity(ERROR_USER_LEVEL_INVALID)
+            raise UnprocessableEntity(ERROR_USER_INVALID_LEVEL)
         
         return value
     
@@ -366,7 +407,7 @@ class UserUpdateRequest(BaseSchema):
 
             if value not in LEVEL.values():
 
-                raise UnprocessableEntity(ERROR_USER_LEVEL_INVALID)
+                raise UnprocessableEntity(ERROR_USER_INVALID_LEVEL)
         
         return value
 

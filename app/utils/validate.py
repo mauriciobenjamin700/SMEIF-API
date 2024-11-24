@@ -89,33 +89,100 @@ def validate_date(date:str) -> bool:
         - date:: str: Data que será validada
         
     - Return:
-        - str: Data formatada
-    
-    - Raises:    
-        - HTTPException: 400 - Data invalida
+        - bool: True se o formato estiver correto e False caso contrario
     
     """
 
     result = True
-    
-    if type(date) != str:
-        return False
 
-    # Definindo o formato esperado de data (YYYY-MM-DD)
     date_format = r'\d{4}-\d{2}-\d{2}'
     
-    # Verificando se a data fornecida corresponde ao formato esperado
-    if match(date_format, date):
-        # Convertendo a data para um objeto datetime
+    if not match(date_format, date):
+
+        result =  False
+    
+    return result
+
+
+def is_in_future(date: str) -> bool:
+    """
+    Verifica se a data está no futuro.
+
+    - Args:
+        - date: str: Data que será validada
+
+    - Return:
+        - bool: True se a data está no futuro, False caso contrário
+    """
+    result = True
+    
+    if type(date) == str:
         parsed_date = datetime.strptime(date, '%Y-%m-%d')
-        # Verificando se a data de nascimento é no passado
+
+        if parsed_date > datetime.now():
+            result =  False
+    
+    return result
+
+
+def is_adult(birth_date: str) -> bool:
+    """
+    Verifica se a data de nascimento está no passado e se a pessoa é maior de idade.
+
+    - Args:
+        - birth_date: str: Data de nascimento no formato 'YYYY-MM-DD'
+
+    - Return:
+        - bool: True se a pessoa é maior de idade, False caso contrário
+    """
+    result = True
+
+    date_format = r'\d{4}-\d{2}-\d{2}'
+
+    if match(date_format, birth_date):
+
+        parsed_date = datetime.strptime(birth_date, '%Y-%m-%d')
+
+        if parsed_date >= datetime.now():
+            print('Data de nascimento inválida')
+            result =  False
+
+        elif datetime.now().year - parsed_date.year < 18:
+            print('Você é menor de idade')
+            result =  False
+    else:
+        print('Data de nascimento inválida')
+        result =  False
+
+    return result
+
+
+def is_young(birth_date: str):
+    """
+    Verifica se a data de nascimento está no passado e se a pessoa é menor de idade.
+
+    - Args:
+        - birth_date: str: Data de nascimento no formato 'YYYY-MM-DD'
+
+    - Return:
+        - bool: True se a pessoa é menor de idade, False caso contrário
+    """
+    result = True
+
+    date_format = r'\d{4}-\d{2}-\d{2}'
+
+    if match(date_format, birth_date):
+
+        parsed_date = datetime.strptime(birth_date, '%Y-%m-%d')
+
         if parsed_date >= datetime.now():
             result =  False
-        elif datetime.now().year - parsed_date.year < 18:
+
+        elif datetime.now().year - parsed_date.year > 18:
             result =  False
     else:
         result =  False
-    
+
     return result
     
 def validate_phone_number(phone_number: str) -> bool:

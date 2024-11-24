@@ -1,13 +1,24 @@
+from datetime import datetime
 from fastapi import HTTPException
 from pytest import raises
 
 
-from constants.base import ERROR_INVALID_CPF, ERROR_INVALID_EMAIL, ERROR_INVALID_PHONE, ERROR_INVALID_PHONE_OPTIONAL
+from constants.base import (
+    ERROR_INVALID_CPF, 
+    ERROR_INVALID_EMAIL,
+    ERROR_INVALID_FORMAT_BIRTH_DATE,
+    ERROR_INVALID_FORMAT_GENDER, 
+    ERROR_INVALID_PHONE, 
+    ERROR_INVALID_PHONE_OPTIONAL
+)
 from constants.user import (
-    ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS,
-    ERROR_USER_LEVEL_INVALID,
+    ERROR_USER_INVALID_BIRTHDATE,
+    ERROR_USER_INVALID_LEVEL,
+    ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS,
+    ERROR_USER_REQUIRED_FIELD_BIRTH_DATE,
     ERROR_USER_REQUIRED_FIELD_CPF,
-    ERROR_USER_REQUIRED_FIELD_EMAIL, 
+    ERROR_USER_REQUIRED_FIELD_EMAIL,
+    ERROR_USER_REQUIRED_FIELD_GENDER,
     ERROR_USER_REQUIRED_FIELD_NAME,
     ERROR_USER_REQUIRED_FIELD_PASSWORD,
     ERROR_USER_REQUIRED_FIELD_PHONE
@@ -19,9 +30,11 @@ from schemas.user import (
 )
 
 
-def test_UserRequest_sucess():
+def test_UserRequest_success(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -31,24 +44,32 @@ def test_UserRequest_sucess():
     user = UserRequest(
         cpf=cpf,
         name=name,
+        birth_date=birth_date,
+        gender=gender,
         phone=phone,
         phone_optional=phone_optional,
         email=email,
         password=password,
-        level=level
+        level=level,
+        address=mock_AddressRequest
     )
 
     assert user.cpf == cpf.replace(".", "").replace("-", "")
     assert user.name == name
+    assert user.birth_date == birth_date
+    assert user.gender == gender
     assert user.phone == phone
     assert user.phone_optional == phone_optional
     assert user.email == email
     assert user.password == password
     assert user.level == level
+    assert user.address == mock_AddressRequest
 
-def test_UserRequest_fail_cpf_none():
+def test_UserRequest_fail_cpf_none(mock_AddressRequest):
     cpf = None
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -59,19 +80,24 @@ def test_UserRequest_fail_cpf_none():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
-def test_UserRequest_fail_cpf_spaces():
+def test_UserRequest_fail_cpf_spaces(mock_AddressRequest):
     cpf = "     "
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -82,19 +108,24 @@ def test_UserRequest_fail_cpf_spaces():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
-def test_UserRequest_fail_cpf_validation():
+def test_UserRequest_fail_cpf_validation(mock_AddressRequest):
     cpf = "123"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -105,20 +136,25 @@ def test_UserRequest_fail_cpf_validation():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_INVALID_CPF
 
 
-def test_UserRequest_fail_name_none():
+def test_UserRequest_fail_name_none(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = None
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -129,20 +165,25 @@ def test_UserRequest_fail_name_none():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_NAME
 
 
-def test_UserRequest_fail_name_spaces():
+def test_UserRequest_fail_name_spaces(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "    "
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -154,19 +195,85 @@ def test_UserRequest_fail_name_spaces():
             cpf=cpf,
             name=name,
             phone=phone,
+            birth_date=birth_date,
+            gender = gender,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_NAME
 
 
-def test_UserRequest_fail_phone_none():
+def test_UserRequest_fail_birth_date_none(mock_user_data):
+
+    data = mock_user_data
+    data['birth_date'] = None
+
+    with raises(HTTPException) as e:
+        UserRequest(**data)
+
+    assert e.value.status_code == 422
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_BIRTH_DATE
+
+
+def test_UserRequest_fail_birth_format(mock_user_data):
+
+    data = mock_user_data
+    data['birth_date'] = "10/11/2002"
+
+    with raises(HTTPException) as e:
+        UserRequest(**data)
+
+    assert e.value.status_code == 422
+    assert e.value.detail == ERROR_INVALID_FORMAT_BIRTH_DATE
+
+
+def test_UserRequest_fail_birth_date_young(mock_user_data):
+
+    data = mock_user_data
+    data['birth_date'] = datetime.now().strftime("%Y-%m-%d")
+    print(data['birth_date'])
+
+    with raises(HTTPException) as e:
+        UserRequest(**data)
+
+    assert e.value.status_code == 422
+    assert e.value.detail == ERROR_USER_INVALID_BIRTHDATE
+
+
+def test_UserRequest_fail_gender_none(mock_user_data):
+    
+    data = mock_user_data
+    data["gender"] = ""
+
+    with raises(HTTPException) as e:
+        UserRequest(**data)
+
+    assert e.value.status_code == 422
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_GENDER
+
+
+def test_UserRequest_fail_gender_invalid(mock_user_data):
+    
+    data = mock_user_data
+    data["gender"] = "LGBT"
+
+    with raises(HTTPException) as e:
+        UserRequest(**data)
+
+    assert e.value.status_code == 422
+    assert e.value.detail == ERROR_INVALID_FORMAT_GENDER
+
+
+def test_UserRequest_fail_phone_none(mock_AddressRequest):
     cpf = "123.456.789-00"
-    name = "jhon doe"
+    name = "john doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = None  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -177,20 +284,25 @@ def test_UserRequest_fail_phone_none():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PHONE
 
 
-def test_UserRequest_fail_phone_spaces():
+def test_UserRequest_fail_phone_spaces(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "     "   # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -201,19 +313,24 @@ def test_UserRequest_fail_phone_spaces():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PHONE
 
-def test_UserRequest_fail_phone_validation():
+def test_UserRequest_fail_phone_validation(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "12312"   # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -224,20 +341,25 @@ def test_UserRequest_fail_phone_validation():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_INVALID_PHONE
 
 
-def test_UserRequest_sucess_with_no_optional_phone():
+def test_UserRequest_success_with_no_optional_phone(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = ""  # Número de telefone no formato correto
     email = "test@example.com"
@@ -248,10 +370,13 @@ def test_UserRequest_sucess_with_no_optional_phone():
         cpf=cpf,
         name=name,
         phone=phone,
+        birth_date=birth_date,
+        gender = gender,
         phone_optional=phone_optional,
         email=email,
         password=password,
-        level=level
+        level=level,
+        address=mock_AddressRequest
     )
 
     assert user.cpf == cpf.replace(".", "").replace("-", "")
@@ -261,11 +386,13 @@ def test_UserRequest_sucess_with_no_optional_phone():
     assert user.email == email
     assert user.password == password
     assert user.level == level
+    assert user.address == mock_AddressRequest
 
-
-def test_UserRequest_fail_option_phone_validation():
+def test_UserRequest_fail_option_phone_validation(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "89912345678"   # Número de telefone no formato correto
     phone_optional = "1234"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -276,20 +403,25 @@ def test_UserRequest_fail_option_phone_validation():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_INVALID_PHONE_OPTIONAL
 
 
-def test_UserRequest_fail_option_phone_equals_phone():
+def test_UserRequest_fail_option_phone_equals_phone(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "89912345678"   # Número de telefone no formato correto
     phone_optional = "89912345678"  # Número de telefone no formato correto
     email = "test@example.com"
@@ -300,21 +432,26 @@ def test_UserRequest_fail_option_phone_equals_phone():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
-    assert e.value.detail == ERROR_PHONE_AND_OPTIONAL_PHONE_EQUALS
+    assert e.value.status_code == 422
+    assert e.value.detail == ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS
 
 
 
-def test_UserRequest_fail_email_spaces():
+def test_UserRequest_fail_email_spaces(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = " "
@@ -325,19 +462,24 @@ def test_UserRequest_fail_email_spaces():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_EMAIL
 
-def test_UserRequest_fail_email_validation():
+def test_UserRequest_fail_email_validation(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = "aaaa"
@@ -348,21 +490,26 @@ def test_UserRequest_fail_email_validation():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_INVALID_EMAIL
 
 
 
-def test_UserRequest_fail_password_spaces():
+def test_UserRequest_fail_password_spaces(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = "example@gmail.com"
@@ -373,20 +520,25 @@ def test_UserRequest_fail_password_spaces():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PASSWORD
 
 
-def test_UserRequest_fail_level_None():
+def test_UserRequest_fail_level_None(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = "example@gmail.com"
@@ -397,19 +549,24 @@ def test_UserRequest_fail_level_None():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
-    assert e.value.detail == ERROR_USER_LEVEL_INVALID
+    assert e.value.status_code == 422
+    assert e.value.detail == ERROR_USER_INVALID_LEVEL
 
-def test_UserRequest_fail_level_invalid():
+def test_UserRequest_fail_level_invalid(mock_AddressRequest):
     cpf = "123.456.789-00"
     name = "John Doe"
+    birth_date="1990-01-01"
+    gender = "M"
     phone = "89912345678"   
     phone_optional = "89912345679"  
     email = "example@gmail.com"
@@ -420,30 +577,36 @@ def test_UserRequest_fail_level_invalid():
         UserRequest(
             cpf=cpf,
             name=name,
+            birth_date=birth_date,
+            gender = gender,
             phone=phone,
             phone_optional=phone_optional,
             email=email,
             password=password,
-            level=level
+            level=level,
+            address=mock_AddressRequest
         )
 
-    assert e.value.status_code == 400
-    assert e.value.detail == ERROR_USER_LEVEL_INVALID
+    assert e.value.status_code == 422
+    assert e.value.detail == ERROR_USER_INVALID_LEVEL
 
 
-def test_UserUpdateRequest_sucess():
+def test_UserUpdateRequest_success(mock_AddressRequest):
     name = "John Doe"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "jhon.doe@gmail.com"
     password = "123456"
+    level=2
 
     user = UserUpdateRequest(
         name=name,
         phone=phone,
         phone_optional=phone_optional,
         email=email,
-        password=password
+        password=password,
+        level=level,
+        address=mock_AddressRequest
     )
 
     assert user.name == name
@@ -452,7 +615,7 @@ def test_UserUpdateRequest_sucess():
     assert user.email == email
     assert user.password == password
 
-def test_UserUpdateRequest_sucess_no_name():
+def test_UserUpdateRequest_success_no_name():
     name = ""
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
@@ -473,7 +636,7 @@ def test_UserUpdateRequest_sucess_no_name():
     assert user.email == email
     assert user.password == password
 
-def test_UserUpdateRequest_sucess_no_phone():
+def test_UserUpdateRequest_success_no_phone():
     name = "John Doe"
     phone_optional = "90900000000"  # Número de telefone no formato correto
     email = "jhon.doe@gmail.com"
@@ -491,7 +654,7 @@ def test_UserUpdateRequest_sucess_no_phone():
     assert user.email == email
     assert user.password == password
 
-def test_UserUpdateRequest_sucess_no_optional_phone():
+def test_UserUpdateRequest_success_no_optional_phone():
     name = "John Doe"
     phone = "90900000001"  # Número de telefone no formato correto
     email = "jhon.doe@gmail.com"
@@ -509,7 +672,7 @@ def test_UserUpdateRequest_sucess_no_optional_phone():
     assert user.email == email
     assert user.password == password
 
-def test_UserUpdateRequest_sucess_no_email():
+def test_UserUpdateRequest_success_no_email():
     name = "John Doe"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
@@ -527,7 +690,7 @@ def test_UserUpdateRequest_sucess_no_email():
     assert user.phone_optional == phone_optional
     assert user.password == password
 
-def test_UserUpdateRequest_sucess_no_password():
+def test_UserUpdateRequest_success_no_password():
     name = "John Doe"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
@@ -547,7 +710,7 @@ def test_UserUpdateRequest_sucess_no_password():
 
 
 
-def test_UserLoginRequest_sucess():
+def test_UserLoginRequest_success():
     cpf = "123.456.789-00"
     password = "123456"
 
@@ -559,8 +722,6 @@ def test_UserLoginRequest_sucess():
     assert user.cpf == cpf.replace(".", "").replace("-", "")
     assert user.password == password
 
-# TODO: Testar todos os casos de login
-
 def test_UserLoginRequest_fail_no_cpf():
     cpf = ""
     password = "123456"
@@ -571,7 +732,7 @@ def test_UserLoginRequest_fail_no_cpf():
             password=password
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
 def test_UserLoginRequest_fail_invalid_cpf():
@@ -584,7 +745,7 @@ def test_UserLoginRequest_fail_invalid_cpf():
             password=password
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_INVALID_CPF
 
 
@@ -598,5 +759,5 @@ def test_UserLoginRequest_fail_no_password():
             password=password
         )
 
-    assert e.value.status_code == 400
+    assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PASSWORD

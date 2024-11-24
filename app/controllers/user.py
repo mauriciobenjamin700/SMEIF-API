@@ -12,8 +12,8 @@ from constants.user import (
     ERROR_USER_NOT_ID, 
     ERROR_USER_PASSWORD_WRONG,
     ERROR_USER_PHONE_ALREADY_EXISTS, 
-    MESSAGE_UPDATE_FAIL, 
-    MESSAGE_UPDATE_SUCCESS
+    MESSAGE_USER_UPDATE_FAIL, 
+    MESSAGE_USER_UPDATE_SUCCESS
 )
 from controllers.base import Repository
 from database.models import UserModel
@@ -24,16 +24,19 @@ from schemas.user import (
     UserResponse,
     UserUpdateRequest
 )
-from app.utils.security.cryptography import (
-    crypto,
+from services.security.password import (
+    protect,
     verify
 )
-from app.utils.messages.messages import (
-    ServerError,
-    SucessMessage,
-    ErrorMessage
+from services.security.tokens import encode_token
+from utils.messages.success import Success
+from utils.messages.error import (
+    BadRequest,
+    Conflict,
+    NotFound,
+    Server,
+    Unauthorized
 )
-from app.services.security.tokens import encode_token
 
 
 class UserUseCases(Repository):
@@ -76,20 +79,20 @@ class UserUseCases(Repository):
                 request.email
             )
             
-            request.password = crypto(request.password)
+            request.password = protect(request.password)
             
             user = UserModel(**request.dict())
 
             self.db_session.add(user)
             self.db_session.commit()
 
-            return SucessMessage(MESSAGE_USER_ADD_SUCCESS)
+            return Success(MESSAGE_USER_ADD_SUCCESS)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
 
     def get(self, id: str)  -> UserResponse:
         """
@@ -116,7 +119,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
 
 
     def get_all(self) -> list[UserResponse]:
@@ -143,7 +146,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
         
     def update(self, id:str, request: UserUpdateRequest) -> BaseMessage:
         """
@@ -174,7 +177,7 @@ class UserUseCases(Repository):
 
                     if field == "password":
 
-                        value = crypto(value)
+                        value = protect(value)
 
                     value_in_field =  getattr(user, field)
 
@@ -188,13 +191,13 @@ class UserUseCases(Repository):
                 self.db_session.commit()
                 self.db_session.refresh(user)
 
-            return SucessMessage(MESSAGE_UPDATE_SUCCESS) if updated else SucessMessage(MESSAGE_UPDATE_FAIL)
+            return Success(MESSAGE_USER_UPDATE_SUCCESS) if updated else Success(MESSAGE_USER_UPDATE_FAIL)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
 
     def delete(self, id: str) -> BaseMessage:
         """
@@ -218,20 +221,20 @@ class UserUseCases(Repository):
             self.db_session.delete(user)
             self.db_session.commit()
 
-            return SucessMessage(MESSAGE_USER_DELETE_SUCCESS)
+            return Success(MESSAGE_USER_DELETE_SUCCESS)
 
         except HTTPException:
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
         
-    def login(self, acess: UserLoginRequest) -> str:
+    def login(self, access: UserLoginRequest) -> str:
         """
         Realiza o login de um usuário
 
         - Args:
-            - acess: Objeto com os dados de login
+            - access: Objeto com os dados de login
 
         - Returns:
             - str: Token de autenticação
@@ -243,13 +246,13 @@ class UserUseCases(Repository):
         """
         try:
 
-            user = self.db_session.query(UserModel).filter_by(cpf=acess.cpf).first()
+            user = self.db_session.query(UserModel).filter_by(cpf=access.cpf).first()
 
             if not user:
-                raise ErrorMessage(404, ERROR_USER_NOT_FOUND_USER)
+                raise NotFound(ERROR_USER_NOT_FOUND_USER)
 
-            if not verify(acess.password, user.password):
-                raise ErrorMessage(401, ERROR_USER_PASSWORD_WRONG)
+            if not verify(access.password, user.password):
+                raise Unauthorized(ERROR_USER_PASSWORD_WRONG)
             
             data = self._map_UserModel_to_UserResponse(user)
             
@@ -261,7 +264,7 @@ class UserUseCases(Repository):
             raise
 
         except Exception as e:
-            raise ServerError(e)
+            raise Server(e)
         
     def _check_existence(self, cpf: str | None, phone: str | None, email: str | None) -> None:
             
@@ -271,7 +274,7 @@ class UserUseCases(Repository):
         
                 if user:
                     
-                    raise ErrorMessage(409, ERROR_USER_CPF_ALREADY_EXISTS)
+                    raise Conflict(ERROR_USER_CPF_ALREADY_EXISTS)
                 
             if phone:
             
@@ -279,7 +282,7 @@ class UserUseCases(Repository):
 
                 if user:
                     
-                    raise ErrorMessage(409, ERROR_USER_PHONE_ALREADY_EXISTS)
+                    raise Conflict(ERROR_USER_PHONE_ALREADY_EXISTS)
                 
             if email:
 
@@ -287,19 +290,19 @@ class UserUseCases(Repository):
                 
                 if user:
                     
-                    raise ErrorMessage(409, ERROR_USER_EMAIL_ALREADY_EXISTS)
+                    raise Conflict(ERROR_USER_EMAIL_ALREADY_EXISTS)
 
             
 
     def _get(self, id: str) -> UserModel:
 
         if not id:
-            raise ErrorMessage(400, ERROR_USER_NOT_ID)
+            raise BadRequest(ERROR_USER_NOT_ID)
         
         user = self.db_session.query(UserModel).filter_by(cpf=id).first()
 
         if not user:
-            raise ErrorMessage(404, ERROR_USER_NOT_FOUND_USER)
+            raise NotFound(ERROR_USER_NOT_FOUND_USER)
         
         return user
     
@@ -308,7 +311,7 @@ class UserUseCases(Repository):
         users = self.db_session.query(UserModel).all()
 
         if not users:
-            raise ErrorMessage(404, ERROR_USER_NOT_FOUND_USERS)
+            raise NotFound(ERROR_USER_NOT_FOUND_USERS)
         
         return users
     
