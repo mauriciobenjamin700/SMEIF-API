@@ -1,226 +1,129 @@
-from fastapi import Response
-
-
-from constants.base import ERROR_SERVER_ERROR
+from constants.address import (
+    ERROR_ADDRESS_REQUIRED_FIELD_HOUSE_NUMBER,
+    ERROR_ADDRESS_REQUIRED_FIELD_NEIGHBORHOOD,
+    ERROR_ADDRESS_REQUIRED_FIELD_STATE,
+    ERROR_ADDRESS_REQUIRED_FIELD_STREET,
+    ERROR_ADDRESS_REQUIRED_FIELD_CITY
+)
+from constants.base import (
+    ERROR_INVALID_CPF, 
+    ERROR_INVALID_EMAIL, 
+    ERROR_INVALID_FORMAT_BIRTH_DATE, 
+    ERROR_INVALID_FORMAT_GENDER, 
+    ERROR_INVALID_PHONE, 
+    ERROR_INVALID_PHONE_OPTIONAL, 
+    ERROR_SERVER_ERROR
+)
 from constants.user import (
     ERROR_USER_CPF_ALREADY_EXISTS, 
     ERROR_USER_EMAIL_ALREADY_EXISTS,
+    ERROR_USER_INVALID_BIRTHDATE,
+    ERROR_USER_INVALID_LEVEL,
     ERROR_USER_NOT_FOUND_USER,
     ERROR_USER_NOT_FOUND_USERS,
     ERROR_USER_NOT_ID,
     ERROR_USER_PASSWORD_WRONG, 
-    ERROR_USER_PHONE_ALREADY_EXISTS, 
+    ERROR_USER_PHONE_ALREADY_EXISTS,
+    ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS,
+    ERROR_USER_REQUIRED_FIELD_ADDRESS,
+    ERROR_USER_REQUIRED_FIELD_BIRTH_DATE,
+    ERROR_USER_REQUIRED_FIELD_CPF,
+    ERROR_USER_REQUIRED_FIELD_EMAIL,
+    ERROR_USER_REQUIRED_FIELD_GENDER,
+    ERROR_USER_REQUIRED_FIELD_NAME,
+    ERROR_USER_REQUIRED_FIELD_PASSWORD,
+    ERROR_USER_REQUIRED_FIELD_PHONE, 
     MESSAGE_USER_ADD_SUCCESS,
     MESSAGE_USER_DELETE_SUCCESS,
+    MESSAGE_USER_UPDATE_FAIL,
     MESSAGE_USER_UPDATE_SUCCESS
 )
 from utils.messages.doc import generate_response, generate_responses_documentation
 
 
-USER_REQUEST_EXAMPLE =         {
-            "cpf": "123.456.789-00",
-            "name": "John Doe",
-            "phone": "(00) 90000-0000",
-            "phone_optional": "(00) 9000-0001",
-            "email": " jhon.doe@example.com",
-            "password": '123',
-            "level": 1
-        }  
-USER_RESPONSE_EXAMPLE = {
-    "cpf": "123.456.789-00",
-    "name": "John Doe",
-    "phone": "(00) 90000-0000",
-    "phone_optional": "(00) 9000-0001",
-    "email": "john@example",
-    "level": 1
-}
-
-ADD_RESPONSE_DESCRIPTION = f"""
-
-- Exemplo de resposta:
-
-            "detail": "{MESSAGE_USER_ADD_SUCCESS}"
-        
-
-"""
-
-ADD_DESCRIPTION = """
-Adiciona um novo usuário ao banco de dados.
-             
-- Exemplo de requisição:
-             
-        {
-            "cpf": "123.456.789-00",
-            "name": "John Doe",
-            "phone": "(00) 90000-0000",
-            "phone_optional": "(00) 9000-0001",
-            "email": " jhon.doe@example.com",
-            "password": '123',
-            "level": 1
-        }         
-""" + ADD_RESPONSE_DESCRIPTION
-
+ADD_DESCRIPTION = "Realiza o cadastro de um usuário no banco de dados com os dados fornecidos"
 ADD_RESPONSES = generate_responses_documentation(
     [
         generate_response(200, MESSAGE_USER_ADD_SUCCESS),
         generate_response(409, ERROR_USER_CPF_ALREADY_EXISTS),
         generate_response(409, ERROR_USER_PHONE_ALREADY_EXISTS),
         generate_response(409, ERROR_USER_EMAIL_ALREADY_EXISTS),
+        generate_response(422, ERROR_USER_REQUIRED_FIELD_CPF),
+        generate_response(422, ERROR_INVALID_CPF),
+        generate_response(422, ERROR_USER_REQUIRED_FIELD_NAME),
+        generate_response(422, ERROR_USER_REQUIRED_FIELD_BIRTH_DATE),
+        generate_response(422, ERROR_INVALID_FORMAT_BIRTH_DATE),
+        generate_response(422, ERROR_USER_INVALID_BIRTHDATE),
+        generate_response(422, ERROR_USER_REQUIRED_FIELD_GENDER),
+        generate_response(422, ERROR_INVALID_FORMAT_GENDER),
+        generate_response(422, ERROR_USER_REQUIRED_FIELD_PHONE),
+        generate_response(422, ERROR_INVALID_PHONE),
+        generate_response(422, ERROR_INVALID_PHONE_OPTIONAL),
+        generate_response(422, ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS),
+        generate_response(422, ERROR_USER_REQUIRED_FIELD_EMAIL),
+        generate_response(422, ERROR_INVALID_EMAIL),
+        generate_response(422, ERROR_USER_REQUIRED_FIELD_PASSWORD),
+        generate_response(422, ERROR_USER_INVALID_LEVEL),
+        generate_response(422, ERROR_USER_REQUIRED_FIELD_ADDRESS),
+        generate_response(422, ERROR_ADDRESS_REQUIRED_FIELD_STATE),
+        generate_response(422, ERROR_ADDRESS_REQUIRED_FIELD_CITY),
+        generate_response(422, ERROR_ADDRESS_REQUIRED_FIELD_NEIGHBORHOOD),
+        generate_response(422, ERROR_ADDRESS_REQUIRED_FIELD_STREET),
+        generate_response(422, ERROR_ADDRESS_REQUIRED_FIELD_HOUSE_NUMBER),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
 
-GET_RESPONSE_DESCRIPTION = """
 
-- Exemplo de resposta:
-
-        {
-            "cpf": "123.456.789-00",
-            "name": "John Doe",
-            "phone": "(00) 90000-0000",
-            "phone_optional": "(00) 9000-0001",
-            "email": "john@example",
-            "level": '1'
-        }
-        
-
-"""
-GET_DESCRIPTION="""
-Busca um usuário no banco de dados.
-             
-- Exemplo de requisição:
-             
-        
-        "user_id": "123.456.789-00"
-        
-          
-""" + GET_RESPONSE_DESCRIPTION
+GET_DESCRIPTION="Busca um usuário no banco de dados."
 
 GET_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, str(USER_RESPONSE_EXAMPLE)),
-        generate_response(404, ERROR_USER_NOT_ID),
+        generate_response(404, ERROR_USER_REQUIRED_FIELD_CPF),
         generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
 
-LIST_RESPONSE_DESCRIPTION = """
-Busca todos os usuários no banco de dados.
 
-- Exemplo de resposta:
-
-        [
-            {
-                "cpf": "123.456.789-00",
-                "name": "John Doe",
-                "phone": "(00) 90000-0000",
-                "phone_optional": "(00) 9000-0001",
-                "email": "john@example",
-                "level": '1'
-            },
-
-            {
-                "cpf": "123.456.789-01",
-                "name": "John Do",
-                "phone": "(00) 92000-0000",
-                "phone_optional": "(00) 9020-0001",
-                "email": "john@example3",
-                "level": '2'
-            }
-        ]
-"""
-
-LIST_DESCRIPTION="""""" + LIST_RESPONSE_DESCRIPTION
+LIST_DESCRIPTION="Busca todos os usuários no banco de dados."
 LIST_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, str([USER_RESPONSE_EXAMPLE, USER_RESPONSE_EXAMPLE])),
         generate_response(404, ERROR_USER_NOT_FOUND_USERS),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
 
 
-UPDATE_RESPONSE_DESCRIPTION = f"""
-
-- Exemplo de resposta:
-
-        "detail": "{MESSAGE_USER_ADD_SUCCESS}"
-
-
-"""
-
-UPDATE_DESCRIPTION="""
-
-- Exemplo de requisição:
-
-        "cpf": "123.456.789-00",
-
-        {
-            "name": "John Doe2",
-            "phone": "(00) 90000-6000",
-            "phone_optional": "(00) 9002-0001",
-        }
-
-""" + UPDATE_RESPONSE_DESCRIPTION
-
+UPDATE_DESCRIPTION="Atualiza os dados de um usuário no banco de dados."
 UPDATE_RESPONSES = generate_responses_documentation(
     [
         generate_response(200, MESSAGE_USER_UPDATE_SUCCESS),
-        generate_response(404, ERROR_USER_NOT_ID),
+        generate_response(200, MESSAGE_USER_UPDATE_FAIL),
+        generate_response(404, ERROR_USER_REQUIRED_FIELD_CPF),
         generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
 
-DELETE_RESPONSE_DESCRIPTION = f"""
-- Exemplo de resposta:
-    
-            "detail": "{MESSAGE_USER_DELETE_SUCCESS}"
 
-"""
-DELETE_DESCRIPTION="""
-
-Deleta um usuário no banco de dados.
-
-- Exemplo de requisição:
-
-        "user_id": "123.456.789-00"
-
-""" + DELETE_RESPONSE_DESCRIPTION
+DELETE_DESCRIPTION="Deleta um usuário do banco de dados."
 DELETE_RESPONSES = generate_responses_documentation(
     [
         generate_response(200, MESSAGE_USER_DELETE_SUCCESS),
-        generate_response(404, ERROR_USER_NOT_ID),
+        generate_response(404, ERROR_USER_REQUIRED_FIELD_CPF),
         generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
 
-LOGIN_RESPONSE_DESCRIPTION = """
 
-- Exemplo de resposta:
-
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-
-"""
-LOGIN_DESCRIPTION="""
-
-Realiza o login de um usuário e retorna um token de autenticação.
-
-- Exemplo de requisição:
-
-        {
-            "cpf": "123.456.789-00",
-            "password": "123"
-        }
-
-""" + LOGIN_RESPONSE_DESCRIPTION
+LOGIN_DESCRIPTION="Realiza o login de um usuário e retorna um token de autenticação."
 LOGIN_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"),
         generate_response(404, ERROR_USER_NOT_FOUND_USER),
         generate_response(401, ERROR_USER_PASSWORD_WRONG),
         generate_response(500, ERROR_SERVER_ERROR)
     ]
 )
+

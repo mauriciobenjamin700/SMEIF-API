@@ -133,10 +133,6 @@ class UserController():
 
             users = get_all_users(self.db_session)
 
-            print("Linha 135 -----------------------------------")
-            print(users)
-            print(type(users))
-
             return self._map_list_UserModel_to_list_UserResponse(users)
 
         except HTTPException:
@@ -158,7 +154,7 @@ class UserController():
             - dict: {"detail": "Nenhum dado foi atualizado"}
 
         - Raises:
-            - HTTPException: 400 - ID não informado
+            - HTTPException: 400 - CPF é obrigatório
             - HTTPException: 404 - Usuário não encontrado
             - HTTPException: 500 - Erro no servidor
         """
@@ -223,7 +219,7 @@ class UserController():
             - dict: {"detail": "Usuário deletado com sucesso"}
 
         - Raises:
-            - HTTPException: 400 - ID não informado
+            - HTTPException: 400 - CPF é obrigatório
             - HTTPException: 404 - Usuário não encontrado
             - HTTPException: 500 - Erro no servidor
         """

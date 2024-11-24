@@ -1,10 +1,3 @@
-"""
-- DataClasses for User
-    - UserRequest
-    - UserResponse
-    - UserUpdateRequest
-    - UserLoginRequest
-"""
 from datetime import datetime
 from pydantic import (
     Field,
