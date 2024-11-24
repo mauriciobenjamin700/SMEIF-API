@@ -15,6 +15,7 @@ from database.queries.get import get_user_by_cpf
 from database.queries.get_all import get_all_users
 from schemas.base import BaseMessage
 from schemas.user import (
+    AccessToken,
     UserDB,
     UserLoginRequest,
     UserRequest,
@@ -241,7 +242,7 @@ class UserController():
         except Exception as e:
             raise Server(e)
         
-    def login(self, access: UserLoginRequest) -> str:
+    def login(self, access: UserLoginRequest) -> AccessToken:
         """
         Realiza o login de um usuário
 
@@ -268,7 +269,7 @@ class UserController():
             
             token = encode_token(data.dict())
             
-            return token
+            return AccessToken(token=token)
 
         except HTTPException:
             raise

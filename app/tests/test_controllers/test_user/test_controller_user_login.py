@@ -7,7 +7,7 @@ from constants.user import (
     ERROR_USER_PASSWORD_WRONG
 )
 from controllers.user import UserController
-from schemas.user import UserLoginRequest, UserResponse
+from schemas.user import AccessToken, UserLoginRequest, UserResponse
 from services.security.tokens import decode_token
 from utils.format import (
     format_date,
@@ -21,9 +21,9 @@ def test_login_user_success(db_session, mock_user_on_db, mock_UserLoginRequest):
 
     response = uc.login(mock_UserLoginRequest)
 
-    assert isinstance(response, str)
+    assert isinstance(response, AccessToken)
 
-    data = decode_token(response)
+    data = decode_token(response.token)
 
     user = UserResponse(**data)
 

@@ -447,3 +447,10 @@ class UserLoginRequest(BaseSchema):
             raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_PASSWORD)
         
         return value
+    
+
+class AccessToken(BaseSchema):
+    """
+    - token: str
+    """
+    token: str = Field(title="token", description="Token de acesso", examples=["eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMzQ1.eyJzdWIiOiIyMzQ1"])

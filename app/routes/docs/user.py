@@ -14,6 +14,8 @@ from constants.user import (
     MESSAGE_USER_DELETE_SUCCESS,
     MESSAGE_USER_UPDATE_SUCCESS
 )
+from utils.messages.doc import generate_response, generate_responses_documentation
+
 
 USER_REQUEST_EXAMPLE =         {
             "cpf": "123.456.789-00",
@@ -32,9 +34,6 @@ USER_RESPONSE_EXAMPLE = {
     "email": "john@example",
     "level": 1
 }
-
-from utils.messages.doc import generate_response, generate_responses_documentation
-
 
 ADD_RESPONSE_DESCRIPTION = f"""
 

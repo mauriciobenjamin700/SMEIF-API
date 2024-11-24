@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from controllers.user import UserController
 from schemas.user import(
+    AccessToken,
     UserRequest,
     UserResponse,
     UserUpdateRequest,
@@ -105,7 +106,7 @@ async def delete_user(
 async def login(
     user: UserLoginRequest,
     db_session: Session = Depends(db_session)
-) -> str:
+) -> AccessToken:
 
     uc = UserController(db_session)
 
