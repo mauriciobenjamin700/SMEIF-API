@@ -5,7 +5,7 @@ from pytest import raises
 from database.models import UserModel
 from constants.user import (
     ERROR_USER_NOT_FOUND_USER,
-    ERROR_USER_NOT_ID,
+    ERROR_USER_REQUIRED_FIELD_CPF,
     MESSAGE_USER_UPDATE_SUCCESS, 
     MESSAGE_USER_UPDATE_FAIL
 )
@@ -69,7 +69,7 @@ def test_update_user_no_id(db_session, mock_user_on_db, mock_UserUpdateRequest):
         uc.update(None, mock_UserUpdateRequest)
 
     assert e.value.status_code == 400
-    assert e.value.detail == ERROR_USER_NOT_ID
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
 def test_update_user_not_found(db_session, mock_user_on_db, mock_UserUpdateRequest):
     

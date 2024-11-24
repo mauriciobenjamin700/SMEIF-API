@@ -5,17 +5,14 @@ from sqlalchemy.orm import Session
 from constants.user import (
     MESSAGE_USER_ADD_SUCCESS, 
     MESSAGE_USER_DELETE_SUCCESS,
-    ERROR_USER_CPF_ALREADY_EXISTS,
-    ERROR_USER_EMAIL_ALREADY_EXISTS,
-    ERROR_USER_NOT_FOUND_USER, 
-    ERROR_USER_NOT_FOUND_USERS, 
-    ERROR_USER_NOT_ID, 
     ERROR_USER_PASSWORD_WRONG,
-    ERROR_USER_PHONE_ALREADY_EXISTS, 
     MESSAGE_USER_UPDATE_FAIL, 
     MESSAGE_USER_UPDATE_SUCCESS
 )
 from database.models import UserModel
+from database.queries.existence import check_user_existence
+from database.queries.get import get_user_by_cpf
+from database.queries.get_all import get_all_users
 from schemas.base import BaseMessage
 from schemas.user import (
     UserDB,
@@ -29,11 +26,9 @@ from services.security.password import (
     verify
 )
 from services.security.tokens import encode_token
+from utils.format import format_date, format_phone
 from utils.messages.success import Success
 from utils.messages.error import (
-    BadRequest,
-    Conflict,
-    NotFound,
     Server,
     Unauthorized
 )
@@ -73,11 +68,7 @@ class UserController():
         """
         try:
 
-            self._check_existence(
-                request.cpf, 
-                request.phone, 
-                request.email
-            )
+            check_user_existence(self.db_session, request.cpf, request.phone, request.email)
             
             request.password = protect(request.password)
 
@@ -113,8 +104,7 @@ class UserController():
         """
         try:
 
-            user = self._get(id)
-
+            user = get_user_by_cpf(self.db_session,id)
             return self._map_UserModel_to_UserResponse(user)
 
         except HTTPException:
@@ -140,7 +130,11 @@ class UserController():
         """
         try:
 
-            users = self._get_all()
+            users = get_all_users(self.db_session)
+
+            print("Linha 135 -----------------------------------")
+            print(users)
+            print(type(users))
 
             return self._map_list_UserModel_to_list_UserResponse(users)
 
@@ -169,7 +163,7 @@ class UserController():
         """
         try:
                 
-            user = self._get(id)
+            user = get_user_by_cpf(self.db_session, id)
 
             updated = False
 
@@ -180,6 +174,22 @@ class UserController():
                     if field == "password":
 
                         value = protect(value)
+
+                    elif field == "address": # Endereço é um objeto, por isso temos que iterar sobre ele e seus atributos
+                            
+                        for address_field, address_value in value.items(): # Quando o campo endereço é fragmentado, ele vira um dict
+
+                            if address_value:
+
+                                value_in_field =  getattr(user, address_field)
+
+                                if address_value != value_in_field:
+
+                                    setattr(user, address_field, address_value)
+                                    updated = True
+
+                        continue # Depois de atualizar o endereço, o campo address não tem mais valor e será ignorado
+    
 
                     value_in_field =  getattr(user, field)
 
@@ -218,7 +228,7 @@ class UserController():
         """
         try:
 
-            user = self._get(id)
+            user = get_user_by_cpf(self.db_session, id)
 
             self.db_session.delete(user)
             self.db_session.commit()
@@ -248,12 +258,10 @@ class UserController():
         """
         try:
 
-            user = self.db_session.query(UserModel).filter_by(cpf=access.cpf).first()
-
-            if not user:
-                raise NotFound(ERROR_USER_NOT_FOUND_USER)
+            user = get_user_by_cpf(self.db_session, access.cpf)
 
             if not verify(access.password, user.password):
+
                 raise Unauthorized(ERROR_USER_PASSWORD_WRONG)
             
             data = self._map_UserModel_to_UserResponse(user)
@@ -267,64 +275,24 @@ class UserController():
 
         except Exception as e:
             raise Server(e)
-        
-    def _check_existence(self, cpf: str | None, phone: str | None, email: str | None) -> None:
-            
-            if cpf:
-            
-                user = self.db_session.query(UserModel).filter_by(cpf=cpf).first()
-        
-                if user:
-                    
-                    raise Conflict(ERROR_USER_CPF_ALREADY_EXISTS)
-                
-            if phone:
-            
-                user = self.db_session.query(UserModel).filter_by(phone=phone).first()
 
-                if user:
-                    
-                    raise Conflict(ERROR_USER_PHONE_ALREADY_EXISTS)
-                
-            if email:
-
-                user = self.db_session.query(UserModel).filter_by(email=email).first()
-                
-                if user:
-                    
-                    raise Conflict(ERROR_USER_EMAIL_ALREADY_EXISTS)
-
-            
-
-    def _get(self, id: str) -> UserModel:
-
-        if not id:
-            raise BadRequest(ERROR_USER_NOT_ID)
-        
-        user = self.db_session.query(UserModel).filter_by(cpf=id).first()
-
-        if not user:
-            raise NotFound(ERROR_USER_NOT_FOUND_USER)
-        
-        return user
-    
-    def _get_all(self) -> list[UserModel]:
-
-        users = self.db_session.query(UserModel).all()
-
-        if not users:
-            raise NotFound(ERROR_USER_NOT_FOUND_USERS)
-        
-        return users
     
     def _map_UserModel_to_UserResponse(self, user: UserModel) -> UserResponse:
         return UserResponse(
             cpf=user.cpf,
             name=user.name,
-            phone=user.phone,
-            phone_optional=user.phone_optional,
+            birth_date=format_date(user.birth_date),
+            gender=user.gender,
+            phone=format_phone(user.phone),
+            phone_optional= format_phone(user.phone_optional) if user.phone_optional else "",
             email=user.email,
-            level=user.level
+            level=user.level,
+            state=user.state,
+            city=user.city,
+            neighborhood=user.neighborhood,
+            street=user.street,
+            house_number=user.house_number,
+            complement=user.complement if user.complement else ""
         )
     
     def _map_list_UserModel_to_list_UserResponse(self, users: list[UserModel]) -> list[UserResponse]:

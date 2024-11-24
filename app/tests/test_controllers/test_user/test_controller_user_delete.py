@@ -3,8 +3,8 @@ from pytest import raises
 
 
 from constants.user import (
-    ERROR_USER_NOT_ID,
     ERROR_USER_NOT_FOUND_USER,
+    ERROR_USER_REQUIRED_FIELD_CPF,
     MESSAGE_USER_DELETE_SUCCESS
 )
 from controllers.user import UserController
@@ -27,7 +27,7 @@ def test_delete_user_fail_no_id(db_session):
         uc.delete(None)
 
     assert e.value.status_code == 400
-    assert e.value.detail == ERROR_USER_NOT_ID
+    assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
 
 def test_delete_user_fail_not_found(db_session):

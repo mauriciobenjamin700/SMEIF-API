@@ -129,7 +129,7 @@ class ChildModel(BaseModel):
 class ChildParentsModel(BaseModel):
     """
     - id: str
-    - kindship: str
+    - kinship: str
     - child_cpf: str
     - parent_cpf: str
 
@@ -140,7 +140,7 @@ class ChildParentsModel(BaseModel):
     __tablename__ = 'child_parents'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
-    kindship: Mapped[str] = mapped_column(String, unique=False,nullable=False)
+    kinship: Mapped[str] = mapped_column(String, unique=False,nullable=False)
     child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), primary_key=True)
     parent_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), primary_key=True)
 
@@ -170,14 +170,14 @@ class ClassModel(BaseModel):
     room: Mapped[str] = mapped_column(String, unique=False,nullable=False)
 
 
-class ClassStudantModel(BaseModel):
+class ClassStudentModel(BaseModel):
     """
     - id: str
     - class_id: str
     - child_cpf: str
     """
 
-    __tablename__ = 'class_studant'
+    __tablename__ = 'class_Student'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
     class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)

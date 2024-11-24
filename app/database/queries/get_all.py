@@ -2,42 +2,53 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
+from constants.user import ERROR_USER_NOT_FOUND_USERS
 from database.models import(
     ChildModel,
-    ClassStudantModel,
-    ClassModel
+    ClassStudentModel,
+    ClassModel,
+    UserModel
 )
 from schemas.classes import(
     Student
 )
-from app.utils.messages.messages import NotFoundErrorMessage
+from utils.messages.error import NotFound
 from constants.classes import (
     ERROR_CLASSES_GET_ALL_NOT_FOUND,
 )
 
 
-def get_all_studants_by_class(db_session: Session, class_id: str) -> list[Student]:
+def get_all_users(db_session: Session) -> list[UserModel]:
+        
+    users = db_session.scalars(select(UserModel)).all()
+
+    if not users:
+        raise NotFound(ERROR_USER_NOT_FOUND_USERS)
+    
+    return users
+
+def get_all_students_by_class(db_session: Session, class_id: str) -> list[Student]:
     
     relations = db_session.scalars(
-        select(ClassStudantModel).where(
-            ClassStudantModel.class_id == class_id
+        select(ClassStudentModel).where(
+            ClassStudentModel.class_id == class_id
         )
     )
 
     children = db_session.scalars(
         select(ChildModel).join(
-            ClassStudantModel,
-            ChildModel.cpf == ClassStudantModel.child_cpf
+            ClassStudentModel,
+            ChildModel.cpf == ClassStudentModel.child_cpf
         ).where(
-            ClassStudantModel.id == class_id
+            ClassStudentModel.id == class_id
         )
     )
 
-    studants = []
+    students = []
 
     for child in children:
 
-        studants.append(
+        students.append(
             Student(
                 cpf=child.cpf,
                 name=child.name,
@@ -45,7 +56,7 @@ def get_all_studants_by_class(db_session: Session, class_id: str) -> list[Studen
             )
         )     
 
-    return studants   
+    return students   
 
 
 def get_all_classes(db_session: Session) -> list[ClassModel]:
@@ -55,4 +66,4 @@ def get_all_classes(db_session: Session) -> list[ClassModel]:
     )
 
     if not classes:
-        raise NotFoundErrorMessage(ERROR_CLASSES_GET_ALL_NOT_FOUND)
+        raise NotFound(ERROR_CLASSES_GET_ALL_NOT_FOUND)

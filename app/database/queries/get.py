@@ -6,14 +6,37 @@ from constants.classes import(
     ERROR_CLASSES_GET_NOT_FOUND
 )
 from constants.user import (
-    ERROR_USER_GET_TEACHER_NOT_FOUND, 
-    LEVEL
+    ERROR_USER_GET_TEACHER_NOT_FOUND,
+    ERROR_USER_NOT_ID,
+    ERROR_USER_REQUIRED_FIELD_CPF, 
+    LEVEL,
+    ERROR_USER_NOT_FOUND_USER
 )
 from database.models import(
     ClassModel,
     UserModel
 )
-from app.utils.messages.messages import NotFoundErrorMessage
+from utils.messages.error import (
+    BadRequest, 
+    NotFound
+)
+
+
+def get_user_by_cpf(db_session: Session, cpf:str) -> UserModel:
+
+    if not cpf:
+        raise BadRequest(ERROR_USER_REQUIRED_FIELD_CPF)
+
+    model = db_session.scalar(
+        select(UserModel).where(
+            UserModel.cpf == cpf
+            )
+    )
+
+    if not model:
+        raise NotFound(ERROR_USER_NOT_FOUND_USER)
+    
+    return model
 
 
 def get_teacher_by_cpf(db_session: Session, teacher_cpf:str) -> UserModel:
@@ -26,7 +49,7 @@ def get_teacher_by_cpf(db_session: Session, teacher_cpf:str) -> UserModel:
     )
 
     if not model:
-        raise NotFoundErrorMessage(ERROR_USER_GET_TEACHER_NOT_FOUND)
+        raise NotFound(ERROR_USER_GET_TEACHER_NOT_FOUND)
     
     return model
 
@@ -40,7 +63,7 @@ def get_class_by_id(db_session: Session, class_id:str) -> ClassModel:
     )
 
     if not model:
-        raise NotFoundErrorMessage(ERROR_CLASSES_GET_NOT_FOUND)
+        raise NotFound(ERROR_CLASSES_GET_NOT_FOUND)
     
     return model
 
@@ -54,6 +77,6 @@ def get_class_by_name(db_session: Session, class_name:str) -> ClassModel:
     )
 
     if not model:
-        raise NotFoundErrorMessage(ERROR_CLASSES_GET_NOT_FOUND)
+        raise NotFound(ERROR_CLASSES_GET_NOT_FOUND)
     
     return model

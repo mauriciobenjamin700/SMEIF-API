@@ -89,7 +89,7 @@ def format_date(date: datetime) -> str:
 
 def unformat_date(date: str) -> datetime:
     """
-    Desformata uma data
+    Desformata uma data no formato dd/mm/yyyy para um objeto datetime
 
     - Args:
         - date:: str: Data que será desformatada
@@ -98,3 +98,16 @@ def unformat_date(date: str) -> datetime:
         - datetime: Data desformatada
     """
     return datetime.strptime(date, "%d/%m/%Y")
+
+
+def format_string_date(date: str) -> str:
+    """
+    Formata uma string de data no formato YYYY-MM-DD para dd/mm/yyyy
+
+    - Args:
+        - date:: str: Data que será formatada
+
+    - Return:
+        - str: Data formatada
+    """
+    return format_date(datetime.strptime(date, "%Y-%m-%d"))

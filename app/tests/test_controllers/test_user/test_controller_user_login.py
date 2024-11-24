@@ -9,6 +9,10 @@ from constants.user import (
 from controllers.user import UserController
 from schemas.user import UserLoginRequest, UserResponse
 from services.security.tokens import decode_token
+from utils.format import (
+    format_date,
+    format_phone
+)
 
 
 def test_login_user_success(db_session, mock_user_on_db, mock_UserLoginRequest):
@@ -25,10 +29,15 @@ def test_login_user_success(db_session, mock_user_on_db, mock_UserLoginRequest):
 
     assert user.cpf == mock_user_on_db.cpf
     assert user.name == mock_user_on_db.name
-    assert user.phone == mock_user_on_db.phone
-    assert user.phone_optional == mock_user_on_db.phone_optional
+    assert user.birth_date == format_date(mock_user_on_db.birth_date)
+    assert user.phone == format_phone(mock_user_on_db.phone)
     assert user.email == mock_user_on_db.email
     assert user.level == mock_user_on_db.level
+    assert user.state == mock_user_on_db.state
+    assert user.city == mock_user_on_db.city
+    assert user.neighborhood == mock_user_on_db.neighborhood
+    assert user.street == mock_user_on_db.street
+    assert user.house_number == mock_user_on_db.house_number
 
 
 def test_login_user_fail_not_found(db_session, mock_UserLoginRequest):

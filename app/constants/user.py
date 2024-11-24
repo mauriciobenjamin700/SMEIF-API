@@ -41,7 +41,7 @@ ERROR_USER_NOT_FOUND_USER = "Usuário não encontrado"
 ERROR_USER_NOT_FOUND_USERS = "Nenhum usuário encontrado"
 
 
-ERROR_USER_PASSWORD_WRONG = "Senha inválida"
+ERROR_USER_PASSWORD_WRONG = "CPF/Senha incorretos"
 
 
 ERROR_USER_CPF_ALREADY_EXISTS = "CPF já cadastrado"

@@ -8,6 +8,7 @@ from database.models import UserModel
 from main import app
 from schemas.address import AddressRequest
 from schemas.user import (
+    UserDB,
     UserLoginRequest, 
     UserRequest, 
     UserUpdateRequest
@@ -105,7 +106,9 @@ def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
 
     request.password = protect(request.password)
 
-    user = UserModel(**request.dict())
+    to_db = UserDB(**request.dict(), **request.address.dict())
+
+    user = UserModel(**to_db.dict())
 
     db_session.add(user)
     db_session.commit()
