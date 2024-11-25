@@ -104,6 +104,26 @@ def validate_date(date:str) -> bool:
     return result
 
 
+def validate_time_format(time: str) -> bool:
+    """
+    Valida um horário no formato HH:MM
+    
+    - Args:
+        - time: str: Horário que será validado
+        
+    - Return:
+        - bool: True se o formato estiver correto e False caso contrario
+    
+    """
+    result = True
+
+    time_format = r'\d{2}:\d{2}'
+
+    if not match(time_format, time):
+        result =  False
+    
+    return result
+
 def is_in_future(date: str) -> bool:
     """
     Verifica se a data está no futuro.

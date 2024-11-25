@@ -29,11 +29,9 @@ class DaysOfWeek(str, Enum):
     SUNDAY = "Domingo"
 
 
-class EducationLevel(Enum):
+class EducationLevel(str, Enum):
     PRESCHOOL = "Infantil"
     ELEMENTARY = "Fundamental"
-    MIDDLE_SCHOOL = "Médio"
-    HIGH_SCHOOL = "Ensino Médio"
 
 
 class Shift(str, Enum):

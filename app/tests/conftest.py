@@ -7,6 +7,14 @@ from database.connection import Session
 from database.models import UserModel
 from main import app
 from schemas.address import Address
+from schemas.base import (
+    DaysOfWeek,
+    EducationLevel,
+    Shift
+)
+from schemas.classes import (
+    Recurrences
+)
 from schemas.user import (
     UserDB,
     UserLoginRequest, 
@@ -17,7 +25,7 @@ from services.security.password import protect
 
 
 @fixture
-def api():
+def api() -> TestClient:
     return TestClient(app)
 
 @fixture
@@ -82,8 +90,43 @@ def mock_user_data(mock_address_data) -> dict:
 
 
 @fixture
+def mock_class_data():# -> dict:
+    data = {}
+    data["education_level"] = EducationLevel.ELEMENTARY.value
+    data["name"] = "5° Ano"
+    data["id"] = "A"
+    data["shift"] = Shift.MORNING.value
+    data["max_students"] = 20
+
+    return data
+
+
+@fixture
+def mock_recurrences_data():
+    data = {}
+    data["day_of_week"] = DaysOfWeek.MONDAY.value
+    data["start_time"] = "08:00"
+    data["end_time"] = "09:00"
+
+    return data
+
+
+@fixture
+def mock_class_event_request_data(mock_recurrences_data) -> dict:
+    data = {}
+    data["class_id"] = "1"
+    data["disciplines_id"] = "2"
+    data["teacher_id"] = "3"
+    data["start_date"] = "2021-01-01"
+    data["end_date"] = "2021-06-01"
+    data["recurrences"] = [mock_recurrences_data]
+
+    return data
+
+@fixture
 def mock_Address(mock_address_data) -> Address:
     return Address(**mock_address_data)
+
 
 @fixture
 def mock_UserRequest(mock_Address) -> UserRequest:
