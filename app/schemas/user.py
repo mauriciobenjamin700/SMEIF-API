@@ -29,7 +29,7 @@ from constants.user import (
     GENDER,
     LEVEL 
 )
-from schemas.address import AddressRequest
+from schemas.address import Address
 from schemas.base import BaseSchema
 from utils.validate import(
     is_adult,
@@ -57,18 +57,54 @@ class UserRequest(BaseSchema):
     - email: str
     - password: str
     - level: int
-    - address: AddressRequest
+    - address: Address
     """
-    cpf: str = Field(title="cpf", description="CPF do usuário", examples=["123.456.789-00"])
-    name: str = Field(title="name", description="Nome do usuário", examples=["John Doe"])
-    birth_date: str = Field(title="birth_date", description="Data de nascimento do usuário", examples=["2000-12-25"])
-    gender: str = Field(title="gender", description="Gênero do usuário", examples=["M", "F","Z"])
-    phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"])
-    phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 9000-0000"], default="")
-    email: str = Field(title="email", description="E-mail do usuário", examples=["test@example.com"])
-    password: str = Field(title="password", description="Senha do usuário", examples=["123456"])
-    level: int = Field(title="level", description="Nível de acesso do usuário", examples=[f"{key}: {value}" for key, value in LEVEL.items()])
-    address: AddressRequest = Field(title="address", description="Endereço do usuário")
+    cpf: str = Field(
+        title="cpf", 
+        description="CPF do usuário", 
+        examples=["123.456.789-00"]
+    )
+    name: str = Field(
+        title="name", 
+        description="Nome do usuário", 
+        examples=["John Doe"]
+    )
+    birth_date: str = Field(
+        title="birth_date", 
+        description="Data de nascimento do usuário", 
+        examples=["2000-12-25"]
+    )
+    gender: str = Field(
+        title="gender", 
+        description="Gênero do usuário", 
+        examples=["M", "F","Z"]
+    )
+    phone: str = Field(
+        title="phone", 
+        description="Telefone do usuário", 
+        examples=["(00) 90000-0000"]
+    )
+    phone_optional: str = Field(
+        title="phone_optional", 
+        description="Telefone opcional do usuário", 
+        examples=["(00) 90000-0001"], default=""
+    )
+    email: str = Field(
+        title="email", 
+        description="E-mail do usuário", 
+        examples=["test@example.com"]
+    )
+    password: str = Field(
+        title="password", 
+        description="Senha do usuário", 
+        examples=["123456"]
+    )
+    level: int = Field(
+        title="level", 
+        description="Nível de acesso do usuário", 
+        examples=[f"{key}: {value}" for key, value in LEVEL.items()]
+    )
+    address: Address = Field(title="address", description="Endereço do usuário")
 
 
     @field_validator("cpf", mode="before")
@@ -203,7 +239,7 @@ class UserRequest(BaseSchema):
         return value
     
     @field_validator("address", mode="before")
-    def field_validate_address(cls, value) -> AddressRequest:
+    def field_validate_address(cls, value) -> Address:
             
             if not value:
     
@@ -279,20 +315,76 @@ class UserResponse(BaseSchema):
     - complement: str = ""
     """
 
-    cpf: str = Field(title="cpf", description="CPF do usuário", examples=["123.456.789-00"])
-    name: str = Field(title="name", description="Nome do usuário", examples=["John Doe"])
-    birth_date: str = Field(title="birth_date", description="Data de nascimento do usuário", examples=["01/01/2000"])
-    gender: str = Field(title="gender", description="Gênero do usuário", examples=["Masculino", "Feminino","Outros"])
-    phone: str = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"])
-    phone_optional: str = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 00000-0000"], default="")
-    email: str = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"])
-    level: int = Field(title="level", description="Nível de acesso do usuário", examples=["1"])
-    state: str = Field(title="state", description="Estado do usuário", examples=["SP"])
-    city: str = Field(title="city", description="Cidade do usuário", examples=["São Paulo"])
-    neighborhood: str = Field(title="neighborhood", description="Bairro do usuário", examples=["Vila Maria"])
-    street: str = Field(title="street", description="Rua do usuário", examples=["Rua dos Bandeirantes"])
-    house_number: str = Field(title="house_number", description="Número da casa do usuário", examples=["100"])
-    complement: str = Field(title="complement", description="Complemento do endereço do usuário", examples=["Apartamento 201"])
+    cpf: str = Field(
+        title="cpf", 
+        description="CPF do usuário", 
+        examples=["123.456.789-00"]
+    )
+    name: str = Field(
+        title="name", 
+        description="Nome do usuário", 
+        examples=["John Doe"]
+    )
+    birth_date: str = Field(
+        title="birth_date", 
+        description="Data de nascimento do usuário", 
+        examples=["01/01/2000"]
+    )
+    gender: str = Field(
+        title="gender", 
+        description="Gênero do usuário", 
+        examples=["Masculino", "Feminino","Outros"]
+    )
+    phone: str = Field(
+        title="phone", 
+        description="Telefone do usuário", 
+        examples=["(00) 90000-0000"]
+    )
+    phone_optional: str = Field(
+        title="phone_optional", 
+        description="Telefone opcional do usuário", 
+        examples=["(00) 00000-0000"], default=""
+    )
+    email: str = Field(
+        title="email", 
+        description="E-mail do usuário", 
+        examples=["jhon.doe@gmail.com"]
+    )
+    level: int = Field(
+        title="level", 
+        description="Nível de acesso do usuário", 
+        examples=["1"]
+    )
+    state: str = Field(
+        title="state", 
+        description="Estado do usuário", 
+        examples=["SP"]
+    )
+    city: str = Field(
+        title="city", 
+        description="Cidade do usuário", 
+        examples=["São Paulo"]
+    )
+    neighborhood: str = Field(
+        title="neighborhood", 
+        description="Bairro do usuário", 
+        examples=["Vila Maria"]
+    )
+    street: str = Field(
+        title="street", 
+        description="Rua do usuário", 
+        examples=["Rua dos Bandeirantes"]
+    )
+    house_number: str = Field(
+        title="house_number", 
+        description="Número da casa do usuário", 
+        examples=["100"]
+    )
+    complement: str = Field(
+        title="complement", 
+        description="Complemento do endereço do usuário", 
+        examples=["Apartamento 201"]
+    )
 
 
     @field_validator("phone_optional", mode="before")
@@ -323,15 +415,49 @@ class UserUpdateRequest(BaseSchema):
     - email: str | None
     - password: str | None
     - level: int | None
-    - address: AddressRequest | None
+    - address: Address | None
     """
-    name: str | None = Field(title="name", description="Nome do usuário", examples=["John Doe"], default=None)
-    phone: str | None = Field(title="phone", description="Telefone do usuário", examples=["(00) 90000-0000"], default=None)
-    phone_optional: str | None = Field(title="phone_optional", description="Telefone opcional do usuário", examples=["(00) 9000-0000"], default=None)
-    email: str |  None = Field(title="email", description="E-mail do usuário", examples=["jhon.doe@gmail.com"], default=None)
-    password: str | None = Field(title="password", description="Senha do usuário", examples=["123456"], default=None)
-    level: int | None = Field(title="level", description="Nível de acesso do usuário", examples=[1,2], default=None)
-    address: AddressRequest | None = Field(title="address", description="Endereço do usuário", default=None)
+    name: str | None = Field(
+        title="name", 
+        description="Nome do usuário", 
+        examples=["John Doe"], 
+        default=None
+    )
+    phone: str | None = Field(
+        title="phone", 
+        description="Telefone do usuário", 
+        examples=["(00) 90000-0000"], 
+        default=None
+    )
+    phone_optional: str | None = Field(
+        title="phone_optional", 
+        description="Telefone opcional do usuário", 
+        examples=["(00) 9000-0000"], 
+        default=None
+    )
+    email: str |  None = Field(
+        title="email", 
+        description="E-mail do usuário", 
+        examples=["jhon.doe@gmail.com"], 
+        default=None
+    )
+    password: str | None = Field(
+        title="password", 
+        description="Senha do usuário", 
+        examples=["123456"], 
+        default=None
+    )
+    level: int | None = Field(
+        title="level", 
+        description="Nível de acesso do usuário", 
+        examples=[1,2], 
+        default=None
+    )
+    address: Address | None = Field(
+        title="address", 
+        description="Endereço do usuário", 
+        default=None
+    )
 
     @field_validator("name", mode="before")
     def field_validate_name(cls, value) -> str:
@@ -446,4 +572,8 @@ class AccessToken(BaseSchema):
     """
     - token: str
     """
-    token: str = Field(title="token", description="Token de acesso", examples=["eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMzQ1.eyJzdWIiOiIyMzQ1"])
+    token: str = Field(
+        title="token", 
+        description="Token de acesso", 
+        examples=["eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyMzQ1.eyJzdWIiOiIyMzQ1"]
+    )

@@ -6,7 +6,7 @@ from constants.user import LEVEL
 from database.connection import Session
 from database.models import UserModel
 from main import app
-from schemas.address import AddressRequest
+from schemas.address import Address
 from schemas.user import (
     UserDB,
     UserLoginRequest, 
@@ -76,17 +76,17 @@ def mock_user_data(mock_address_data) -> dict:
     data["email"] = "test@example.com"
     data["password"] = "123456"
     data["level"] = 1
-    data["address"] = AddressRequest(**mock_address_data)
+    data["address"] = Address(**mock_address_data)
 
     return data
 
 
 @fixture
-def mock_AddressRequest(mock_address_data) -> AddressRequest:
-    return AddressRequest(**mock_address_data)
+def mock_Address(mock_address_data) -> Address:
+    return Address(**mock_address_data)
 
 @fixture
-def mock_UserRequest(mock_AddressRequest) -> UserRequest:
+def mock_UserRequest(mock_Address) -> UserRequest:
     return UserRequest(
         cpf="123.456.789-00",
         name="John Doe",
@@ -96,7 +96,7 @@ def mock_UserRequest(mock_AddressRequest) -> UserRequest:
         email="john.doe@gmail.com",
         password="123456",
         level=LEVEL["parent"],
-        address=AddressRequest(**mock_AddressRequest.dict())
+        address=Address(**mock_Address.dict())
     )
 
 @fixture
@@ -126,7 +126,7 @@ def mock_UserUpdateRequest() -> UserUpdateRequest:
         email="jane.doe@gmail.com",
         password="654321",
         level=LEVEL["parent"],
-        address=AddressRequest(
+        address=Address(
             state="PI",
             city="Picos",
             neighborhood="Junco",

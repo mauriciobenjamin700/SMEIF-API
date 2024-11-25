@@ -5,10 +5,10 @@ from pytest import raises
 from constants.address import (
     ERROR_ADDRESS_REQUIRED_FIELD_STATE
 )
-from schemas.address import AddressRequest
+from schemas.address import Address
 
 
-def test_AddressRequest_Success():
+def test_Address_Success():
     state = "PI"
     city = "Teresina"
     neighborhood = "Centro"
@@ -16,7 +16,7 @@ def test_AddressRequest_Success():
     house_number = "123"
     complement = "A"
 
-    address = AddressRequest(
+    address = Address(
         state=state,
         city=city,
         neighborhood=neighborhood,
@@ -32,7 +32,7 @@ def test_AddressRequest_Success():
     assert address.house_number == house_number
     assert address.complement == complement
 
-def test_AddressRequest_Success_no_complement():
+def test_Address_Success_no_complement():
     state = "PI"
     city = "Teresina"
     neighborhood = "Centro"
@@ -40,7 +40,7 @@ def test_AddressRequest_Success_no_complement():
     house_number = "123"
     complement = ""
 
-    address = AddressRequest(
+    address = Address(
         state=state,
         city=city,
         neighborhood=neighborhood,
@@ -57,7 +57,7 @@ def test_AddressRequest_Success_no_complement():
     assert address.complement == complement
 
 
-def test_AddressRequest_Failed_state():
+def test_Address_Failed_state():
     state = ""
     city = "Teresina"
     neighborhood = "Centro"
@@ -66,7 +66,7 @@ def test_AddressRequest_Failed_state():
     complement = "A"
 
     with raises(HTTPException) as e:
-        AddressRequest(
+        Address(
             state=state,
             city=city,
             neighborhood=neighborhood,

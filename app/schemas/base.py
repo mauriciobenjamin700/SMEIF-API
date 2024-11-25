@@ -1,3 +1,4 @@
+from enum import Enum
 from pydantic import BaseModel
 
 
@@ -16,3 +17,26 @@ class BaseSchema(BaseModel):
 
 class BaseMessage(BaseSchema):
     detail: str
+
+
+class DaysOfWeek(str, Enum):
+    MONDAY = "Segunda"
+    TUESDAY = "Terça"
+    WEDNESDAY = "Quarta"
+    THURSDAY = "Quinta"
+    FRIDAY = "Sexta"
+    SATURDAY = "Sábado"
+    SUNDAY = "Domingo"
+
+
+class EducationLevel(Enum):
+    PRESCHOOL = "Infantil"
+    ELEMENTARY = "Fundamental"
+    MIDDLE_SCHOOL = "Médio"
+    HIGH_SCHOOL = "Ensino Médio"
+
+
+class Shift(str, Enum):
+    MORNING = "Matutino"
+    AFTERNOON = "Vespertino"
+    NIGHT = "Noturno"
