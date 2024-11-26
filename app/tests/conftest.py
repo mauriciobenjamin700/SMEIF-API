@@ -13,6 +13,7 @@ from schemas.base import (
     Shift
 )
 from schemas.classes import (
+    ClassEventResponse,
     Recurrences
 )
 from schemas.user import (
@@ -122,6 +123,34 @@ def mock_class_event_request_data(mock_recurrences_data) -> dict:
     data["recurrences"] = [mock_recurrences_data]
 
     return data
+
+
+
+@fixture
+def mock_class_event_response_data(mock_class_event_request_data) -> dict:
+    data = mock_class_event_request_data.copy()
+
+    data["teacher_name"] = "John Doe"
+    data["discipline_name"] = "Matemática"
+
+    return data
+
+
+@fixture
+def mock_class_response_data(
+    mock_class_data,
+    mock_class_event_response_data
+):
+    data = mock_class_data.copy()
+
+    data["class_info"] = "5° Ano - A"
+    data["class_events"] = [mock_class_event_response_data.copy()]
+
+    return data
+
+@fixture
+def mock_ClassEventResponse(mock_class_event_response_data) -> ClassEventResponse:
+    return ClassEventResponse(**mock_class_event_response_data)
 
 @fixture
 def mock_Address(mock_address_data) -> Address:

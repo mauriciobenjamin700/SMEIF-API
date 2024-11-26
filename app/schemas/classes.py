@@ -5,6 +5,7 @@ from pydantic import (
 
 
 from constants.classes import (
+    ERROR_CLASSES_INVALID_FIELD_CLASS_EVENTS,
     ERROR_CLASSES_INVALID_FIELD_DAY_OF_WEEK,
     ERROR_CLASSES_INVALID_FIELD_EDUCATION_LEVEL,
     ERROR_CLASSES_INVALID_FIELD_END_DATE,
@@ -21,11 +22,12 @@ from constants.classes import (
     ERROR_CLASSES_REQUIRED_FIELD_MAX_STUDENTS,
     ERROR_CLASSES_REQUIRED_FIELD_NAME,
     ERROR_CLASSES_REQUIRED_FIELD_RECURRENCES,
-    ERROR_CLASSES_REQUIRED_FIELD_ROOM,
     ERROR_CLASSES_REQUIRED_FIELD_SHIFT,
     ERROR_CLASSES_REQUIRED_FIELD_START_DATE,
-    ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF
+    ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF,
+    ERROR_CLASSES_REQUIRED_FIELD_TEACHER_NAME
 )
+from constants.disciplines import ERROR_DISCIPLINES_REQUIRED_FIELD_NAME
 from schemas.base import (
     BaseSchema, 
     DaysOfWeek,
@@ -152,7 +154,7 @@ class Recurrences(BaseSchema):
     - start_time: str
     - end_time: str
     """
-    day_of_week: DaysOfWeek = Field(
+    day_of_week: str = Field(
         title="Dia da Semana",
         description="Dia da semana que a aula ocorrerá",
         examples=[
@@ -178,7 +180,7 @@ class Recurrences(BaseSchema):
 
 
     @field_validator("day_of_week", mode="before")
-    def validate_day_of_week(cls, value) -> DaysOfWeek:
+    def validate_day_of_week(cls, value) -> str:
 
         value = clean_string_field(value)
 
@@ -188,7 +190,7 @@ class Recurrences(BaseSchema):
         if value not in DaysOfWeek.__dict__.values():
             raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_DAY_OF_WEEK)
         
-        return DaysOfWeek(value)
+        return value
 
 
     @field_validator("start_time", mode="before")
@@ -232,7 +234,7 @@ class ClassEventRequest(BaseSchema):
 
     class_id: str = Field(
         title="ID da Disciplina",
-        description="Código da disciplina que terá uma aula agendada",
+        description="Código da turma que terá uma aula agendada",
         examples=['1', '2', '3']
     )
     disciplines_id: str = Field(
@@ -322,39 +324,75 @@ class ClassEventRequest(BaseSchema):
     @field_validator("recurrences", mode="before")
     def validate_recurrences(cls, value) -> list[Recurrences]:
                 
-            if not value:
-                raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_RECURRENCES)
-    
-            if not isinstance(value, list):
-                raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_RECURRENCES)
-            
-            recurrences = []
+        if not value:
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_RECURRENCES)
 
-            for recurrence in value:
-                recurrences.append(Recurrences(**recurrence))
-            
-            return recurrences
+        if not isinstance(value, list):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_RECURRENCES)
+
+        
+        return value
+
+
+class ClassEventResponse(ClassEventRequest):
+    """
+    - class_id: str
+    - disciplines_id: str
+    - teacher_id: str
+    - start_date: str
+    - end_date: str
+    - recurrences: list[Recurrences]
+    - teacher_name: str
+    - discipline_name: str
+    """
+    teacher_name: str = Field(
+        title="Nome do Professor",
+        description="Nome do professor que ministrará a aula",
+        examples=["Prof. Jane Doe", "Prof. John Smith", "Prof. Mary Johnson"]
+    )
+    discipline_name: str = Field(
+        title="Nome da Disciplina",
+        description="Nome da disciplina que terá uma aula",
+        examples=["Matemática", "Português", "Geografia"]
+    )
+
+
+    @field_validator("teacher_name", mode="before")
+    def validate_teacher_name(cls, value) -> str:
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_NAME)
+
+        return value
+
+
+    @field_validator("discipline_name", mode="before")
+    def validate_discipline_name(cls, value) -> str:
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_DISCIPLINES_REQUIRED_FIELD_NAME)
+
+        return value
 
 
 class ClassResponse(ClassRequest):
     """
-    
+    - education_level: str
+    - name: str
+    - id: str
+    - shift: str
+    - max_students: int
+    - class_info: str
+    - class_events: list[ClassEventResponse]
     """
     class_info: str = Field(
         title="Informações da Turma",
         description="Informações da turma",
         examples=["5° Ano A", "6° Ano B", "8° Ano C"]
     )
-    shift: Shift = Field(
-        title="Turno",
-        description="Turno da disciplina",
-        examples=["Matutino", "Vespertino", "Noturno"]
-    )
-    education_level: EducationLevel = Field(
-        title="Tipo",
-        description="Tipo de ensino",
-        examples=["Infantil", "Fundamental"]
-    )
+    class_events: list[ClassEventResponse]
 
 
     @field_validator("class_info", mode="before")
@@ -368,25 +406,10 @@ class ClassResponse(ClassRequest):
         return value
     
 
-    @field_validator("shift", mode="before")
-    def validate_shift(cls, value) -> Shift:
+    @field_validator("class_events", mode="before")
+    def validate_class_events(cls, value) -> list[ClassEventResponse]:  
 
-        if not value:
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_SHIFT)
-
-        if value not in Shift.__dict__.values():
-            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_SHIFT)
-
-        return Shift(value)
-    
-
-    @field_validator("education_level", mode="before")
-    def validate_education_level(cls, value) -> EducationLevel:
-
-        if not value:
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_EDUCATION_LEVEL)
-
-        if value not in EducationLevel.__dict__.values():
-            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_EDUCATION_LEVEL)
-
-        return EducationLevel(value)
+        if not isinstance(value, list):
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_CLASS_EVENTS)
+        
+        return value

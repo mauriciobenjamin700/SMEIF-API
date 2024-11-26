@@ -1,0 +1,1 @@
+ERROR_DISCIPLINES_REQUIRED_FIELD_NAME = "Nome da disciplina é obrigatório"
