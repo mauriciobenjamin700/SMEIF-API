@@ -47,7 +47,7 @@ class ClassRequest(BaseSchema):
     """
     - education_level: str
     - name: str
-    - id: str
+    - section: str
     - shift: str
     - max_students: int
     """
@@ -61,7 +61,7 @@ class ClassRequest(BaseSchema):
         description="Nome da turma a ser cadastrada",
         examples=["5° Ano", "6° Ano", "Pre-I"]
     )
-    id: str = Field(
+    section: str = Field(
         title="Identificação da turma",
         description="Sigla de identificação da turma",
         examples=["A", "B", "C"],
@@ -105,7 +105,7 @@ class ClassRequest(BaseSchema):
         return value
     
 
-    @field_validator("id", mode="before")
+    @field_validator("section", mode="before")
     def validate_id(cls, value) -> str:
             
         value = clean_string_field(value)
@@ -336,6 +336,7 @@ class ClassEventRequest(BaseSchema):
 
 class ClassEventResponse(ClassEventRequest):
     """
+    - id: str
     - class_id: str
     - disciplines_id: str
     - teacher_id: str
@@ -345,6 +346,11 @@ class ClassEventResponse(ClassEventRequest):
     - teacher_name: str
     - discipline_name: str
     """
+    id: str = Field(
+        title="ID da Aula",
+        description="Código da aula",
+        examples=['1', '2', '3']
+    )
     teacher_name: str = Field(
         title="Nome do Professor",
         description="Nome do professor que ministrará a aula",
@@ -379,14 +385,20 @@ class ClassEventResponse(ClassEventRequest):
 
 class ClassResponse(ClassRequest):
     """
+    - id: str
     - education_level: str
     - name: str
-    - id: str
+    - section: str
     - shift: str
     - max_students: int
     - class_info: str
     - class_events: list[ClassEventResponse]
     """
+    id: str = Field(
+        title="ID da Turma",
+        description="Código da turma",
+        examples=['1', '2', '3']
+    )
     class_info: str = Field(
         title="Informações da Turma",
         description="Informações da turma",
@@ -410,6 +422,7 @@ class ClassResponse(ClassRequest):
     def validate_class_events(cls, value) -> list[ClassEventResponse]:  
 
         if not isinstance(value, list):
+            
             raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_CLASS_EVENTS)
         
         return value

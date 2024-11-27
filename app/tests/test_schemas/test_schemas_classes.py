@@ -43,7 +43,7 @@ def test_schemas_classes_ClassRequest_success(mock_class_data):
 
     assert request.education_level == data['education_level']
     assert request.name == data['name']
-    assert request.id == data['id']
+    assert request.section == data['section']
     assert request.shift == data['shift']
     assert request.max_students == data['max_students']
 
@@ -90,7 +90,7 @@ def test_schemas_classes_ClassRequest_fail_no_name(mock_class_data):
 def test_schemas_classes_ClassRequest_fail_no_id(mock_class_data):
 
     data = mock_class_data.copy()
-    data['id'] = " "
+    data['section'] = " "
 
     with raises(HTTPException) as exception:
         ClassRequest(**data)
@@ -102,7 +102,7 @@ def test_schemas_classes_ClassRequest_fail_no_id(mock_class_data):
 def test_schemas_classes_ClassRequest_fail_invalid_id(mock_class_data):
 
     data = mock_class_data.copy()
-    data['id'] = "hello world!"
+    data['section'] = "hello world!"
 
     with raises(HTTPException) as exception:
         ClassRequest(**data)
@@ -355,6 +355,7 @@ def test_schemas_classes_ClassEventResponse_success(mock_class_event_response_da
 
     response = ClassEventResponse(**data)
 
+    assert response.id == data["id"]
     assert response.class_id == data['class_id']
     assert response.disciplines_id == data['disciplines_id']
     assert response.teacher_id == data['teacher_id']
@@ -396,14 +397,16 @@ def test_schemas_classes_ClassEventResponse_fail_no_discipline_name(mock_class_e
 
 
 def test_schemas_classes_ClassResponse_success(mock_class_response_data):
-     
-    data = mock_class_response_data.copy()
 
+    data = mock_class_response_data.copy()
+    data["id"] = "capeta"
+    print(data)
     response = ClassResponse(**data)
 
+    assert response.id == data["id"]
     assert response.education_level == data['education_level']
     assert response.name == data['name']
-    assert response.id == data['id']
+    assert response.section == data['section']
     assert response.shift == data['shift']
     assert response.max_students == data['max_students']
     assert response.class_info == data['class_info']
@@ -441,6 +444,7 @@ def test_schemas_classes_ClassResponse_success_no_class_events_no_class_events(m
      
     data = mock_class_response_data.copy()
     data['class_events'] = []
+    data["id"] = "capeta"
 
     response = ClassResponse(**data)
 

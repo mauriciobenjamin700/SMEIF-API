@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 from constants.user import LEVEL
 from database.connection import Session
-from database.models import UserModel
+from database.models import ClassModel, UserModel
 from main import app
 from schemas.address import Address
 from schemas.base import (
@@ -14,6 +14,7 @@ from schemas.base import (
 )
 from schemas.classes import (
     ClassEventResponse,
+    ClassRequest,
     Recurrences
 )
 from schemas.user import (
@@ -22,7 +23,9 @@ from schemas.user import (
     UserRequest, 
     UserUpdateRequest
 )
+from services.generator.ids import id_generate
 from services.security.password import protect
+
 
 
 @fixture
@@ -35,6 +38,7 @@ def db_session():
         session = Session()
 
         session.query(UserModel).delete()
+        session.query(ClassModel).delete()
 
         session.commit()
 
@@ -43,6 +47,7 @@ def db_session():
     finally:
 
         session.query(UserModel).delete()
+        session.query(ClassModel).delete()
 
         session.commit()
 
@@ -95,10 +100,17 @@ def mock_class_data():# -> dict:
     data = {}
     data["education_level"] = EducationLevel.ELEMENTARY.value
     data["name"] = "5° Ano"
-    data["id"] = "A"
+    data["section"] = "A"
     data["shift"] = Shift.MORNING.value
     data["max_students"] = 20
 
+    return data
+
+
+@fixture
+def mock_class_response_data(mock_class_data):# -> Any:# -> dict:
+    data = mock_class_data.copy()
+    data["id"] = "121"
     return data
 
 
@@ -129,7 +141,7 @@ def mock_class_event_request_data(mock_recurrences_data) -> dict:
 @fixture
 def mock_class_event_response_data(mock_class_event_request_data) -> dict:
     data = mock_class_event_request_data.copy()
-
+    data["id"] = "12345"
     data["teacher_name"] = "John Doe"
     data["discipline_name"] = "Matemática"
 
@@ -148,9 +160,6 @@ def mock_class_response_data(
 
     return data
 
-@fixture
-def mock_ClassEventResponse(mock_class_event_response_data) -> ClassEventResponse:
-    return ClassEventResponse(**mock_class_event_response_data)
 
 @fixture
 def mock_Address(mock_address_data) -> Address:
@@ -229,3 +238,41 @@ def mock_UserLoginRequest(mock_UserRequest) -> UserLoginRequest:
     )
 
     return login
+
+
+@fixture
+def mock_ClassRequest(mock_class_data) -> ClassRequest:
+    return ClassRequest(**mock_class_data)
+
+
+@fixture
+def mock_class_on_db(db_session, mock_ClassRequest) -> ClassModel:
+    request = ClassRequest(**mock_ClassRequest.dict())
+
+    to_db = ClassModel(
+        id = id_generate(),
+        **request.dict()
+    )
+
+    db_session.add(to_db)
+    db_session.commit()
+
+    return to_db
+
+
+@fixture
+def mock_ClassRequest_update() -> ClassRequest:
+    
+    return ClassRequest(
+        education_level=EducationLevel.PRESCHOOL.value,
+        name="1° Ano",
+        section="A",
+        shift=Shift.AFTERNOON.value,
+        max_students=15
+    )
+
+@fixture
+def mock_ClassEventResponse(mock_class_event_response_data) -> ClassEventResponse:
+    return ClassEventResponse(**mock_class_event_response_data)
+
+

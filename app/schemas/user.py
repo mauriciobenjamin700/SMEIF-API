@@ -52,6 +52,8 @@ class UserRequest(BaseSchema):
     """
     - cpf: str
     - name: str
+    - birth_date: str
+    - gender: str
     - phone: str
     - phone_optional: str = ""
     - email: str
@@ -104,7 +106,10 @@ class UserRequest(BaseSchema):
         description="Nível de acesso do usuário", 
         examples=[f"{key}: {value}" for key, value in LEVEL.items()]
     )
-    address: Address = Field(title="address", description="Endereço do usuário")
+    address: Address = Field(
+        title="address", 
+        description="Endereço do usuário"
+    )
 
 
     @field_validator("cpf", mode="before")

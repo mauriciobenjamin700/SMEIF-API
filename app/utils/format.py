@@ -82,7 +82,7 @@ def format_date(date: datetime) -> str:
         - date:: datetime: Data que será formatada
 
     - Return:
-        - str: Data formatada
+        - str: Data formatada no formato dd/mm/yyyy
     """
     return date.strftime("%d/%m/%Y")
 

@@ -1,10 +1,12 @@
 from sqlalchemy import (
+    and_,
     or_,
     select
 )
 from sqlalchemy.orm import Session
 
 
+from database.base import BaseModel
 from constants.user import (
     ERROR_USER_CPF_ALREADY_EXISTS,
     ERROR_USER_EMAIL_ALREADY_EXISTS,
@@ -27,8 +29,6 @@ def check_user_existence(db_session: Session, cpf: str | None, phone: str | None
         filters.append(UserModel.phone == phone)
     if email:
         filters.append(UserModel.email == email)
-
-    print(filters)
     
     if filters:
         user = db_session.query(UserModel).filter(or_(*filters)).first()
@@ -46,7 +46,7 @@ def teacher_existe(db_session: Session, teacher_cpf: str) -> bool:
 
     register = db_session.scalar(
         select(UserModel).where(
-            UserModel.cpf == teacher_cpf &
+            UserModel.cpf == teacher_cpf and
             UserModel.level == LEVEL["teacher"]
         )
     )
@@ -54,12 +54,68 @@ def teacher_existe(db_session: Session, teacher_cpf: str) -> bool:
     return True if register else False
 
 
-def class_existe(db_session: Session, class_name: str) -> bool:
+def class_existe(db_session: Session, class_name: str, class_section: str) -> bool:
+    """
+    Busca uma turma pelo nome e seção.
+
+    - Args:
+        - db_session: Sessão do banco de dados.
+        - class_name: Nome da turma.
+        - class_section: Seção da turma.
+
+    - Returns:
+        - bool: True se a turma existe, False caso contrário.
+    """
+
+    filters = (
+        ClassModel.name == class_name,
+        ClassModel.section == class_section,
+    )
 
     register = db_session.scalar(
         select(ClassModel).where(
-            ClassModel.name == class_name
-        )
+            and_(*filters))
     )
 
     return True if register else False
+
+
+def register_exists(db_session: Session, table: BaseModel, filters: tuple):
+    """
+    Verifica se um registro existe em uma tabela.
+
+    - Args:
+        - db_session: Sessão do banco de dados.
+        - table: Modelo da tabela.
+        - filters: Filtros para a busca.
+
+    - Returns:
+        - bool: True se o registro existe, False caso contrário.
+    """
+
+    register = db_session.scalar(
+        select(table).where(
+            and_(*filters))
+    )
+
+    return True if register else False
+
+
+def generate_filters(table: BaseModel, attributes: list[str]) -> list:
+    """
+    Gera uma lista de filtros para a busca de um registro.
+
+    - Args:
+        - table: Modelo da tabela.
+        - attributes: Atributos do registro.
+
+    - Returns:
+        - list: Lista de filtros.
+    """
+
+    filters = []
+
+    for attribute in attributes:
+        filters.append(getattr(table, attribute))
+
+    return filters
