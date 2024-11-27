@@ -1,0 +1,1 @@
+ERROR_TEACHER_GET_NOT_FOUND = "Professor não encontrado"

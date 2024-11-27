@@ -20,7 +20,7 @@ ERROR_CLASSES_INVALID_FIELD_MAX_STUDENTS = "Número máximo de alunos inválido"
 ERROR_CLASSES_INVALID_FIELD_DAY_OF_WEEK = "Dia da semana inválido"
 ERROR_CLASSES_INVALID_FIELD_START_DATE = "Data de início inválida"
 ERROR_CLASSES_INVALID_FIELD_END_DATE = "Data de fim inválida"
-ERROR_CLASSES_INVALID_FIELD_CLASS_EVENTS = "Aulas da  turma inválidas, deve ser uma lista"
+ERROR_CLASSES_INVALID_FIELD_CLASS_EVENTS = "Aulas da turma inválidas, deve ser uma lista"
 
 ERROR_STUDENT_REQUIRED_FIELD_CPF = "CPF do aluno é obrigatório"
 ERROR_STUDENT_REQUIRED_FIELD_NAME = "Nome do aluno é obrigatório"
@@ -33,7 +33,9 @@ ERROR_CLASSES_GET_NOT_FOUND = "Turma não encontrada"
 ERROR_CLASSES_GET_ALL_NOT_FOUND = "Nenhuma turma encontrada"
 
 ERROR_CLASS_ADD_CONFLICT = "Turma já cadastrada"
+ERROR_CLASSES_EVENTS_ADD_CONFLICT = "Aula já cadastrado"
 
 MESSAGE_CLASS_ADD_SUCCESS = "Turma cadastrada com sucesso"
+MESSAGE_CLASS_EVENT_ADD_SUCCESS = "Aula cadastrada com sucesso"
 MESSAGE_CLASS_UPDATE_SUCCESS = "Turma atualizada com sucesso"
 MESSAGE_CLASS_DELETE_SUCCESS = "Turma deletada com sucesso"

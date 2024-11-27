@@ -277,6 +277,7 @@ class ClassEventModel(BaseModel):
     - id: str
     - class_id: str
     - discipline_id: str
+    - teacher_id: str
     - start_date: datetime
     - end_date: datetime
 
@@ -340,8 +341,8 @@ class RecurrencesModel(BaseModel):
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
     class_event_id: Mapped[str] = mapped_column(String, ForeignKey("class_event.id"), nullable=False)
     day_of_week: Mapped[str] = mapped_column(String, nullable=False)
-    start_time: Mapped[datetime] = mapped_column(Time, nullable=False)
-    end_time: Mapped[datetime] = mapped_column(Time, nullable=False)
+    start_time: Mapped[str] = mapped_column(Time, nullable=False)
+    end_time: Mapped[str] = mapped_column(Time, nullable=False)
 
     class_event = relationship(
         "ClassEventModel",

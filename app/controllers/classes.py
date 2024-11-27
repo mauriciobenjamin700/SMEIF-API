@@ -2,25 +2,22 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 
+from database.queries.validate_foreignkey import validate_class_events
 from constants.classes import(
     ERROR_CLASS_ADD_CONFLICT,
-    ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID,
+    ERROR_CLASSES_EVENTS_ADD_CONFLICT,
     MESSAGE_CLASS_ADD_SUCCESS,
     MESSAGE_CLASS_DELETE_SUCCESS,
-    MESSAGE_CLASS_UPDATE_SUCCESS
-)
-from constants.user import(
-    ERROR_USER_GET_TEACHER_NOT_FOUND,
+    MESSAGE_CLASS_EVENT_ADD_SUCCESS,
 )
 from database.models import(
     ClassModel,
     ClassEventModel,
+    RecurrencesModel
 )
 from database.queries.existence import (
+    class_event_existe,
     class_existe,
-    generate_filters,
-    register_exists,
-    teacher_existe
 )
 from database.queries.get import (
     get_class_by_id,
@@ -180,6 +177,7 @@ class ClassesController():
             model = get_class_by_id(self.db_session, class_id)
 
             self.db_session.delete(model)
+
             self.db_session.commit()
 
             return Success(MESSAGE_CLASS_DELETE_SUCCESS)
@@ -190,6 +188,67 @@ class ClassesController():
         except Exception as e:
             raise Server(e)
         
+    
+    def add_event(self, request: ClassEventRequest) -> BaseMessage:
+        """
+        Cadastra um evento de uma turma no sistema
+
+        - Args:
+            - class_id: ID da turma a qual o evento será cadastrado.
+            - request: Objeto com os dados do evento a ser cadastrado.
+
+        - Returns:
+            - BaseMessage: Mensagem de sucesso ou erro.
+        """
+        try:
+
+            if class_event_existe(self.db_session, request):
+
+                raise Conflict(ERROR_CLASSES_EVENTS_ADD_CONFLICT)
+            
+            validate_class_events(self.db_session, request.class_id, request.disciplines_id, request.teacher_id)
+
+            model  = ClassEventModel(
+                id=id_generate(),
+                **request.dict()
+            )
+
+            self.db_session.add(model)
+
+            for recurrence in request.recurrences:
+
+                recurrence_model = self._recurrence_to_model(model.id, recurrence)
+
+                self.db_session.add(recurrence_model)
+
+            self.db_session.commit()
+
+            return Success(MESSAGE_CLASS_EVENT_ADD_SUCCESS)
+            
+        except HTTPException:
+            raise
+
+        except Exception as e:
+            raise Server(e)
+        
+
+    def get_event(self):
+        pass
+
+    def get_all_events(self):
+        pass
+
+    def update_event(self):
+        pass
+
+    def delete_event(self):
+        pass
+
+    def add_recurrences(self):
+        pass
+
+    def delete_recurrences(self):
+        pass
 
     def _Model_to_Response(self, model: ClassModel) -> ClassResponse:
 
@@ -236,3 +295,14 @@ class ClassesController():
 
     def _build_class_info(self, model: ClassModel) -> str:
         return f"{model.name} {model.section}"
+    
+
+    def _recurrence_to_model(self, class_event_id: str,recurrence: Recurrences) -> RecurrencesModel:
+        return RecurrencesModel(
+            id=id_generate(),
+            class_event_id=class_event_id,
+            day_of_week=recurrence.day_of_week,
+            start_time=recurrence.start_time,
+            end_time=recurrence.end_time
+        )
+        
