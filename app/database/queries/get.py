@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 
 from constants.classes import(
+    ERROR_CLASSES_EVENTS_GET_NOT_FOUND,
     ERROR_CLASSES_GET_NOT_FOUND
 )
 from constants.user import (
@@ -13,6 +14,7 @@ from constants.user import (
     ERROR_USER_NOT_FOUND_USER
 )
 from database.models import(
+    ClassEventModel,
     ClassModel,
     UserModel
 )
@@ -78,5 +80,19 @@ def get_class_by_name(db_session: Session, class_name:str) -> ClassModel:
 
     if not model:
         raise NotFound(ERROR_CLASSES_GET_NOT_FOUND)
+    
+    return model
+
+
+def get_class_event_by_id(db_session: Session, class_event_id:str) -> ClassEventModel:
+
+    model = db_session.scalar(
+        select(ClassEventModel).where(
+            ClassEventModel.id == class_event_id
+        )
+    )
+
+    if not model:
+        raise NotFound(ERROR_CLASSES_EVENTS_GET_NOT_FOUND)
     
     return model

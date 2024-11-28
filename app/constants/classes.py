@@ -29,6 +29,8 @@ ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION = "Matrícula do aluno é obrigatóri
 ERROR_STUDENT_TYPE = "Aluno deve ser uma instância de Student"
 
 ERROR_CLASSES_GET_NOT_FOUND = "Turma não encontrada"
+ERROR_CLASSES_EVENTS_GET_NOT_FOUND = "Aula não encontrada"
+ERROR_CLASSES_EVENTS_GET_ALL_NOT_FOUND = "Nenhuma aula encontrada"
 
 ERROR_CLASSES_GET_ALL_NOT_FOUND = "Nenhuma turma encontrada"
 
@@ -36,6 +38,9 @@ ERROR_CLASS_ADD_CONFLICT = "Turma já cadastrada"
 ERROR_CLASSES_EVENTS_ADD_CONFLICT = "Aula já cadastrado"
 
 MESSAGE_CLASS_ADD_SUCCESS = "Turma cadastrada com sucesso"
-MESSAGE_CLASS_EVENT_ADD_SUCCESS = "Aula cadastrada com sucesso"
 MESSAGE_CLASS_UPDATE_SUCCESS = "Turma atualizada com sucesso"
 MESSAGE_CLASS_DELETE_SUCCESS = "Turma deletada com sucesso"
+
+MESSAGE_CLASS_EVENT_ADD_SUCCESS = "Aula cadastrada com sucesso"
+MESSAGE_CLASS_EVENT_UPDATE_SUCCESS = "Aula atualizada com sucesso"
+MESSAGE_CLASS_EVENT_DELETE_SUCCESS = "Aula deletada com sucesso"

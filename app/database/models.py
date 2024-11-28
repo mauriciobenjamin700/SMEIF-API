@@ -339,7 +339,7 @@ class RecurrencesModel(BaseModel):
     __tablename__ = 'recurrences'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
-    class_event_id: Mapped[str] = mapped_column(String, ForeignKey("class_event.id"), nullable=False)
+    class_event_id: Mapped[str] = mapped_column(String, ForeignKey("class_event.id", ondelete="CASCADE"), nullable=False)
     day_of_week: Mapped[str] = mapped_column(String, nullable=False)
     start_time: Mapped[str] = mapped_column(Time, nullable=False)
     end_time: Mapped[str] = mapped_column(Time, nullable=False)
