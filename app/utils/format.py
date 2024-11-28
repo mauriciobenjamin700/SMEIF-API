@@ -7,10 +7,10 @@ def format_cpf(cpf:str) -> str:
     Formata um CPF
 
     - Args:
-        - cpf:: str: CPF que será formatado
+        - cpf:: str: CPF que será formatado ex(12312312312)
 
     - Return:
-        - str: CPF formatado
+        - str: CPF formatado ex(123.123.123-12)
     """
     
     cpf = "".join([number for number in cpf if number.isnumeric()])
@@ -23,10 +23,10 @@ def unformat_cpf(cpf:str):
     Desformata um CPF
 
     - Args:
-        - cpf:: str: CPF que será desformatado
+        - cpf:: str: CPF que será desformatado ex(123.123.123-12)
 
     - Return:
-        - str: CPF desformatado
+        - str: CPF desformatado ex(12312312312)
     """
     
     return "".join([number for number in cpf if number.isnumeric()])
@@ -52,10 +52,10 @@ def unformat_phone(phone: str):
     Desformata um número de telefone
 
     - Args:
-        - phone:: str: Número de telefone que será desformatado
+        - phone:: str: Número de telefone que será desformatado ex((89) 91212-1212)
 
     - Return
-        - str: Número de telefone desformatado (apenas números)
+        - str: Número de telefone desformatado (89912121212)
 
 
     """
