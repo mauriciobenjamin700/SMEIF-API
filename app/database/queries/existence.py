@@ -15,12 +15,36 @@ from constants.user import (
 from database.base import BaseModel
 from database.models import (
     ClassEventModel,
+    DisciplinesModel,
+    RecurrencesModel,
     UserModel,
     ClassModel
 )
-from schemas.classes import ClassEventRequest
-from utils.format import unformat_date
+from schemas.classes import ClassEventRequest, Recurrences
+from utils.format import unformat_date, unformat_time
 from utils.messages.error import Conflict
+
+
+
+def register_exists(db_session: Session, table: BaseModel, filters: tuple):
+    """
+    Verifica se um registro existe em uma tabela.
+
+    - Args:
+        - db_session: Sessão do banco de dados.
+        - table: Modelo da tabela.
+        - filters: Filtros para a busca.
+
+    - Returns:
+        - bool: True se o registro existe, False caso contrário.
+    """
+
+    register = db_session.scalar(
+        select(table).where(
+            and_(*filters))
+    )
+
+    return True if register else False
 
 
 def check_user_existence(db_session: Session, cpf: str | None, phone: str | None, email: str | None) -> None:
@@ -108,43 +132,43 @@ def class_event_existe(db_session: Session, request: ClassEventRequest) -> bool:
     return register_exists(db_session, ClassEventModel, filters)
 
 
-
-def register_exists(db_session: Session, table: BaseModel, filters: tuple):
+def recurrences_exists(db_session, class_event_id, recurrence: Recurrences) -> bool:
     """
-    Verifica se um registro existe em uma tabela.
+    Verifica se uma recorrência de um evento de turma existe.
 
     - Args:
         - db_session: Sessão do banco de dados.
-        - table: Modelo da tabela.
-        - filters: Filtros para a busca.
+        - class_event_id: ID do evento de turma.
+        - recurrence: Recorrência.
 
     - Returns:
-        - bool: True se o registro existe, False caso contrário.
+        - bool: True se a recorrência existe, False caso contrário.
     """
 
-    register = db_session.scalar(
-        select(table).where(
-            and_(*filters))
+    filters = (
+        RecurrencesModel.class_event_id == class_event_id,
+        RecurrencesModel.day_of_week == recurrence.day_of_week,
+        RecurrencesModel.start_time ==  recurrence.start_time,
+        RecurrencesModel.end_time == recurrence.end_time,
     )
 
-    return True if register else False
+    return register_exists(db_session, RecurrencesModel, filters)
 
 
-def generate_filters(table: BaseModel, attributes: list[str]) -> list:
+def discipline_exists(db_session, discipline_name) -> bool:
     """
-    Gera uma lista de filtros para a busca de um registro.
+    Verifica se uma disciplina existe.
 
     - Args:
-        - table: Modelo da tabela.
-        - attributes: Atributos do registro.
+        - db_session: Sessão do banco de dados.
+        - discipline_name: Nome da disciplina.
 
     - Returns:
-        - list: Lista de filtros.
+        - bool: True se a disciplina existe, False caso contrário.
     """
 
-    filters = []
+    filters = (
+        DisciplinesModel.name == discipline_name,
+    )
 
-    for attribute in attributes:
-        filters.append(getattr(table, attribute))
-
-    return filters
+    return register_exists(db_session, DisciplinesModel, filters)

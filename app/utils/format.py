@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import time
 
 
 def format_cpf(cpf:str) -> str:
@@ -98,6 +99,32 @@ def unformat_date(date: str) -> datetime:
         - datetime: Data desformatada
     """
     return datetime.strptime(date, "%d/%m/%Y")
+
+
+def format_time(time: time) -> str:
+    """
+    Formata um horário
+
+    - Args:
+        - time:: _Time: Horário que será formatado
+
+    - Return:
+        - str: Horário formatado no formato HH:MM
+    """
+    return time.strftime("%H:%M")
+
+
+def unformat_time(time: str = "08:00") -> time:
+    """
+    Formata um horário
+
+    - Args:
+        - time:: str: Horário que será formatado
+
+    - Return:
+        - str: Horário formatado em um objeto time
+    """
+    return datetime.strptime(time, "%H:%M").time()
 
 
 def format_string_date(date: str) -> str:

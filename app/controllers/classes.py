@@ -6,6 +6,7 @@ from database.queries.validate_foreignkey import validate_class_events
 from constants.classes import(
     ERROR_CLASS_ADD_CONFLICT,
     ERROR_CLASSES_EVENTS_ADD_CONFLICT,
+    ERROR_CLASSES_EVENTS_ADD_RECURRENCES_CONFLICT,
     MESSAGE_CLASS_ADD_SUCCESS,
     MESSAGE_CLASS_DELETE_SUCCESS,
     MESSAGE_CLASS_EVENT_ADD_SUCCESS,
@@ -19,6 +20,7 @@ from database.models import(
 from database.queries.existence import (
     class_event_existe,
     class_existe,
+    recurrences_exists,
 )
 from database.queries.get import (
     get_class_by_id,
@@ -62,7 +64,11 @@ class ClassesController():
             - request: Objeto com os dados da turma a ser cadastrada.
 
         - Returns:
-            - BaseMessage: Mensagem de sucesso ou erro.
+            - BaseMessage: Mensagem de sucesso.
+
+        - Raises:
+            - HTTPException: 409 - Turma já cadastrada.
+            - Exception: Erro no servidor.
         """
         try:
             
@@ -97,6 +103,10 @@ class ClassesController():
 
         - Returns:
             - ClassResponse: Objeto com os dados da turma buscada.
+
+        - Raises:
+            - HTTPException: 404 - Turma não encontrada.
+            - Exception: Erro no servidor.
         """
         try:
 
@@ -121,6 +131,10 @@ class ClassesController():
 
         - Returns:
             - list[ClassResponse]: Lista de objetos com os dados das turmas cadastradas.
+
+        - Raises:
+            - HTTPException: 404 - Nenhuma turma encontrada.
+            - Exception: Erro no servidor.
         """
         try:
 
@@ -145,6 +159,10 @@ class ClassesController():
 
         - Returns:
             - ClassResponse: Objeto com os dados da turma atualizada.
+
+        - Raises:
+            - HTTPException: 404 - Turma não encontrada.
+            - Exception: Erro no servidor.
         """
         try:
 
@@ -174,6 +192,10 @@ class ClassesController():
 
         - Returns:
             - BaseMessage: Mensagem de sucesso ou erro.
+
+        - Raises:
+            - HTTPException: 404 - Turma não encontrada.
+            - Exception: Erro no servidor.
         """
         try:
 
@@ -202,6 +224,10 @@ class ClassesController():
 
         - Returns:
             - BaseMessage: Mensagem de sucesso ou erro.
+
+        - Raises:
+            - HTTPException: 409 - Aula já cadastrada.
+            - Exception: Erro no servidor.
         """
         try:
 
@@ -236,6 +262,19 @@ class ClassesController():
         
 
     def get_event(self, class_event_id: str) -> ClassEventResponse:
+        """
+        Busca uma turma a partir de seu ID
+
+        - Args:
+            - class_event_id: ID da aula a ser buscada.
+        
+        - Returns:
+            - ClassEventResponse: Objeto com os dados da aula buscada.
+
+        - Raises:
+            - HTTPException: 404 - Aula não encontrada.
+            - Exception: Erro no servidor.
+        """
         try:
             model = get_class_event_by_id(class_event_id)
 
@@ -248,10 +287,20 @@ class ClassesController():
             raise Server(e)
 
     def get_all_events(self) -> list[ClassEventResponse]:
+        """
+        Busca todas as aulas cadastradas no sistema
 
+        - Args:
+            - None
+
+        - Returns:
+            - list[ClassEventResponse]: Lista de objetos com os dados das aulas cadastradas.
+
+        - Raises:
+            - HTTPException: 404 - Nenhuma aula encontrada.
+            - Exception: Erro no servidor.
+        """
         try:
-
-        
             models = get_all_class_events(self.db_session)
 
             return [self._Model_to_ClassEventResponse(model) for model in models]
@@ -263,7 +312,20 @@ class ClassesController():
             raise Server(e)
 
     def update_event(self, class_event_id: str, request: ClassEventRequest) -> ClassEventResponse:
-        
+        """
+        Atualiza uma aula cadastrada no sistema
+
+        - Args:
+            - class_event_id: ID da aula a ser atualizada.
+            - request: Objeto com os dados da aula a ser atualizada.
+
+        - Returns:
+            - ClassEventResponse: Objeto com os dados da aula atualizada.
+
+        - Raises:
+            - HTTPException: 404 - Aula não encontrada.
+            - Exception: Erro no servidor.
+        """
         try:
 
             model = get_class_event_by_id(class_event_id)
@@ -285,6 +347,19 @@ class ClassesController():
             raise Server(e)
 
     def delete_event(self, class_event_id: str) -> BaseMessage:
+        """
+        Deleta uma aula do sistema
+
+        - Args:
+            - class_event_id: ID da aula a ser deletada.
+
+        - Returns:
+            - BaseMessage: Mensagem de sucesso ou erro.
+
+        - Raises:
+            - HTTPException: 404 - Aula não encontrada.
+            - Exception: Erro no servidor.
+        """
         try:
 
             model = get_class_event_by_id(class_event_id)
@@ -303,10 +378,84 @@ class ClassesController():
         
 
     def add_recurrences(self, class_event_id: str, recurrences: list[Recurrences]) -> BaseMessage:
-        pass
+        """
+        Adiciona uma lista de recorrências para uma aula
+
+        - Args:
+            - class_event_id: ID da aula a qual as recorrências serão adicionadas.
+            - recurrences: Lista de recorrências a serem adicionadas.
+
+        - Returns:
+            - BaseMessage: Mensagem de sucesso.
+
+        - Raises:
+            - HTTPException: 409 - Recorrências conflitantes durante o cadastro.
+            - Exception: Erro no servidor.
+        """
+        try:
+
+            model = get_class_event_by_id(class_event_id)
+
+            for recurrence in recurrences:
+
+                if recurrences_exists(self.db_session, model.id, recurrence):
+
+                    raise Conflict(ERROR_CLASSES_EVENTS_ADD_RECURRENCES_CONFLICT)
+
+                recurrence_model = self._Recurrence_to_Model(model.id, recurrence)
+
+                self.db_session.add(recurrence_model)
+
+            self.db_session.commit()
+
+            return Success(MESSAGE_CLASS_EVENT_ADD_SUCCESS)
+
+        except HTTPException:
+            raise
+
+        except Exception as e:
+            raise Server(e)
 
     def delete_recurrences(self, class_event_id: str, recurrences: list[Recurrences]) -> BaseMessage:
-        pass
+        """
+        Remove uma lista de recorrências de uma aula
+
+        - Args:
+            - class_event_id: ID da aula a qual as recorrências serão removidas.
+            - recurrences: Lista de recorrências a serem removidas.
+
+        - Returns:
+            - BaseMessage: Mensagem de sucesso
+
+        - Raises:
+            - HTTPException: 404 - Recorrência não encontrada.
+            - Exception: Erro no servidor.
+        """
+        try:
+
+            model = get_class_event_by_id(class_event_id)
+
+            for recurrence in recurrences:
+
+                recurrence_model = RecurrencesModel(
+                    class_event_id=model.id,
+                    day_of_week=recurrence.day_of_week,
+                    start_time=recurrence.start_time,
+                    end_time=recurrence.end_time
+                )
+
+                self.db_session.delete(recurrence_model)
+
+            self.db_session.commit()
+
+            return Success(MESSAGE_CLASS_EVENT_DELETE_SUCCESS)
+
+        except HTTPException:
+            raise
+
+        except Exception as e:
+            raise Server(e)
+
 
     def _Model_to_Response(self, model: ClassModel) -> ClassResponse:
         """

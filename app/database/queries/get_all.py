@@ -3,10 +3,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
+from constants.disciplines import ERROR_DISCIPLINES_GET_ALL_NOT_FOUND
 from constants.user import ERROR_USER_NOT_FOUND_USERS
 from database.models import(
     ClassEventModel,
     ClassModel,
+    DisciplinesModel,
     UserModel
 )
 from utils.messages.error import NotFound
@@ -82,3 +84,21 @@ def get_all_class_events(db_session: Session) -> Sequence[ClassEventModel]:
     events = db_session.scalars(select(ClassEventModel)).all()
 
     return events
+
+
+def get_all_disciplines(db_session: Session) -> list[DisciplinesModel]:
+    """
+    Busca todas as disciplinas no banco de dados
+
+    - Args:
+        - db_session: Sessão do banco de dados
+
+    - Returns:
+        - list[str]: Lista de disciplinas encontradas no banco de dados.
+    """
+    disciplines = db_session.scalars(select(DisciplinesModel)).all()
+
+    if not disciplines:
+        raise NotFound(ERROR_DISCIPLINES_GET_ALL_NOT_FOUND)
+
+    return disciplines

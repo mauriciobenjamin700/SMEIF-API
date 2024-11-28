@@ -6,6 +6,7 @@ from constants.classes import(
     ERROR_CLASSES_EVENTS_GET_NOT_FOUND,
     ERROR_CLASSES_GET_NOT_FOUND
 )
+from constants.disciplines import ERROR_DISCIPLINES_GET_NOT_FOUND
 from constants.user import (
     ERROR_USER_GET_TEACHER_NOT_FOUND,
     ERROR_USER_NOT_ID,
@@ -16,6 +17,7 @@ from constants.user import (
 from database.models import(
     ClassEventModel,
     ClassModel,
+    DisciplinesModel,
     UserModel
 )
 from utils.messages.error import (
@@ -94,5 +96,19 @@ def get_class_event_by_id(db_session: Session, class_event_id:str) -> ClassEvent
 
     if not model:
         raise NotFound(ERROR_CLASSES_EVENTS_GET_NOT_FOUND)
+    
+    return model
+
+
+def get_discipline_by_name(db_session: Session, discipline_name:str) -> DisciplinesModel:
+
+    model = db_session.scalar(
+        select(DisciplinesModel).where(
+            DisciplinesModel.name == discipline_name
+        )
+    )
+
+    if not model:
+        raise NotFound(ERROR_DISCIPLINES_GET_NOT_FOUND)
     
     return model

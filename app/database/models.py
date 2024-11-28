@@ -327,8 +327,8 @@ class RecurrencesModel(BaseModel):
     - id: str
     - class_event_id: str
     - day_of_week: str
-    - start_time: datetime
-    - end_time: datetime
+    - start_time: str
+    - end_time: str
 
     ### Relationships:
 

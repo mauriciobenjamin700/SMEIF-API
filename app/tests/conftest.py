@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 from constants.user import LEVEL
 from database.connection import Session
-from database.models import ClassModel, UserModel
+from database.models import ClassModel, DisciplinesModel, UserModel
 from main import app
 from schemas.address import Address
 from schemas.base import (
@@ -13,9 +13,14 @@ from schemas.base import (
     Shift
 )
 from schemas.classes import (
+    ClassEventRequest,
     ClassEventResponse,
     ClassRequest,
     Recurrences
+)
+from schemas.disciplines import(
+    DisciplineRequest,
+    DisciplineResponse
 )
 from schemas.user import (
     UserDB,
@@ -39,6 +44,7 @@ def db_session():
 
         session.query(UserModel).delete()
         session.query(ClassModel).delete()
+        session.query(DisciplinesModel).delete()
 
         session.commit()
 
@@ -48,6 +54,7 @@ def db_session():
 
         session.query(UserModel).delete()
         session.query(ClassModel).delete()
+        session.query(DisciplinesModel).delete()
 
         session.commit()
 
@@ -162,6 +169,21 @@ def mock_class_response_data(
 
 
 @fixture
+def mock_discipline_request_data():
+    data = {}
+    data["name"] = "Matemática"
+
+    return data
+
+
+@fixture
+def mock_discipline_response_data(mock_discipline_request_data) -> dict:
+    data = mock_discipline_request_data.copy()
+    data["id"] = "12345"
+
+    return data
+
+@fixture
 def mock_Address(mock_address_data) -> Address:
     return Address(**mock_address_data)
 
@@ -271,8 +293,39 @@ def mock_ClassRequest_update() -> ClassRequest:
         max_students=15
     )
 
+
+@fixture
+def mock_DisciplineRequest(mock_discipline_request_data) -> DisciplineRequest:
+
+    return DisciplineRequest(**mock_discipline_request_data)
+
+
+@fixture
+def mock_DisciplineResponse(mock_discipline_response_data) -> DisciplineResponse:
+
+    return DisciplineResponse(**mock_discipline_response_data)
+
+
+@fixture
+def mock_ClassEventRequest(mock_class_event_request_data) -> ClassEventRequest:
+    return ClassEventRequest(**mock_class_event_request_data)
+
 @fixture
 def mock_ClassEventResponse(mock_class_event_response_data) -> ClassEventResponse:
     return ClassEventResponse(**mock_class_event_response_data)
 
 
+@fixture
+def mock_discipline_on_db(db_session, mock_DisciplineRequest) -> DisciplinesModel:
+
+    request = DisciplineRequest(**mock_DisciplineRequest.dict())
+
+    to_db = DisciplinesModel(
+        id = id_generate(),
+        **request.dict()
+    )
+
+    db_session.add(to_db)
+    db_session.commit()
+
+    return to_db
