@@ -120,13 +120,15 @@ def class_event_existe(db_session: Session, request: ClassEventRequest) -> bool:
         - bool: True se o evento existe, False caso contrário.
     """
 
-    filters = (
+    filters = [
         ClassEventModel.class_id == request.class_id,
-        ClassEventModel.discipline_id == request.disciplines_id,
-        ClassEventModel.teacher_id == request.teacher_id,
-        
+        ClassEventModel.teacher_id == request.teacher_id
+    ]
 
-    )
+    for discipline_id in request.disciplines_id:
+        filters.append(ClassEventModel.discipline_id == discipline_id)
+            
+
         #ClassEventModel.start_date == unformat_date(request.start_date, False) ,
         #ClassEventModel.end_date == unformat_date(request.end_date, False),
 

@@ -76,7 +76,7 @@ class ClassesController():
                raise Conflict(ERROR_CLASS_ADD_CONFLICT)
 
 
-            model  = ClassModel(
+            model = ClassModel(
                 id=id_generate(),
                 **request.dict()
             )
@@ -237,12 +237,18 @@ class ClassesController():
             
             validate_class_events(self.db_session, request.class_id, request.disciplines_id, request.teacher_id)
 
-            model  = ClassEventModel(
-                id=id_generate(),
-                **request.dict()
-            )
+            for discipline_id in request.disciplines_id:
 
-            self.db_session.add(model)
+                model  = ClassEventModel(
+                    id=id_generate(),
+                    class_id=request.class_id,
+                    discipline_id=discipline_id,
+                    teacher_id=request.teacher_id,
+                    start_date=request.start_date,
+                    end_date=request.end_date
+                )
+
+                self.db_session.add(model)
 
             for recurrence in request.recurrences:
 

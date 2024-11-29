@@ -250,7 +250,7 @@ class ClassTeacherModel(BaseModel):
     __tablename__ = 'class_teacher'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
-    user_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+    user_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf", ondelete="CASCADE"), nullable=False)
     class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
 
     class_event = relationship(

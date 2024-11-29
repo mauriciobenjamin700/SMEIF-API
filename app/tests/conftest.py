@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 
 from database.connection import Session
-from database.models import ClassModel, ClassTeacherModel, DisciplinesModel, UserModel
+from database.models import ClassEventModel, ClassModel, ClassTeacherModel, DisciplinesModel, UserModel
 from main import app
 from schemas.address import Address
 from schemas.base import (
@@ -44,6 +44,8 @@ def db_session():
     try:
         session = Session()
 
+        session.query(ClassEventModel).delete()
+        session.query(ClassTeacherModel).delete()
         session.query(UserModel).delete()
         session.query(ClassModel).delete()
         session.query(DisciplinesModel).delete()
@@ -54,6 +56,8 @@ def db_session():
 
     finally:
 
+        session.query(ClassEventModel).delete()
+        session.query(ClassTeacherModel).delete()
         session.query(UserModel).delete()
         session.query(ClassModel).delete()
         session.query(DisciplinesModel).delete()
@@ -137,7 +141,7 @@ def mock_recurrences_data():
 def mock_class_event_request_data(mock_recurrences_data) -> dict:
     data = {}
     data["class_id"] = "1"
-    data["disciplines_id"] = "2"
+    data["disciplines_id"] = ["2", "3"]
     data["teacher_id"] = "3"
     data["start_date"] = "2021-01-01"
     data["end_date"] = "2021-06-01"
@@ -286,13 +290,13 @@ def mock_DisciplineResponse(mock_discipline_response_data) -> DisciplineResponse
 def mock_ClassEventRequest(
     mock_class_event_request_data,
     mock_class_on_db,
-    mock_teacher_on_db,
+    mock_ClassTeacher_on_db,
     mock_discipline_on_db,
 ) -> ClassEventRequest:
     request =  ClassEventRequest(**mock_class_event_request_data)
 
     request.class_id = mock_class_on_db.id
-    request.teacher_id = mock_teacher_on_db.id
+    request.teacher_id = mock_ClassTeacher_on_db.id
     request.disciplines_id = mock_discipline_on_db.id
 
     return request
@@ -365,7 +369,7 @@ def mock_teacher_on_db(db_session) -> UserModel:
 
 
 @fixture
-def mock_ClassTeacher(
+def mock_ClassTeacher_on_db(
     db_session,
     mock_teacher_on_db,
     mock_class_on_db
@@ -373,7 +377,7 @@ def mock_ClassTeacher(
     
     to_db = ClassTeacherModel(
         id=id_generate(), 
-        teacher_id=mock_teacher_on_db.cpf,
+        user_cpf=mock_teacher_on_db.cpf,
         class_id=mock_class_on_db.id
     )
 

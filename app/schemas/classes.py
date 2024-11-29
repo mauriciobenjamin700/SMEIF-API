@@ -225,7 +225,7 @@ class Recurrences(BaseSchema):
 class ClassEventRequest(BaseSchema):
     """
     - class_id: str
-    - disciplines_id: str
+    - disciplines_id: list[str]
     - teacher_id: str
     - start_date: str
     - end_date: str
@@ -237,9 +237,9 @@ class ClassEventRequest(BaseSchema):
         description="Código da turma que terá uma aula agendada",
         examples=['1', '2', '3']
     )
-    disciplines_id: str = Field(
-        title="ID da Disciplina",
-        description="Código da disciplina que terá uma aula agendada",
+    disciplines_id: list[str] = Field(
+        title="IDs das Disciplina",
+        description="Código das disciplinas que terão aulas ministradas pelo professor durante o período designado",
         examples=['1', '2', '3']
     )
     teacher_id: str = Field(
@@ -272,14 +272,23 @@ class ClassEventRequest(BaseSchema):
     
 
     @field_validator("disciplines_id", mode="before")
-    def validate_disciplines_id(cls, value) -> str:
+    def validate_disciplines_id(cls, values) -> list[str]:
+
+        if isinstance(values, str):
+            values = [values]
+
+        result = []
+
+        for value in values:
             
-        value = clean_string_field(value)
+            value = clean_string_field(value)
 
-        if not validate_string(value):
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_DISCIPLINES_ID)
+            if not validate_string(value):
+                raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_DISCIPLINES_ID)
+            
+            result.append(value)
 
-        return value
+        return result
     
 
     @field_validator("teacher_id", mode="before")

@@ -266,6 +266,9 @@ def test_schemas_classes_ClassEventRequest_success(mock_class_event_request_data
 
     assert request.class_id == data['class_id']
     assert request.disciplines_id == data['disciplines_id']
+    assert isinstance(request.disciplines_id, list)
+    assert isinstance(request.disciplines_id[0], str)
+    assert request.disciplines_id[0] == data["disciplines_id"][0]
     assert request.teacher_id == data['teacher_id']
     assert request.start_date == data['start_date']
     assert request.end_date == data['end_date']
