@@ -1,16 +1,18 @@
+from datetime import datetime
 from pytest import fixture
 from fastapi.testclient import TestClient
 
 
-from constants.user import LEVEL
 from database.connection import Session
-from database.models import ClassModel, DisciplinesModel, UserModel
+from database.models import ClassModel, ClassTeacherModel, DisciplinesModel, UserModel
 from main import app
 from schemas.address import Address
 from schemas.base import (
     DaysOfWeek,
     EducationLevel,
-    Shift
+    Gender,
+    Shift,
+    UserLevel
 )
 from schemas.classes import (
     ClassEventRequest,
@@ -72,7 +74,7 @@ def clean_data():
 
     session.close()
 
-
+############################ DATA ############################
 @fixture
 def mock_address_data():
     data = {}
@@ -183,40 +185,10 @@ def mock_discipline_response_data(mock_discipline_request_data) -> dict:
 
     return data
 
-@fixture
-def mock_Address(mock_address_data) -> Address:
-    return Address(**mock_address_data)
 
 
-@fixture
-def mock_UserRequest(mock_Address) -> UserRequest:
-    return UserRequest(
-        cpf="123.456.789-00",
-        name="John Doe",
-        birth_date="1990-01-01",
-        gender="M",
-        phone="(00) 90000-0000",
-        email="john.doe@gmail.com",
-        password="123456",
-        level=LEVEL["parent"],
-        address=Address(**mock_Address.dict())
-    )
 
-@fixture
-def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
-    
-    request = UserRequest(**mock_UserRequest.dict())
-
-    request.password = protect(request.password)
-
-    to_db = UserDB(**request.dict(), **request.address.dict())
-
-    user = UserModel(**to_db.dict())
-
-    db_session.add(user)
-    db_session.commit()
-
-    return user
+############################ SCHEMAS ############################
 
 
 @fixture
@@ -228,7 +200,7 @@ def mock_UserUpdateRequest() -> UserUpdateRequest:
         phone="(00) 90000-0066",
         email="jane.doe@gmail.com",
         password="654321",
-        level=LEVEL["parent"],
+        level=UserLevel.PARENT.value,
         address=Address(
             state="PI",
             city="Picos",
@@ -245,7 +217,7 @@ def mock_UserUpdateRequest() -> UserUpdateRequest:
 def mock_UserUpdateRequest_level() -> UserUpdateRequest:
 
     update = UserUpdateRequest(
-        level=LEVEL["teacher"]
+        level=UserLevel.PARENT.value
     )
 
     return update
@@ -266,20 +238,24 @@ def mock_UserLoginRequest(mock_UserRequest) -> UserLoginRequest:
 def mock_ClassRequest(mock_class_data) -> ClassRequest:
     return ClassRequest(**mock_class_data)
 
+@fixture
+def mock_Address(mock_address_data) -> Address:
+    return Address(**mock_address_data)
+
 
 @fixture
-def mock_class_on_db(db_session, mock_ClassRequest) -> ClassModel:
-    request = ClassRequest(**mock_ClassRequest.dict())
-
-    to_db = ClassModel(
-        id = id_generate(),
-        **request.dict()
+def mock_UserRequest(mock_Address) -> UserRequest:
+    return UserRequest(
+        cpf="123.456.789-00",
+        name="John Doe",
+        birth_date="1990-01-01",
+        gender="M",
+        phone="(00) 90000-0000",
+        email="john.doe@gmail.com",
+        password="123456",
+        level=UserLevel.PARENT.value,
+        address=Address(**mock_Address.dict())
     )
-
-    db_session.add(to_db)
-    db_session.commit()
-
-    return to_db
 
 
 @fixture
@@ -307,12 +283,104 @@ def mock_DisciplineResponse(mock_discipline_response_data) -> DisciplineResponse
 
 
 @fixture
-def mock_ClassEventRequest(mock_class_event_request_data) -> ClassEventRequest:
-    return ClassEventRequest(**mock_class_event_request_data)
+def mock_ClassEventRequest(
+    mock_class_event_request_data,
+    mock_class_on_db,
+    mock_teacher_on_db,
+    mock_discipline_on_db,
+) -> ClassEventRequest:
+    request =  ClassEventRequest(**mock_class_event_request_data)
+
+    request.class_id = mock_class_on_db.id
+    request.teacher_id = mock_teacher_on_db.id
+    request.disciplines_id = mock_discipline_on_db.id
+
+    return request
 
 @fixture
 def mock_ClassEventResponse(mock_class_event_response_data) -> ClassEventResponse:
     return ClassEventResponse(**mock_class_event_response_data)
+
+
+
+############################ MODELS ############################
+
+@fixture
+def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
+    
+    request = UserRequest(**mock_UserRequest.dict())
+
+    request.password = protect(request.password)
+
+    to_db = UserDB(**request.dict(), **request.address.dict())
+
+    user = UserModel(**to_db.dict())
+
+    db_session.add(user)
+    db_session.commit()
+
+    return user
+
+
+@fixture
+def mock_class_on_db(db_session, mock_ClassRequest) -> ClassModel:
+    request = ClassRequest(**mock_ClassRequest.dict())
+
+    to_db = ClassModel(
+        id = id_generate(),
+        **request.dict()
+    )
+
+    db_session.add(to_db)
+    db_session.commit()
+
+    return to_db
+
+
+@fixture
+def mock_teacher_on_db(db_session) -> UserModel:
+
+    user = UserModel(
+        cpf="123.456.789-66",
+        name="Teacher Doe",
+        birth_date=datetime(1990, 1, 1),
+        gender = Gender.MALE.value,
+        phone="89912344320",
+        email="teacher@professor.com",
+        password=protect("123456"),
+        level=UserLevel.TEACHER.value,
+        state="PI",
+        city="Picos",
+        neighborhood="Junco",
+        street="Rua A",
+        house_number="123",
+        complement="Ultima Casa"
+    )
+
+    db_session.add(user)
+
+    db_session.commit()
+
+    return user
+
+
+@fixture
+def mock_ClassTeacher(
+    db_session,
+    mock_teacher_on_db,
+    mock_class_on_db
+) -> ClassTeacherModel:
+    
+    to_db = ClassTeacherModel(
+        id=id_generate(), 
+        teacher_id=mock_teacher_on_db.cpf,
+        class_id=mock_class_on_db.id
+    )
+
+    db_session.add(to_db)
+    db_session.commit()
+
+    return to_db
 
 
 @fixture

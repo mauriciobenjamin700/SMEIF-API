@@ -88,17 +88,20 @@ def format_date(date: datetime) -> str:
     return date.strftime("%d/%m/%Y")
 
 
-def unformat_date(date: str) -> datetime:
+def unformat_date(date: str, portuguese: bool = True) -> datetime:
     """
-    Desformata uma data no formato dd/mm/yyyy para um objeto datetime
+    Desformata uma data no formato dd/mm/yyyy ou yyyy/mm/dd para um objeto datetime
 
     - Args:
         - date:: str: Data que será desformatada
+        - portuguese:: bool: True Se a data está no formato português (dd/mm/yyyy), False caso contrário (yyyy-mm-dd)
 
     - Return:
         - datetime: Data desformatada
     """
-    return datetime.strptime(date, "%d/%m/%Y")
+    if portuguese:
+        return datetime.strptime(date, "%d/%m/%Y")
+    return datetime.strptime(date, "%Y-%m-%d")
 
 
 def format_time(time: time) -> str:

@@ -1,6 +1,4 @@
 """
-- LEVEL
-- GENDER
 - MESSAGE_USER_ADD_SUCCESS
 - MESSAGE_USER_UPDATE_SUCCESS
 - MESSAGE_USER_UPDATE_FAIL
@@ -23,14 +21,6 @@
 - ERROR_USER_GET_TEACHER_NOT_FOUND
 
 """
-LEVEL = {
-    "parent": 1,
-    "teacher": 2,
-    "coordination": 3,
-    "admin": 4
-}
-GENDER = ['M', 'F', 'Z']
-
 MESSAGE_USER_ADD_SUCCESS = "Usuário cadastrado com sucesso"
 MESSAGE_USER_UPDATE_SUCCESS = "Usuário atualizado com sucesso"
 MESSAGE_USER_UPDATE_FAIL = "Nenhum dado foi atualizado"

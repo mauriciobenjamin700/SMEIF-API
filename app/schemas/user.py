@@ -25,12 +25,14 @@ from constants.user import (
     ERROR_USER_REQUIRED_FIELD_GENDER,
     ERROR_USER_REQUIRED_FIELD_NAME,
     ERROR_USER_REQUIRED_FIELD_PASSWORD,
-    ERROR_USER_REQUIRED_FIELD_PHONE,
-    GENDER,
-    LEVEL 
+    ERROR_USER_REQUIRED_FIELD_PHONE
 )
 from schemas.address import Address
-from schemas.base import BaseSchema
+from schemas.base import (
+    BaseSchema,
+    Gender,
+    UserLevel
+)
 from utils.validate import(
     is_adult,
     validate_cpf,
@@ -104,7 +106,7 @@ class UserRequest(BaseSchema):
     level: int = Field(
         title="level", 
         description="Nível de acesso do usuário", 
-        examples=[f"{key}: {value}" for key, value in LEVEL.items()]
+        examples=[f"{key}: {value}" for key, value in UserLevel.__dict__.items()]
     )
     address: Address = Field(
         title="address", 
@@ -160,7 +162,7 @@ class UserRequest(BaseSchema):
 
             raise UnprocessableEntity(ERROR_USER_REQUIRED_FIELD_GENDER)
         
-        if value not in GENDER:
+        if value not in Gender.__dict__.values():
 
             raise UnprocessableEntity(ERROR_INVALID_FORMAT_GENDER)
         
@@ -237,7 +239,7 @@ class UserRequest(BaseSchema):
     @field_validator("level", mode="before")
     def field_validate_level(cls, value) -> int:
 
-        if not value or value not in LEVEL.values():
+        if not value or value not in UserLevel.__dict__.values():
 
             raise UnprocessableEntity(ERROR_USER_INVALID_LEVEL)
         
@@ -528,7 +530,7 @@ class UserUpdateRequest(BaseSchema):
 
         if value:
 
-            if value not in LEVEL.values():
+            if value not in UserLevel.__dict__.values():
 
                 raise UnprocessableEntity(ERROR_USER_INVALID_LEVEL)
         

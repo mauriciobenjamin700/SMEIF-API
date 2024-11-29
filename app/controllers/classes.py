@@ -331,7 +331,7 @@ class ClassesController():
             model = get_class_event_by_id(class_event_id)
 
             for key, value in request.dict().items():
-                if key == "recurrences": # TODO: Recorrências só podem ser adicionadas e removidas, não alteradas
+                if key == "recurrences":
                     continue
                 setattr(model, key, value)
 

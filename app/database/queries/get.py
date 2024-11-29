@@ -10,8 +10,7 @@ from constants.disciplines import ERROR_DISCIPLINES_GET_NOT_FOUND
 from constants.user import (
     ERROR_USER_GET_TEACHER_NOT_FOUND,
     ERROR_USER_NOT_ID,
-    ERROR_USER_REQUIRED_FIELD_CPF, 
-    LEVEL,
+    ERROR_USER_REQUIRED_FIELD_CPF,
     ERROR_USER_NOT_FOUND_USER
 )
 from database.models import(
@@ -20,6 +19,7 @@ from database.models import(
     DisciplinesModel,
     UserModel
 )
+from schemas.base import UserLevel
 from utils.messages.error import (
     BadRequest, 
     NotFound
@@ -48,7 +48,7 @@ def get_teacher_by_cpf(db_session: Session, teacher_cpf:str) -> UserModel:
     model = db_session.scalar(
         select(UserModel).where(
             UserModel.cpf == teacher_cpf & 
-            UserModel.level == LEVEL["teacher"]
+            UserModel.level == UserLevel.TEACHER.value
         )
     )
 

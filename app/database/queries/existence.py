@@ -9,8 +9,7 @@ from sqlalchemy.orm import Session
 from constants.user import (
     ERROR_USER_CPF_ALREADY_EXISTS,
     ERROR_USER_EMAIL_ALREADY_EXISTS,
-    ERROR_USER_PHONE_ALREADY_EXISTS,
-    LEVEL
+    ERROR_USER_PHONE_ALREADY_EXISTS
 )
 from database.base import BaseModel
 from database.models import (
@@ -20,6 +19,7 @@ from database.models import (
     UserModel,
     ClassModel
 )
+from schemas.base import UserLevel
 from schemas.classes import ClassEventRequest, Recurrences
 from utils.format import unformat_date, unformat_time
 from utils.messages.error import Conflict
@@ -74,7 +74,7 @@ def teacher_existe(db_session: Session, teacher_cpf: str) -> bool:
     register = db_session.scalar(
         select(UserModel).where(
             UserModel.cpf == teacher_cpf and
-            UserModel.level == LEVEL["teacher"]
+            UserModel.level == UserLevel.TEACHER.value
         )
     )
 
@@ -124,10 +124,11 @@ def class_event_existe(db_session: Session, request: ClassEventRequest) -> bool:
         ClassEventModel.class_id == request.class_id,
         ClassEventModel.discipline_id == request.disciplines_id,
         ClassEventModel.teacher_id == request.teacher_id,
-        ClassEventModel.start_date == unformat_date(request.start_date) ,
-        ClassEventModel.end_date == unformat_date(request.end_date),
+        
 
     )
+        #ClassEventModel.start_date == unformat_date(request.start_date, False) ,
+        #ClassEventModel.end_date == unformat_date(request.end_date, False),
 
     return register_exists(db_session, ClassEventModel, filters)
 
