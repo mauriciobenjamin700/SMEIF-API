@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 
@@ -16,7 +17,10 @@ from schemas.disciplines import(
     DisciplineResponse
 )
 from services.generator.ids import id_generate
-from utils.messages.error import Conflict
+from utils.messages.error import (
+    Conflict, 
+    Server
+)
 from utils.messages.success import Success
 
 
@@ -39,22 +43,28 @@ class DisciplinesController:
             - Conflict: Disciplina já existe.
             - Exception: Erro no servidor.
         """
+        try:
+            if discipline_exists(
+                self.db_session, 
+                request.name
+            ):
+                raise Conflict(ERROR_DISCIPLINES_ADD_CONFLICT)
 
-        if discipline_exists(
-            self.db_session, 
-            request.name
-        ):
-            raise Conflict(ERROR_DISCIPLINES_ADD_CONFLICT)
+            discipline = DisciplinesModel(
+                id=id_generate(),
+                name=request.name
+            )
 
-        discipline = DisciplinesModel(
-            id=id_generate(),
-            name=request.name
-        )
+            self.db_session.add(discipline)
+            self.db_session.commit()
 
-        self.db_session.add(discipline)
-        self.db_session.commit()
+            return Success(MESSAGE_DISCIPLINE_ADD_SUCCESS)
+        
+        except HTTPException:
+            raise
 
-        return Success(MESSAGE_DISCIPLINE_ADD_SUCCESS)
+        except Exception as e:
+            raise Server(e)
 
 
     def get(self, discipline_name: str) -> DisciplineResponse:

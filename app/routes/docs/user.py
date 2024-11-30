@@ -21,7 +21,6 @@ from constants.user import (
     ERROR_USER_INVALID_LEVEL,
     ERROR_USER_NOT_FOUND_USER,
     ERROR_USER_NOT_FOUND_USERS,
-    ERROR_USER_NOT_ID,
     ERROR_USER_PASSWORD_WRONG, 
     ERROR_USER_PHONE_ALREADY_EXISTS,
     ERROR_USER_PHONE_AND_OPTIONAL_PHONE_EQUALS,
@@ -38,7 +37,10 @@ from constants.user import (
     MESSAGE_USER_UPDATE_FAIL,
     MESSAGE_USER_UPDATE_SUCCESS
 )
-from utils.messages.doc import generate_response, generate_responses_documentation
+from utils.messages.doc import (
+    generate_response, 
+    generate_responses_documentation
+)
 
 
 ADD_DESCRIPTION = "Realiza o cadastro de um usuário no banco de dados com os dados fornecidos"

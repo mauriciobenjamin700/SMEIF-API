@@ -6,6 +6,18 @@ from sqlalchemy.orm import Session
 
 
 from controllers.disciplines import DisciplinesController
+from routes.docs.disciplines import(
+    ADD_DESCRIPTION,
+    GET_DESCRIPTION,
+    LIST_DESCRIPTION,
+    UPDATE_DESCRIPTION,
+    DELETE_DESCRIPTION,
+    ADD_RESPONSES,
+    GET_RESPONSES,
+    LIST_RESPONSES,
+    UPDATE_RESPONSES,
+    DELETE_RESPONSES
+)
 from schemas.disciplines import(
     DisciplineRequest,
     DisciplineResponse
@@ -17,7 +29,7 @@ from services.session import db_session
 router = APIRouter(prefix='/disciplines', tags=['Disciplines'])
 
 
-@router.post('/add')
+@router.post('/add', description=ADD_DESCRIPTION, responses=ADD_RESPONSES, status_code=201)
 async def add_discipline(
     request: DisciplineRequest,
     db_session: Session = Depends(db_session)
@@ -30,7 +42,7 @@ async def add_discipline(
     return response
 
 
-@router.get("/get")
+@router.get("/get", description=GET_DESCRIPTION, responses=GET_RESPONSES)
 async def get_discipline(
     discipline_name: str,
     db_session: Session = Depends(db_session)
@@ -43,7 +55,7 @@ async def get_discipline(
     return response
 
 
-@router.get("/list")
+@router.get("/list", description=LIST_DESCRIPTION, responses=LIST_RESPONSES)
 async def list_disciplines(
     db_session: Session = Depends(db_session)
 ) -> list[DisciplineResponse]:
@@ -55,7 +67,7 @@ async def list_disciplines(
     return response
 
 
-@router.put("/update")
+@router.put("/update", description=UPDATE_DESCRIPTION, responses=UPDATE_RESPONSES)
 async def update_discipline(
     name:str,
     request: DisciplineRequest,
@@ -69,7 +81,7 @@ async def update_discipline(
         return response
 
 
-@router.delete("/delete")
+@router.delete("/delete", description=DELETE_DESCRIPTION, responses=DELETE_RESPONSES)
 async def delete_discipline(
     discipline_name: str,
     db_session: Session = Depends(db_session)

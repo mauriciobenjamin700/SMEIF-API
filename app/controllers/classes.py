@@ -12,6 +12,8 @@ from constants.classes import(
     MESSAGE_CLASS_DELETE_SUCCESS,
     MESSAGE_CLASS_EVENT_ADD_SUCCESS,
     MESSAGE_CLASS_EVENT_DELETE_SUCCESS,
+    MESSAGE_CLASSES_EVENTS_ADD_RECURRENCES_SUCCESS,
+    MESSAGE_CLASSES_EVENTS_DELETE_RECURRENCES_SUCCESS,
 )
 from database.models import(
     ClassModel,
@@ -420,7 +422,7 @@ class ClassesController():
 
             self.db_session.commit()
 
-            return Success(MESSAGE_CLASS_EVENT_ADD_SUCCESS)
+            return Success(MESSAGE_CLASSES_EVENTS_ADD_RECURRENCES_SUCCESS)
 
         except HTTPException:
             raise
@@ -453,7 +455,7 @@ class ClassesController():
 
             self.db_session.commit()
 
-            return Success(MESSAGE_CLASS_EVENT_DELETE_SUCCESS)
+            return Success(MESSAGE_CLASSES_EVENTS_DELETE_RECURRENCES_SUCCESS)
 
         except HTTPException:
             raise
