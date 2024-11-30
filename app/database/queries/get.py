@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 
 from constants.classes import(
+    ERROR_CLASSES_EVENTS_DELETE_RECURRENCES_NOT_FOUND,
     ERROR_CLASSES_EVENTS_GET_NOT_FOUND,
     ERROR_CLASSES_GET_NOT_FOUND
 )
@@ -17,9 +18,11 @@ from database.models import(
     ClassEventModel,
     ClassModel,
     DisciplinesModel,
+    RecurrencesModel,
     UserModel
 )
 from schemas.base import UserLevel
+from schemas.classes import Recurrences
 from utils.messages.error import (
     BadRequest, 
     NotFound
@@ -110,5 +113,26 @@ def get_discipline_by_name(db_session: Session, discipline_name:str) -> Discipli
 
     if not model:
         raise NotFound(ERROR_DISCIPLINES_GET_NOT_FOUND)
+    
+    return model
+
+
+def get_recurrence_by_attributes(
+        db_session: Session,
+        class_event_id: str,
+        recurrence: Recurrences
+    ) -> ClassEventModel:
+
+    model = db_session.scalar(
+        select(RecurrencesModel).where(
+            RecurrencesModel.class_event_id == class_event_id and
+            RecurrencesModel.day_of_week == recurrence.day_of_week and
+            RecurrencesModel.start_time == recurrence.start_time and
+            RecurrencesModel.end_time == recurrence.end_time
+        )
+    )
+
+    if not model:
+        raise NotFound(ERROR_CLASSES_EVENTS_DELETE_RECURRENCES_NOT_FOUND)
     
     return model

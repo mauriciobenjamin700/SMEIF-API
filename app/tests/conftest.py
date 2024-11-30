@@ -328,7 +328,23 @@ def mock_ClassEventUpdate(
 def mock_ClassEventResponse(mock_class_event_response_data) -> ClassEventResponse:
     return ClassEventResponse(**mock_class_event_response_data)
 
+@fixture
+def mock_Recurrences_list() -> list[Recurrences]:
+    
+    recurrences = [
+        Recurrences(
+            day_of_week=DaysOfWeek.WEDNESDAY.value,
+            start_time="14:00",
+            end_time="15:00"
+        ),
+        Recurrences(
+            day_of_week=DaysOfWeek.FRIDAY.value,
+            start_time="15:20",
+            end_time="16:20"
+        )
+    ]
 
+    return recurrences
 
 ############################ MODELS ############################
 

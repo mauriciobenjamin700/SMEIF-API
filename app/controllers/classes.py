@@ -26,7 +26,7 @@ from database.queries.existence import (
 from database.queries.get import (
     get_class_by_id,
     get_class_event_by_id,
-    get_teacher_by_cpf
+    get_recurrence_by_attributes
 )
 from database.queries.get_all import (
     get_all_class_events,
@@ -406,7 +406,7 @@ class ClassesController():
         """
         try:
 
-            model = get_class_event_by_id(class_event_id)
+            model = get_class_event_by_id(self.db_session,class_event_id)
 
             for recurrence in recurrences:
 
@@ -445,16 +445,9 @@ class ClassesController():
         """
         try:
 
-            model = get_class_event_by_id(class_event_id)
-
             for recurrence in recurrences:
 
-                recurrence_model = RecurrencesModel(
-                    class_event_id=model.id,
-                    day_of_week=recurrence.day_of_week,
-                    start_time=recurrence.start_time,
-                    end_time=recurrence.end_time
-                )
+                recurrence_model = get_recurrence_by_attributes(self.db_session, class_event_id ,recurrence)
 
                 self.db_session.delete(recurrence_model)
 

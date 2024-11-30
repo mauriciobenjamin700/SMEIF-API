@@ -7,8 +7,7 @@ from sqlalchemy import (
     ForeignKey, 
     Integer, 
     String, 
-    Text,
-    Time
+    Text
 )
 from sqlalchemy.orm import (
     Mapped, 
@@ -59,8 +58,8 @@ class UserModel(BaseModel):
     gender: Mapped[str] = mapped_column(CHAR(1), unique=False,nullable=False)
     phone: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     phone_optional: Mapped[str] = mapped_column(String, unique=False, nullable=True)
-    email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String, unique= False, nullable=False)
+    email: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True)
+    password: Mapped[str] = mapped_column(String, unique= False, nullable=False, index=True)
     level: Mapped[int] = mapped_column(Integer, unique=False ,nullable=False)
     state: Mapped[str] = mapped_column(String, nullable=False)
     city: Mapped[str] = mapped_column(String, nullable=False)

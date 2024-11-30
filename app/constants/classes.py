@@ -35,6 +35,7 @@ ERROR_CLASSES_EVENTS_GET_NOT_FOUND = "Aula não encontrada"
 ERROR_CLASSES_EVENTS_GET_ALL_NOT_FOUND = "Nenhuma aula encontrada"
 
 ERROR_CLASSES_EVENTS_ADD_RECURRENCES_CONFLICT = "Recorrências conflitantes durante o cadastro"
+ERROR_CLASSES_EVENTS_DELETE_RECURRENCES_NOT_FOUND = "Recorrências não encontradas"
 
 ERROR_CLASS_ADD_CONFLICT = "Turma já cadastrada"
 ERROR_CLASSES_EVENTS_ADD_CONFLICT = "Aula já cadastrado"
