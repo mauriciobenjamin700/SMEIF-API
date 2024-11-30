@@ -418,11 +418,10 @@ def mock_class_event_on_db(
     to_db = ClassEventModel(
         id = id_generate(),
         class_id=mock_class_on_db.id,
-        teacher_id=mock_ClassTeacher_on_db.user_cpf,
+        teacher_id=mock_ClassTeacher_on_db.id,
         discipline_id=mock_discipline_on_db.id,
         start_date= unformat_date(request.start_date, portuguese=False),
-        end_date=unformat_date(request.end_date, portuguese=False),
-        recurrences=request.recurrences
+        end_date=unformat_date(request.end_date, portuguese=False)
     )
 
     recurrence = RecurrencesModel(

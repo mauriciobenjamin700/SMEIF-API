@@ -98,7 +98,7 @@ def validate_date(date:str) -> bool:
     date_format = r'\d{4}-\d{2}-\d{2}'
     
     if not match(date_format, date):
-
+        print(f"date: {date} not in format")
         result =  False
     
     return result

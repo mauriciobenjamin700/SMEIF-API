@@ -282,7 +282,7 @@ class ClassesController():
             - Exception: Erro no servidor.
         """
         try:
-            model = get_class_event_by_id(class_event_id)
+            model = get_class_event_by_id(self.db_session,class_event_id)
 
             return self._Model_to_ClassEventResponse(model)
         
@@ -554,13 +554,14 @@ class ClassesController():
         - Returns:
             - ClassEventResponse: Objeto com os dados da aula convertidos.
         """
+        print(format_date(model.start_date, False))
         return ClassEventResponse(
             id=model.id,
             class_id=model.class_id,
-            disciplines_id=model.disciplines_id,
+            disciplines_id=[model.discipline_id],
             teacher_id=model.teacher_id,
-            start_date=format_date(model.start_date),
-            end_date=format_date(model.end_date),
+            start_date=format_date(model.start_date, False),
+            end_date=format_date(model.end_date, False),
             teacher_name=model.teacher.user.name,
             discipline_name=model.discipline.name,
             recurrences=[

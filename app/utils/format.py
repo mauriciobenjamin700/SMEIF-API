@@ -75,18 +75,21 @@ def clean_string_field(string: str) -> str:
     return string.strip() if string else ""
 
 
-def format_date(date: datetime) -> str:
+def format_date(date: datetime, portuguese: bool = True) -> str:
     """
     Formata uma data
 
     - Args:
         - date:: datetime: Data que será formatada
+        - portuguese:: bool: True Se a data será formatada no formato português (dd/mm/yyyy), False caso contrário (yyyy-mm-dd)
 
     - Return:
-        - str: Data formatada no formato dd/mm/yyyy
+        - str: Data formatada no formato dd/mm/yyyy ou yyyy-mm-dd
     """
-    return date.strftime("%d/%m/%Y")
-
+    if portuguese:
+        return date.strftime("%d/%m/%Y")
+    
+    return date.strftime("%Y-%m-%d")
 
 def unformat_date(date: str, portuguese: bool = True) -> datetime:
     """
