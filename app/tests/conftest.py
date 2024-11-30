@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 
 from database.connection import Session
-from database.models import ClassEventModel, ClassModel, ClassTeacherModel, DisciplinesModel, UserModel
+from database.models import ClassEventModel, ClassModel, ClassTeacherModel, DisciplinesModel, RecurrencesModel, UserModel
 from main import app
 from schemas.address import Address
 from schemas.base import (
@@ -32,6 +32,7 @@ from schemas.user import (
 )
 from services.generator.ids import id_generate
 from services.security.password import protect
+from utils.format import unformat_date
 
 
 
@@ -199,12 +200,12 @@ def mock_discipline_response_data(mock_discipline_request_data) -> dict:
 def mock_UserUpdateRequest() -> UserUpdateRequest:
 
     update = UserUpdateRequest(
-        name="Jane Doe",
+        name="Teacher Jane Doe",
         phone_optional="(00) 91111-1111",
         phone="(00) 90000-0066",
         email="jane.doe@gmail.com",
         password="654321",
-        level=UserLevel.PARENT.value,
+        level=UserLevel.TEACHER.value,
         address=Address(
             state="PI",
             city="Picos",
@@ -221,7 +222,7 @@ def mock_UserUpdateRequest() -> UserUpdateRequest:
 def mock_UserUpdateRequest_level() -> UserUpdateRequest:
 
     update = UserUpdateRequest(
-        level=UserLevel.PARENT.value
+        level=UserLevel.TEACHER.value
     )
 
     return update
@@ -401,3 +402,62 @@ def mock_discipline_on_db(db_session, mock_DisciplineRequest) -> DisciplinesMode
     db_session.commit()
 
     return to_db
+
+
+@fixture
+def mock_class_event_on_db(
+    db_session,
+    mock_class_on_db,
+    mock_ClassTeacher_on_db,
+    mock_discipline_on_db,
+    mock_class_event_request_data
+) -> ClassEventModel:
+
+    request = ClassEventRequest(**mock_class_event_request_data)
+
+    to_db = ClassEventModel(
+        id = id_generate(),
+        class_id=mock_class_on_db.id,
+        teacher_id=mock_ClassTeacher_on_db.user_cpf,
+        discipline_id=mock_discipline_on_db.id,
+        start_date= unformat_date(request.start_date, portuguese=False),
+        end_date=unformat_date(request.end_date, portuguese=False),
+        recurrences=request.recurrences
+    )
+
+    recurrence = RecurrencesModel(
+        id=id_generate(),
+        class_event_id=to_db.id,
+        day_of_week=request.recurrences[0].day_of_week,
+        start_time=request.recurrences[0].start_time,
+        end_time=request.recurrences[0].end_time
+    )
+
+    db_session.add(to_db)
+
+    db_session.add(recurrence)
+
+    db_session.commit()
+
+    return to_db
+
+
+@fixture
+def mock_recurrence_on_db(
+    db_session,
+    mock_class_event_on_db
+) -> RecurrencesModel:
+
+    recurrence = RecurrencesModel(
+        id=id_generate(),
+        class_event_id=mock_class_event_on_db.id,
+        day_of_week=DaysOfWeek.WEDNESDAY.value,
+        start_time="13:00",
+        end_time="14:00"
+    )
+
+    db_session.add(recurrence)
+
+    db_session.commit()
+
+    return recurrence

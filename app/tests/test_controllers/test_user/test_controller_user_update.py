@@ -20,7 +20,9 @@ def test_update_user_success(db_session, mock_user_on_db,mock_UserUpdateRequest)
     
     uc = UserController(db_session)
 
-    response = uc.update(mock_user_on_db.cpf, mock_UserUpdateRequest)
+    request = UserUpdateRequest(**mock_UserUpdateRequest.dict())
+    print(request)
+    response = uc.update(mock_user_on_db.cpf, request)
 
     assert response.detail == MESSAGE_USER_UPDATE_SUCCESS
 
