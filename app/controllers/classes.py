@@ -7,6 +7,7 @@ from constants.classes import(
     ERROR_CLASS_ADD_CONFLICT,
     ERROR_CLASSES_EVENTS_ADD_CONFLICT,
     ERROR_CLASSES_EVENTS_ADD_RECURRENCES_CONFLICT,
+    ERROR_CLASSES_EVENTS_GET_ALL_NOT_FOUND,
     MESSAGE_CLASS_ADD_SUCCESS,
     MESSAGE_CLASS_DELETE_SUCCESS,
     MESSAGE_CLASS_EVENT_ADD_SUCCESS,
@@ -139,7 +140,7 @@ class ClassesController():
         try:
 
             classes = get_all_classes(self.db_session)
-            print(classes)
+            
             return [self._Model_to_Response(model) for model in classes]
 
         except HTTPException:
@@ -309,6 +310,9 @@ class ClassesController():
         try:
             models = get_all_class_events(self.db_session)
 
+            if not models:
+                raise NotFound(ERROR_CLASSES_EVENTS_GET_ALL_NOT_FOUND)
+
             return [self._Model_to_ClassEventResponse(model) for model in models]
         
         except HTTPException:
@@ -334,7 +338,9 @@ class ClassesController():
         """
         try:
 
-            model = get_class_event_by_id(class_event_id)
+            print(type(request))
+
+            model = get_class_event_by_id(self.db_session,class_event_id)
 
             for key, value in request.dict().items():
                 if key == "recurrences":
@@ -368,7 +374,7 @@ class ClassesController():
         """
         try:
 
-            model = get_class_event_by_id(class_event_id)
+            model = get_class_event_by_id(self.db_session,class_event_id)
 
             self.db_session.delete(model)
 
@@ -540,8 +546,8 @@ class ClassesController():
         """
         return Recurrences(
             day_of_week=model.day_of_week,
-            start_time=format_date(model.start_time),
-            end_time=format_date(model.end_time)
+            start_time=model.start_time,
+            end_time=model.end_time
         )
         
     def _Model_to_ClassEventResponse(self, model: ClassEventModel) -> ClassEventResponse:
@@ -554,7 +560,6 @@ class ClassesController():
         - Returns:
             - ClassEventResponse: Objeto com os dados da aula convertidos.
         """
-        print(format_date(model.start_date, False))
         return ClassEventResponse(
             id=model.id,
             class_id=model.class_id,

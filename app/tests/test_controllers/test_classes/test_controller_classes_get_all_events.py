@@ -2,20 +2,23 @@ from fastapi import HTTPException
 from pytest import raises
 
 
-from constants.classes import ERROR_CLASSES_EVENTS_GET_NOT_FOUND
+from constants.classes import ERROR_CLASSES_EVENTS_GET_ALL_NOT_FOUND
 from controllers.classes import ClassesController
 from utils.format import format_date
 
 
-def test_controller_classes_get_event_success(
+def test_controller_classes_get_all_events_success(
     db_session,
     mock_class_event_on_db
 ):
     
     controller = ClassesController(db_session)
 
-    response = controller.get_event(class_event_id=mock_class_event_on_db.id)
+    response = controller.get_all_events()
 
+    assert len(response) == 1
+
+    response = response[0]
 
     assert response.id == mock_class_event_on_db.id
     assert response.class_id == mock_class_event_on_db.class_id
@@ -31,14 +34,15 @@ def test_controller_classes_get_event_success(
     assert response.discipline_name == mock_class_event_on_db.discipline.name
 
 
-def test_controller_classes_get_event_not_found(
+def test_controller_classes_get_all_events_empty(
     db_session
 ):
     
     controller = ClassesController(db_session)
 
     with raises(HTTPException) as exception:
-        controller.get_event(class_event_id="not_found")
+        controller.get_all_events()
+
 
     assert exception.value.status_code == 404
-    assert exception.value.detail == ERROR_CLASSES_EVENTS_GET_NOT_FOUND
+    assert exception.value.detail == ERROR_CLASSES_EVENTS_GET_ALL_NOT_FOUND

@@ -403,7 +403,6 @@ def test_schemas_classes_ClassResponse_success(mock_class_response_data):
 
     data = mock_class_response_data.copy()
     data["id"] = "capeta"
-    print(data)
     response = ClassResponse(**data)
 
     assert response.id == data["id"]

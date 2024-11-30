@@ -309,9 +309,7 @@ class ClassEventRequest(BaseSchema):
 
         if not validate_string(value):
             raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_START_DATE)
-        print(f"312 -> {value}")
         if not validate_date(value):
-            print("aqui")
             raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_START_DATE)
 
         return value
@@ -325,9 +323,7 @@ class ClassEventRequest(BaseSchema):
         if not validate_string(value):
             raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_END_DATE)
 
-        print(f"328 -> {value}")
         if not validate_date(value):
-            print("aqui 330")
             raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_END_DATE)
 
         return value

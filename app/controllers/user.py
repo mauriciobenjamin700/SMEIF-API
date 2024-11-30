@@ -195,7 +195,6 @@ class UserController():
                             updated = True
 
             if updated:
-                print("Entrei no Updated da linha 198")
                 self.db_session.commit()
                 self.db_session.refresh(user)
 

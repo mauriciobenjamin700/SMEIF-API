@@ -243,6 +243,7 @@ def mock_UserLoginRequest(mock_UserRequest) -> UserLoginRequest:
 def mock_ClassRequest(mock_class_data) -> ClassRequest:
     return ClassRequest(**mock_class_data)
 
+
 @fixture
 def mock_Address(mock_address_data) -> Address:
     return Address(**mock_address_data)
@@ -299,6 +300,27 @@ def mock_ClassEventRequest(
     request.class_id = mock_class_on_db.id
     request.teacher_id = mock_ClassTeacher_on_db.id
     request.disciplines_id = mock_discipline_on_db.id
+
+    return request
+
+
+@fixture
+def mock_ClassEventUpdate(
+    mock_class_event_request_data,
+    mock_class_on_db,
+    mock_ClassTeacher_on_db,
+    mock_discipline_on_db,
+) -> ClassEventRequest:
+    
+    request =  ClassEventRequest(**mock_class_event_request_data)
+
+    request.class_id = mock_class_on_db.id
+    request.teacher_id = mock_ClassTeacher_on_db.id
+    request.disciplines_id = mock_discipline_on_db.id
+
+    request.start_date = "2026-01-01"
+    request.end_date = "2026-06-01"
+    
 
     return request
 
