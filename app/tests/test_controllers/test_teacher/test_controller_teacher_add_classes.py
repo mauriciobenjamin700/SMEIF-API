@@ -1,12 +1,22 @@
+from fastapi import HTTPException
+from pytest import raises
+
+
+from constants.disciplines import ERROR_DISCIPLINES_GET_ALL_NOT_FOUND
+from constants.teacher import ERROR_TEACHER_ADD_CLASSES_CONFLICT
+from constants.user import ERROR_USER_GET_TEACHER_NOT_FOUND
+
 from controllers.teacher import TeacherController
 from schemas.teacher import ClassTeacherRequest
-from utils.format import format_cpf, format_phone
+from utils.format import (
+    format_cpf, 
+    format_phone
+)
 
 
 def test_controller_teacher_add_classes_success_one(
     db_session,
     mock_teacher_on_db,
-    mock_teacher_discipline_on_db,
     mock_ClassTeacherRequest
 ):
     
@@ -27,7 +37,6 @@ def test_controller_teacher_add_classes_success_one(
 def test_controller_teacher_add_classes_success_three(
     db_session,
     mock_teacher_on_db,
-    mock_teacher_discipline_on_db,
     mock_list_class_on_db
 ):
     
@@ -45,3 +54,43 @@ def test_controller_teacher_add_classes_success_three(
     assert response.user.email == mock_teacher_on_db.email
     assert response.user.phone == format_phone(mock_teacher_on_db.phone) 
 
+
+def test_controller_teacher_add_classes_invalid_teacher(
+    db_session,
+    mock_user_on_db,
+    mock_ClassTeacherRequest
+):
+    
+    controller = TeacherController(db_session)
+
+    request = ClassTeacherRequest(
+        user_cpf=mock_user_on_db.cpf,
+        classes_id=mock_ClassTeacherRequest.classes_id
+    )
+
+    with raises(HTTPException) as e:
+        controller.add_classes(request)
+
+    assert e.value.status_code == 404
+    assert e.value.detail == ERROR_USER_GET_TEACHER_NOT_FOUND
+
+
+def test_controller_teacher_add_classes_invalid_classes(
+    db_session,
+    mock_teacher_on_db,
+    mock_teacher_discipline_on_db,
+    mock_ClassTeacherRequest
+):
+        
+        controller = TeacherController(db_session)
+    
+        request = ClassTeacherRequest(
+            **mock_ClassTeacherRequest.dict()
+        )
+    
+        with raises(HTTPException) as e:
+            controller.add_classes(request)
+            controller.add_classes(request)
+    
+        assert e.value.status_code == 409
+        assert e.value.detail == ERROR_TEACHER_ADD_CLASSES_CONFLICT

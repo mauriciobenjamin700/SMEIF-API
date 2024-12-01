@@ -123,8 +123,8 @@ def get_all_disciplines_by_teacher(db_session: Session, user_cpf: str) -> list[D
         select(TeacherDisciplinesModel).where(TeacherDisciplinesModel.user_cpf == user_cpf)
     ).all()
 
-    if not associations:
-        raise NotFound(ERROR_DISCIPLINES_GET_ALL_NOT_FOUND)
+    # if not associations: # Existem caos que simplesmente não vai ter mesmo (em cadastro)
+    #     raise NotFound(ERROR_DISCIPLINES_GET_ALL_NOT_FOUND)
 
     return [assossiation.discipline for assossiation in associations]
 
@@ -144,8 +144,8 @@ def get_all_classes_by_teacher(db_session: Session, user_cpf: str) -> list[Class
         select(ClassTeacherModel).where(ClassTeacherModel.user_cpf == user_cpf)
     ).all()
 
-    if not associations:
-        raise NotFound(ERROR_CLASSES_GET_ALL_NOT_FOUND)
+    # if not associations: # existem casos que simplesmente não vai ter mesmo
+    #     raise NotFound(ERROR_CLASSES_GET_ALL_NOT_FOUND)
 
     classes = []
 

@@ -91,7 +91,7 @@ class TeacherController:
         try:
             user = get_teacher_by_cpf(self.db_session, request.user_cpf)
 
-            if teacher_disciplines_exists(self.db_session, request.user_cpf, request.disciplines):
+            if teacher_disciplines_exists(self.db_session, request.user_cpf, request.disciplines_id):
 
                 raise Conflict(ERROR_TEACHER_ADD_DISCIPLINES_CONFLICT)
 

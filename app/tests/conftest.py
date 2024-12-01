@@ -25,7 +25,8 @@ from schemas.disciplines import(
     DisciplineResponse
 )
 from schemas.teacher import (
-    ClassTeacherRequest
+    ClassTeacherRequest,
+    TeacherDisciplinesRequest
 )
 from schemas.user import (
     UserDB,
@@ -380,6 +381,17 @@ def mock_ClassTeacherRequest(
         classes_id=[mock_class_on_db.id]
 )
 
+@fixture
+def mock_mock_TeacherDisciplinesRequest(
+    mock_teacher_on_db,
+    mock_discipline_on_db
+) -> TeacherDisciplinesRequest:
+    
+    return TeacherDisciplinesRequest(
+        user_cpf=mock_teacher_on_db.cpf,
+        disciplines_id=[mock_discipline_on_db.id]
+    )
+
 ############################ MODELS ############################
 
 @fixture
@@ -585,3 +597,22 @@ def mock_teacher_discipline_on_db(
     db_session.commit()
 
     return teacher_discipline
+
+
+@fixture
+def mock_class_teacher_on_db(
+    db_session,
+    mock_class_on_db,
+    mock_teacher_on_db
+) -> ClassTeacherModel:
+    
+    class_teacher = ClassTeacherModel(
+        id=id_generate(),
+        user_cpf=mock_teacher_on_db.cpf,
+        class_id=mock_class_on_db.id
+    )
+
+    db_session.add(class_teacher)
+    db_session.commit()
+
+    return class_teacher
