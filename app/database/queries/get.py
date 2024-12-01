@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
 
@@ -49,8 +49,10 @@ def get_teacher_by_cpf(db_session: Session, teacher_cpf:str) -> UserModel:
 
     model = db_session.scalar(
         select(UserModel).where(
-            UserModel.cpf == teacher_cpf & 
-            UserModel.level == UserLevel.TEACHER.value
+            and_(
+                UserModel.cpf == teacher_cpf,
+                UserModel.level == UserLevel.TEACHER.value
+            )
         )
     )
 

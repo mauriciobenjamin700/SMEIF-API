@@ -24,6 +24,9 @@ from schemas.disciplines import(
     DisciplineRequest,
     DisciplineResponse
 )
+from schemas.teacher import (
+    ClassTeacherRequest
+)
 from schemas.user import (
     UserDB,
     UserLoginRequest, 
@@ -346,6 +349,18 @@ def mock_Recurrences_list() -> list[Recurrences]:
 
     return recurrences
 
+
+@fixture
+def mock_ClassTeacherRequest(
+    mock_teacher_on_db,
+    mock_class_on_db
+) -> ClassTeacherRequest:
+    
+    return ClassTeacherRequest(
+        user_cpf=mock_teacher_on_db.cpf,
+        classes_id=[mock_class_on_db.id]
+)
+
 ############################ MODELS ############################
 
 @fixture
@@ -384,7 +399,7 @@ def mock_class_on_db(db_session, mock_ClassRequest) -> ClassModel:
 def mock_teacher_on_db(db_session) -> UserModel:
 
     user = UserModel(
-        cpf="123.456.789-66",
+        cpf="12345678966",
         name="Teacher Doe",
         birth_date=datetime(1990, 1, 1),
         gender = Gender.MALE.value,
@@ -401,7 +416,6 @@ def mock_teacher_on_db(db_session) -> UserModel:
     )
 
     db_session.add(user)
-
     db_session.commit()
 
     return user
