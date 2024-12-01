@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import time
 
 
 def format_cpf(cpf:str) -> str:
@@ -6,10 +7,10 @@ def format_cpf(cpf:str) -> str:
     Formata um CPF
 
     - Args:
-        - cpf:: str: CPF que será formatado
+        - cpf:: str: CPF que será formatado ex(12312312312)
 
     - Return:
-        - str: CPF formatado
+        - str: CPF formatado ex(123.123.123-12)
     """
     
     cpf = "".join([number for number in cpf if number.isnumeric()])
@@ -22,10 +23,10 @@ def unformat_cpf(cpf:str):
     Desformata um CPF
 
     - Args:
-        - cpf:: str: CPF que será desformatado
+        - cpf:: str: CPF que será desformatado ex(123.123.123-12)
 
     - Return:
-        - str: CPF desformatado
+        - str: CPF desformatado ex(12312312312)
     """
     
     return "".join([number for number in cpf if number.isnumeric()])
@@ -51,10 +52,10 @@ def unformat_phone(phone: str):
     Desformata um número de telefone
 
     - Args:
-        - phone:: str: Número de telefone que será desformatado
+        - phone:: str: Número de telefone que será desformatado ex((89) 91212-1212)
 
     - Return
-        - str: Número de telefone desformatado (apenas números)
+        - str: Número de telefone desformatado (89912121212)
 
 
     """
@@ -74,30 +75,62 @@ def clean_string_field(string: str) -> str:
     return string.strip() if string else ""
 
 
-def format_date(date: datetime) -> str:
+def format_date(date: datetime, portuguese: bool = True) -> str:
     """
     Formata uma data
 
     - Args:
         - date:: datetime: Data que será formatada
+        - portuguese:: bool: True Se a data será formatada no formato português (dd/mm/yyyy), False caso contrário (yyyy-mm-dd)
 
     - Return:
-        - str: Data formatada
+        - str: Data formatada no formato dd/mm/yyyy ou yyyy-mm-dd
     """
-    return date.strftime("%d/%m/%Y")
+    if portuguese:
+        return date.strftime("%d/%m/%Y")
+    
+    return date.strftime("%Y-%m-%d")
 
-
-def unformat_date(date: str) -> datetime:
+def unformat_date(date: str, portuguese: bool = True) -> datetime:
     """
-    Desformata uma data no formato dd/mm/yyyy para um objeto datetime
+    Desformata uma data no formato dd/mm/yyyy ou yyyy/mm/dd para um objeto datetime
 
     - Args:
         - date:: str: Data que será desformatada
+        - portuguese:: bool: True Se a data está no formato português (dd/mm/yyyy), False caso contrário (yyyy-mm-dd)
 
     - Return:
         - datetime: Data desformatada
     """
-    return datetime.strptime(date, "%d/%m/%Y")
+    if portuguese:
+        return datetime.strptime(date, "%d/%m/%Y")
+    return datetime.strptime(date, "%Y-%m-%d")
+
+
+def format_time(time: time) -> str:
+    """
+    Formata um horário
+
+    - Args:
+        - time:: _Time: Horário que será formatado
+
+    - Return:
+        - str: Horário formatado no formato HH:MM
+    """
+    return time.strftime("%H:%M")
+
+
+def unformat_time(time: str = "08:00") -> time:
+    """
+    Formata um horário
+
+    - Args:
+        - time:: str: Horário que será formatado
+
+    - Return:
+        - str: Horário formatado em um objeto time
+    """
+    return datetime.strptime(time, "%H:%M").time()
 
 
 def format_string_date(date: str) -> str:

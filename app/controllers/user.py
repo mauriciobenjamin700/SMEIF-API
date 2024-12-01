@@ -168,12 +168,8 @@ class UserController():
 
                 if value:
 
-                    if field == "password":
+                    if field == "address": # Endereço é um objeto, por isso temos que iterar sobre ele e seus atributos
 
-                        value = protect(value)
-
-                    elif field == "address": # Endereço é um objeto, por isso temos que iterar sobre ele e seus atributos
-                            
                         for address_field, address_value in value.items(): # Quando o campo endereço é fragmentado, ele vira um dict
 
                             if address_value:
@@ -185,18 +181,20 @@ class UserController():
                                     setattr(user, address_field, address_value)
                                     updated = True
 
-                        continue # Depois de atualizar o endereço, o campo address não tem mais valor e será ignorado
-    
+                    else:
 
-                    value_in_field =  getattr(user, field)
+                        if field == "password":
 
-                    if value != value_in_field:
+                            value = protect(value)
 
-                        setattr(user, field, value)
-                        updated = True
+                        value_in_field =  getattr(user, field)
+
+                        if value != value_in_field:
+
+                            setattr(user, field, value)
+                            updated = True
 
             if updated:
-
                 self.db_session.commit()
                 self.db_session.refresh(user)
 

@@ -4,410 +4,433 @@ from pydantic import (
 )
 
 
-from utils.format import (
-    clean_string_field,
-    format_phone, 
-    unformat_cpf
-)
-from constants.base import ERROR_INVALID_CPF, ERROR_INVALID_EMAIL
 from constants.classes import (
+    ERROR_CLASSES_INVALID_FIELD_CLASS_EVENTS,
+    ERROR_CLASSES_INVALID_FIELD_DAY_OF_WEEK,
+    ERROR_CLASSES_INVALID_FIELD_EDUCATION_LEVEL,
     ERROR_CLASSES_INVALID_FIELD_END_DATE,
+    ERROR_CLASSES_INVALID_FIELD_ID,
+    ERROR_CLASSES_INVALID_FIELD_MAX_STUDENTS,
+    ERROR_CLASSES_INVALID_FIELD_SHIFT,
     ERROR_CLASSES_INVALID_FIELD_START_DATE,
     ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID,
+    ERROR_CLASSES_REQUIRED_FIELD_DAY_OF_WEEK,
+    ERROR_CLASSES_REQUIRED_FIELD_DISCIPLINES_ID,
+    ERROR_CLASSES_REQUIRED_FIELD_EDUCATION_LEVEL,
     ERROR_CLASSES_REQUIRED_FIELD_END_DATE,
+    ERROR_CLASSES_REQUIRED_FIELD_ID,
+    ERROR_CLASSES_REQUIRED_FIELD_MAX_STUDENTS,
     ERROR_CLASSES_REQUIRED_FIELD_NAME,
-    ERROR_CLASSES_REQUIRED_FIELD_ROOM,
+    ERROR_CLASSES_REQUIRED_FIELD_RECURRENCES,
+    ERROR_CLASSES_REQUIRED_FIELD_SHIFT,
     ERROR_CLASSES_REQUIRED_FIELD_START_DATE,
     ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF,
-    ERROR_STUDENT_REQUIRED_FIELD_CPF,
-    ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION,
-    ERROR_STUDENT_REQUIRED_FIELD_NAME,
-    ERROR_STUDENT_TYPE
+    ERROR_CLASSES_REQUIRED_FIELD_TEACHER_NAME
 )
-from schemas.base import BaseSchema
+from constants.disciplines import ERROR_DISCIPLINES_REQUIRED_FIELD_NAME
+from schemas.base import (
+    BaseSchema, 
+    DaysOfWeek,
+    EducationLevel,
+    Shift
+)
+from utils.format import clean_string_field
 from utils.messages.error import UnprocessableEntity
 from utils.validate import(
     validate_date,
-    validate_email,
-    validate_cpf,
-    validate_string
+    validate_string,
+    validate_time_format,
 )
 
 
 class ClassRequest(BaseSchema):
     """
+    - education_level: str
     - name: str
-    - room: str
-    - teacher_cpf: str
+    - section: str
+    - shift: str
+    - max_students: int
     """
+    education_level: str = Field(
+        title="Tipo de educação",
+        description="Tipo de ensino daquele aluno",
+        examples=[EducationLevel.ELEMENTARY.value, EducationLevel.PRESCHOOL.value]
+    )
     name: str = Field(
         title="Nome",
-        description="Nome da disciplina a ser cadastrada",
-        examples=["Matemática", "Português", "Física"]
+        description="Nome da turma a ser cadastrada",
+        examples=["5° Ano", "6° Ano", "Pre-I"]
     )
-    room: str = Field(
-        title="Sala",
-        description="Sala onde a aula será ministrada",
-        examples=["Sala 01", "Sala 02", "Sala 03"]
+    section: str = Field(
+        title="Identificação da turma",
+        description="Sigla de identificação da turma",
+        examples=["A", "B", "C"],
+        max_length=1
     )
-    teacher_cpf: str = Field(
-        title="CPF do Professor",
-        description="CPF do professor que ministrará a disciplina",
-        examples=["123.456.789-00", "987.654.321-00"]
+    shift: str = Field(
+        title="Turno",
+        description="Turno da disciplina",
+        examples=[Shift.MORNING.value, Shift.AFTERNOON.value, Shift.NIGHT.value]
+    )
+    max_students: int = Field(
+        title="Máximo de Alunos",
+        description="Número máximo de alunos que podem ser matriculados na disciplina",
+        examples=[20, 30, 40]
     )
 
+
+    @field_validator("education_level", mode="before")
+    def validate_education_level(cls, value) -> str:
+
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_EDUCATION_LEVEL)
+        
+
+        if value not in EducationLevel.__dict__.values():
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_EDUCATION_LEVEL)
+        
+        return value
+    
 
     @field_validator("name", mode="before")
-    def validate_name(cls, value):
+    def validate_name(cls, value) -> str:
 
         value = clean_string_field(value)
 
         if not validate_string(value):
-
             raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_NAME)
+
+        return value
+    
+
+    @field_validator("section", mode="before")
+    def validate_id(cls, value) -> str:
+            
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_ID)
+        
+        if len(value)!= 1:
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_ID)
+
+        return value
+    
+
+    @field_validator("shift", mode="before")
+    def validate_shift(cls, value) -> str:
+
+        value = clean_string_field(value)
+            
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_SHIFT)
+
+        if value not in Shift.__dict__.values():
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_SHIFT)
         
         return value
     
 
-    @field_validator("room", mode="before")
-    def validate_room(cls, value):
+    @field_validator("max_students", mode="before")
+    def validate_max_students(cls, value) -> int:
+            
+        if not value:
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_MAX_STUDENTS)
 
-        value = clean_string_field(value)
-
-        if not validate_string(value):
-
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_ROOM)
+        if not isinstance(value, int):
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_MAX_STUDENTS)
+        
+        if value <= 0:
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_MAX_STUDENTS)
         
         return value
-    
 
-    @field_validator("teacher_cpf", mode="before")
-    def validate_teacher_cpf(cls, value):
 
-        value = clean_string_field(value)
-
-        if not validate_string(value):
-
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
-        
-        if not validate_cpf(value):
-
-            raise UnprocessableEntity(ERROR_INVALID_CPF)
-        
-        return unformat_cpf(value)
-    
-
-class ClassEventRequest(BaseSchema):
+class Recurrences(BaseSchema):
     """
-    - class_id: str
-    - start_date: str # YYYY-MM-DD HH:MM
-    - end_date: str # YYYY-MM-DD HH:MM
+    - day_of_week: str
+    - start_time: str
+    - end_time: str
     """
-
-    class_id: str = Field(
-        title="ID da Disciplina",
-        description="Código da disciplina que terá uma aula agendada",
-        examples=['1', '2', '3']
+    day_of_week: str = Field(
+        title="Dia da Semana",
+        description="Dia da semana que a aula ocorrerá",
+        examples=[
+            DaysOfWeek.MONDAY.value, 
+            DaysOfWeek.TUESDAY.value, 
+            DaysOfWeek.WEDNESDAY.value,
+            DaysOfWeek.THURSDAY.value,
+            DaysOfWeek.FRIDAY.value,
+            DaysOfWeek.SATURDAY.value,
+            DaysOfWeek.SUNDAY.value
+        ]
     )
-    start_date: str = Field(
-        title="Data de Início",
-        description="Data de início da aula",
-        examples=["2021-01-01 08:00", "2021-01-01 14:00"]
+    start_time: str = Field(
+        title="Hora de Início",
+        description="Hora de início da aula",
+        examples=["08:00", "13:00"]
     )
-    end_date: str = Field(
-        title="Data de Fim",
-        description="Data de encerramento da aula",
-        examples=["2021-01-01 10:00", "2021-01-01 16:00"]
+    end_time: str = Field(
+        title="Hora de Fim",
+        description="Hora de encerramento da aula",
+        examples=["12:00", "17:00"]
     )
 
 
-    @field_validator("class_id", mode="before")
-    def validate_class_id(cls, value):
-        
+    @field_validator("day_of_week", mode="before")
+    def validate_day_of_week(cls, value) -> str:
+
         value = clean_string_field(value)
 
         if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_DAY_OF_WEEK)
 
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
-
+        if value not in DaysOfWeek.__dict__.values():
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_DAY_OF_WEEK)
+        
         return value
-    
 
-    @field_validator("start_date", mode="before")
-    def validate_start_date(cls, value):
 
+    @field_validator("start_time", mode="before")
+    def validate_start_time(cls, value) -> str:
+            
         value = clean_string_field(value)
 
         if not validate_string(value):
 
             raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_START_DATE)
-        
-        if not validate_date(value):
 
+        if not validate_time_format(value):
             raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_START_DATE)
 
-        value = validate_date(value)
+        return value
+    
+
+    @field_validator("end_time", mode="before")
+    def validate_end_time(cls, value) -> str:
+            
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_END_DATE)
+
+        if not validate_time_format(value):
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_END_DATE)
+
+        return value
+    
+
+class ClassEventRequest(BaseSchema):
+    """
+    - class_id: str
+    - disciplines_id: list[str]
+    - teacher_id: str
+    - start_date: str
+    - end_date: str
+    - recurrences: list[Recurrences]
+    """
+
+    class_id: str = Field(
+        title="ID da Disciplina",
+        description="Código da turma que terá uma aula agendada",
+        examples=['1', '2', '3']
+    )
+    disciplines_id: list[str] = Field(
+        title="IDs das Disciplina",
+        description="Código das disciplinas que terão aulas ministradas pelo professor durante o período designado",
+        examples=['1', '2', '3']
+    )
+    teacher_id: str = Field(
+        title="ID do Professor",
+        description="Código do professor que ministrará a aula",
+        examples=['1', '2', '3']
+    )
+    start_date: str = Field(
+        title="Data de Início",
+        description="Data de início das aula",
+        examples=["2024-07-01"]
+    )
+    end_date: str = Field(
+        title="Data de Fim",
+        description="Data de encerramento da aulas",
+        examples=["2024-11-28"]
+    )
+    recurrences: list[Recurrences]
+
+
+    @field_validator("class_id", mode="before")
+    def validate_class_id(cls, value) -> str:
+            
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
+
+        return value
+    
+
+    @field_validator("disciplines_id", mode="before")
+    def validate_disciplines_id(cls, values) -> list[str]:
+
+        if isinstance(values, str):
+            values = [values]
+
+        result = []
+
+        for value in values:
+            
+            value = clean_string_field(value)
+
+            if not validate_string(value):
+                raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_DISCIPLINES_ID)
+            
+            result.append(value)
+
+        return result
+    
+
+    @field_validator("teacher_id", mode="before")
+    def validate_teacher_id(cls, value) -> str:
+            
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
+
+        return value
+    
+
+    @field_validator("start_date", mode="before")
+    def validate_start_date(cls, value) -> str:
+            
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_START_DATE)
+        if not validate_date(value):
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_START_DATE)
 
         return value
     
 
     @field_validator("end_date", mode="before")
-    def validate_end_date(cls, value):
-
+    def validate_end_date(cls, value) -> str:
+            
         value = clean_string_field(value)
 
         if not validate_string(value):
-
             raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_END_DATE)
-        
-        if not validate_date(value):
 
+        if not validate_date(value):
             raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_END_DATE)
 
-        value = validate_date(value)
+        return value
+    
 
+    @field_validator("recurrences", mode="before")
+    def validate_recurrences(cls, value) -> list[Recurrences]:
+                
+        if not value:
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_RECURRENCES)
+
+        if not isinstance(value, list):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_RECURRENCES)
+
+        
         return value
 
-class ClassStudentRequest(BaseSchema):
+
+class ClassEventResponse(ClassEventRequest):
     """
+    - id: str
     - class_id: str
-    - child_cpf: str
-    """
-
-    class_id: str = Field(
-        title="ID da Disciplina",
-        description="Código da disciplina",
-        examples=['1', '2', '3']
-    )
-    child_cpf: str = Field(
-        title="CPF do Aluno",
-        description="CPF do aluno que será matriculado na disciplina",
-        examples=["123.456.789-00", "987.654.321-00"]
-    )
-
-
-    @field_validator("class_id", mode="before")
-    def validate_class_id(cls, value):
-
-        value = clean_string_field(value)
-
-        if not validate_string(value):
-
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
-
-        return value
-    
-
-    @field_validator("child_cpf", mode="before")
-    def validate_child_cpf(cls, value):
-
-        value = clean_string_field(value)
-
-        if not validate_string(value):
-
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF)
-        
-        if not validate_cpf(value):
-
-            raise UnprocessableEntity(ERROR_INVALID_CPF)
-        
-        return unformat_cpf(value)
-    
-
-class ClassUpdateRequest(BaseSchema):
-    """
-    - id: str
-    - name: str = ""
-    - room: str = ""
-    - teacher_cpf: str = ""
-    """
-    id: str = Field(
-        title="ID",
-        description="Código da disciplina a ser atualizada",
-        examples=['1', '2','3']
-    )
-    name: str = Field(
-        title="Nome",
-        description="Nome da disciplina a ser cadastrada",
-        examples=["Matemática", "Português", "Física"],
-        default=""
-    )
-    room: str = Field(
-        title="Sala",
-        description="Sala onde a aula será ministrada",
-        examples=["Sala 01", "Sala 02", "Sala 03"],
-        default=""
-    )
-    teacher_cpf: str = Field(
-        title="CPF do Professor",
-        description="CPF do professor que ministrará a disciplina",
-        examples=["123.456.789-00", "987.654.321-00"],
-        default=""
-    )
-
-
-    @field_validator("id", mode="before")
-    def validate_id(cls, value):
-            
-        value = clean_string_field(value)
-
-        if not validate_string(value):
-
-            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_CLASS_ID)
-
-        return value
-    
-
-    @field_validator("name", mode="before")
-    def validate_name(cls, value):
-
-        value = clean_string_field(value)
-        
-        return value
-    
-
-    @field_validator("room", mode="before")
-    def validate_room(cls, value):
-
-        value = clean_string_field(value)
-        
-        return value
-    
-
-    @field_validator("teacher_cpf", mode="before")
-    def validate_teacher_cpf(cls, value):
-
-        value = clean_string_field(value)
-
-        if validate_string(value):
-        
-            if not validate_cpf(value):
-
-                raise UnprocessableEntity(ERROR_INVALID_CPF)
-            
-            value = unformat_cpf(value)
-
-        return value
-    
-
-class Student(BaseSchema):
-    """
-    - cpf: str
-    - name: str
-    - matriculation: str
-    """
-
-    cpf: str = Field(
-        title="CPF",
-        description="CPF do aluno",
-        examples=["123.456.789-00", "987.654.321-00"]
-    )
-    name: str = Field(
-        title="Nome",
-        description="Nome do aluno",
-        examples=["João", "Maria", "José"]
-    )
-    matriculation: str = Field(
-        title="Matrícula",
-        description="Matrícula do aluno",
-        examples=["123456", "654321"]
-    )
-
-
-    @field_validator("cpf", mode="before")
-    def validate_cpf(cls, value):
-        value = clean_string_field(value)
-
-        if not validate_string(value):
-
-            raise UnprocessableEntity(ERROR_STUDENT_REQUIRED_FIELD_CPF)
-        return validate_cpf(value)
-    
-
-    @field_validator("name", mode="before")
-    def validate_name(cls, value):
-        
-        value = clean_string_field(value)
-
-        if not validate_string(value):
-
-            raise UnprocessableEntity(ERROR_STUDENT_REQUIRED_FIELD_NAME)
-        
-        return value
-    
-
-    @field_validator("matriculation", mode="before")
-    def validate_matriculation(cls, value):
-        
-        value = clean_string_field(value)
-
-        if not validate_string(value):
-
-            raise UnprocessableEntity(ERROR_STUDENT_REQUIRED_FIELD_MATRICULATION)
-
-        return value
-
-class ClassResponse(ClassRequest):
-    """
-    - id: str
-    - name: str
-    - room: str
-    - teacher_cpf: str
+    - disciplines_id: [str]
+    - teacher_id: str
+    - start_date: str
+    - end_date: str
+    - recurrences: list[Recurrences]
     - teacher_name: str
-    - teacher_phone: str
-    _ teacher_email: str
-    - students: List[Student]
+    - discipline_name: str
     """
     id: str = Field(
-        title="ID",
-        description="Código da disciplina",
+        title="ID da Aula",
+        description="Código da aula",
         examples=['1', '2', '3']
     )
     teacher_name: str = Field(
         title="Nome do Professor",
-        description="Nome do professor que ministrará a disciplina",
-        examples=["João", "Maria", "José"]
+        description="Nome do professor que ministrará a aula",
+        examples=["Prof. Jane Doe", "Prof. John Smith", "Prof. Mary Johnson"]
     )
-    teacher_phone: str = Field(
-        title="Telefone do Professor",
-        description="Telefone do professor que ministrará a disciplina",
-        examples=["(11) 91234-5678", "(11) 98765-4321"]
-    )
-    teacher_email: str = Field(
-        title="E-mail do Professor",
-        description="E-mail do professor que ministrará a disciplina",
-        examples=["jose@gmail.com", "maria@gmail.com"]
-    )
-    students: list[Student] = Field(
-        tittle="Alunos",
-        description="Lista de alunos matriculados na disciplina",
-        examples=["[{cpf: '123.456.789-00', name: 'João', matriculation: '123456'}, {cpf: '987.654.321-00', name: 'Maria', matriculation: '654321'}]"]
+    discipline_name: str = Field(
+        title="Nome da Disciplina",
+        description="Nome da disciplina que terá uma aula",
+        examples=["Matemática", "Português", "Geografia"]
     )
 
 
-    @field_validator("teacher_phone", mode="before")
-    def validate_teacher_phone(cls, value):
+    @field_validator("teacher_name", mode="before")
+    def validate_teacher_name(cls, value) -> str:
+        value = clean_string_field(value)
 
-        value = format_phone(value)
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_TEACHER_NAME)
+
+        return value
+
+
+    @field_validator("discipline_name", mode="before")
+    def validate_discipline_name(cls, value) -> str:
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_DISCIPLINES_REQUIRED_FIELD_NAME)
+
+        return value
+
+
+class ClassResponse(ClassRequest):
+    """
+    - id: str
+    - education_level: str
+    - name: str
+    - section: str
+    - shift: str
+    - max_students: int
+    - class_info: str
+    - class_events: list[ClassEventResponse]
+    """
+    id: str = Field(
+        title="ID da Turma",
+        description="Código da turma",
+        examples=['1', '2', '3']
+    )
+    class_info: str = Field(
+        title="Informações da Turma",
+        description="Informações da turma",
+        examples=["5° Ano A", "6° Ano B", "8° Ano C"]
+    )
+    class_events: list[ClassEventResponse]
+
+
+    @field_validator("class_info", mode="before")
+    def validate_class_info(cls, value) -> str:
+
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CLASSES_REQUIRED_FIELD_NAME)
+
         return value
     
 
-    @field_validator("teacher_email", mode="before")
-    def validate_teacher_email(cls, value):
-        
-        if not validate_email(value):
-            raise UnprocessableEntity(ERROR_INVALID_EMAIL)
+    @field_validator("class_events", mode="before")
+    def validate_class_events(cls, value) -> list[ClassEventResponse]:  
 
-        return value
-
-
-    @field_validator("students", mode="before")
-    def validate_students(cls, value):
-        if not value:
-            return []
-        
-        for student in value:
-            if not isinstance(student, Student):
-                raise UnprocessableEntity(ERROR_STUDENT_TYPE)
+        if not isinstance(value, list):
+            
+            raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_CLASS_EVENTS)
         
         return value

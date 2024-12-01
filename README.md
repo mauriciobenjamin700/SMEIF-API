@@ -13,6 +13,8 @@ Você irá precisar do arquivo [.env](.env) contendo as variáveis de ambiente p
 
 Se você é um associado ao projeto, basta acessar o drive clicando [aqui](https://drive.google.com/drive/u/0/folders/1q-S8q3qZWw3NEsd5agEdkV89KoPsbwhd) para obter tal arquivo.
 
+Clique [aqui](https://trello.com/b/iQL2UF5R/smeif) para acessar o Trello e poder visualizar as tarefas
+
 ## Comandos
 
 - HOST:5009/docs = Docs interativa para testes

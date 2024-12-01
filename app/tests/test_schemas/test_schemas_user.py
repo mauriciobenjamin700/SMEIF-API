@@ -30,7 +30,7 @@ from schemas.user import (
 )
 
 
-def test_UserRequest_success(mock_AddressRequest):
+def test_UserRequest_success(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -51,7 +51,7 @@ def test_UserRequest_success(mock_AddressRequest):
         email=email,
         password=password,
         level=level,
-        address=mock_AddressRequest
+        address=mock_Address
     )
 
     assert user.cpf == cpf.replace(".", "").replace("-", "")
@@ -63,9 +63,9 @@ def test_UserRequest_success(mock_AddressRequest):
     assert user.email == email
     assert user.password == password
     assert user.level == level
-    assert user.address == mock_AddressRequest
+    assert user.address == mock_Address
 
-def test_UserRequest_fail_cpf_none(mock_AddressRequest):
+def test_UserRequest_fail_cpf_none(mock_Address):
     cpf = None
     name = "John Doe"
     birth_date="1990-01-01"
@@ -87,13 +87,13 @@ def test_UserRequest_fail_cpf_none(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
-def test_UserRequest_fail_cpf_spaces(mock_AddressRequest):
+def test_UserRequest_fail_cpf_spaces(mock_Address):
     cpf = "     "
     name = "John Doe"
     birth_date="1990-01-01"
@@ -115,13 +115,13 @@ def test_UserRequest_fail_cpf_spaces(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_CPF
 
-def test_UserRequest_fail_cpf_validation(mock_AddressRequest):
+def test_UserRequest_fail_cpf_validation(mock_Address):
     cpf = "123"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -143,14 +143,14 @@ def test_UserRequest_fail_cpf_validation(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_INVALID_CPF
 
 
-def test_UserRequest_fail_name_none(mock_AddressRequest):
+def test_UserRequest_fail_name_none(mock_Address):
     cpf = "123.456.789-00"
     name = None
     birth_date="1990-01-01"
@@ -172,14 +172,14 @@ def test_UserRequest_fail_name_none(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_NAME
 
 
-def test_UserRequest_fail_name_spaces(mock_AddressRequest):
+def test_UserRequest_fail_name_spaces(mock_Address):
     cpf = "123.456.789-00"
     name = "    "
     birth_date="1990-01-01"
@@ -201,7 +201,7 @@ def test_UserRequest_fail_name_spaces(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
@@ -268,7 +268,7 @@ def test_UserRequest_fail_gender_invalid(mock_user_data):
     assert e.value.detail == ERROR_INVALID_FORMAT_GENDER
 
 
-def test_UserRequest_fail_phone_none(mock_AddressRequest):
+def test_UserRequest_fail_phone_none(mock_Address):
     cpf = "123.456.789-00"
     name = "john doe"
     birth_date="1990-01-01"
@@ -290,14 +290,14 @@ def test_UserRequest_fail_phone_none(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PHONE
 
 
-def test_UserRequest_fail_phone_spaces(mock_AddressRequest):
+def test_UserRequest_fail_phone_spaces(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -319,13 +319,13 @@ def test_UserRequest_fail_phone_spaces(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PHONE
 
-def test_UserRequest_fail_phone_validation(mock_AddressRequest):
+def test_UserRequest_fail_phone_validation(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -347,14 +347,14 @@ def test_UserRequest_fail_phone_validation(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_INVALID_PHONE
 
 
-def test_UserRequest_success_with_no_optional_phone(mock_AddressRequest):
+def test_UserRequest_success_with_no_optional_phone(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -375,7 +375,7 @@ def test_UserRequest_success_with_no_optional_phone(mock_AddressRequest):
         email=email,
         password=password,
         level=level,
-        address=mock_AddressRequest
+        address=mock_Address
     )
 
     assert user.cpf == cpf.replace(".", "").replace("-", "")
@@ -385,9 +385,9 @@ def test_UserRequest_success_with_no_optional_phone(mock_AddressRequest):
     assert user.email == email
     assert user.password == password
     assert user.level == level
-    assert user.address == mock_AddressRequest
+    assert user.address == mock_Address
 
-def test_UserRequest_fail_option_phone_validation(mock_AddressRequest):
+def test_UserRequest_fail_option_phone_validation(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -409,14 +409,14 @@ def test_UserRequest_fail_option_phone_validation(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_INVALID_PHONE_OPTIONAL
 
 
-def test_UserRequest_fail_option_phone_equals_phone(mock_AddressRequest):
+def test_UserRequest_fail_option_phone_equals_phone(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -438,7 +438,7 @@ def test_UserRequest_fail_option_phone_equals_phone(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
@@ -446,7 +446,7 @@ def test_UserRequest_fail_option_phone_equals_phone(mock_AddressRequest):
 
 
 
-def test_UserRequest_fail_email_spaces(mock_AddressRequest):
+def test_UserRequest_fail_email_spaces(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -468,13 +468,13 @@ def test_UserRequest_fail_email_spaces(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_EMAIL
 
-def test_UserRequest_fail_email_validation(mock_AddressRequest):
+def test_UserRequest_fail_email_validation(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -496,7 +496,7 @@ def test_UserRequest_fail_email_validation(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
@@ -504,7 +504,7 @@ def test_UserRequest_fail_email_validation(mock_AddressRequest):
 
 
 
-def test_UserRequest_fail_password_spaces(mock_AddressRequest):
+def test_UserRequest_fail_password_spaces(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -526,14 +526,14 @@ def test_UserRequest_fail_password_spaces(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_REQUIRED_FIELD_PASSWORD
 
 
-def test_UserRequest_fail_level_None(mock_AddressRequest):
+def test_UserRequest_fail_level_None(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -555,13 +555,13 @@ def test_UserRequest_fail_level_None(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_INVALID_LEVEL
 
-def test_UserRequest_fail_level_invalid(mock_AddressRequest):
+def test_UserRequest_fail_level_invalid(mock_Address):
     cpf = "123.456.789-00"
     name = "John Doe"
     birth_date="1990-01-01"
@@ -583,14 +583,14 @@ def test_UserRequest_fail_level_invalid(mock_AddressRequest):
             email=email,
             password=password,
             level=level,
-            address=mock_AddressRequest
+            address=mock_Address
         )
 
     assert e.value.status_code == 422
     assert e.value.detail == ERROR_USER_INVALID_LEVEL
 
 
-def test_UserUpdateRequest_success(mock_AddressRequest):
+def test_UserUpdateRequest_success(mock_Address):
     name = "John Doe"
     phone = "90900000001"  # Número de telefone no formato correto
     phone_optional = "90900000000"  # Número de telefone no formato correto
@@ -605,7 +605,7 @@ def test_UserUpdateRequest_success(mock_AddressRequest):
         email=email,
         password=password,
         level=level,
-        address=mock_AddressRequest
+        address=mock_Address
     )
 
     assert user.name == name

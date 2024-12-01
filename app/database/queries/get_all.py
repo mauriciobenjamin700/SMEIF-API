@@ -1,16 +1,15 @@
+from typing import Sequence
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
+from constants.disciplines import ERROR_DISCIPLINES_GET_ALL_NOT_FOUND
 from constants.user import ERROR_USER_NOT_FOUND_USERS
 from database.models import(
-    ChildModel,
-    ClassStudentModel,
+    ClassEventModel,
     ClassModel,
+    DisciplinesModel,
     UserModel
-)
-from schemas.classes import(
-    Student
 )
 from utils.messages.error import NotFound
 from constants.classes import (
@@ -19,7 +18,15 @@ from constants.classes import (
 
 
 def get_all_users(db_session: Session) -> list[UserModel]:
-        
+    """
+    Busca todos os usuários no banco de dados
+
+    - Args:
+        - db_session: Sessão do banco de dados
+
+    - Returns:
+        - list[UserModel]: Lista de usuários encontrados no banco de dados.
+    """
     users = db_session.scalars(select(UserModel)).all()
 
     if not users:
@@ -27,43 +34,71 @@ def get_all_users(db_session: Session) -> list[UserModel]:
     
     return users
 
-def get_all_students_by_class(db_session: Session, class_id: str) -> list[Student]:
-    
-    relations = db_session.scalars(
-        select(ClassStudentModel).where(
-            ClassStudentModel.class_id == class_id
-        )
-    )
-
-    children = db_session.scalars(
-        select(ChildModel).join(
-            ClassStudentModel,
-            ChildModel.cpf == ClassStudentModel.child_cpf
-        ).where(
-            ClassStudentModel.id == class_id
-        )
-    )
-
-    students = []
-
-    for child in children:
-
-        students.append(
-            Student(
-                cpf=child.cpf,
-                name=child.name,
-                matriculation=child.matriculation
-            )
-        )     
-
-    return students   
-
 
 def get_all_classes(db_session: Session) -> list[ClassModel]:
-    
+    """
+    Busca todas as turmas no banco de dados
+
+    - Args:
+        - db_session: Sessão do banco de dados
+
+    - Returns:
+        - list[ClassModel]: Lista de turmas encontradas no banco de dados.
+    """
     classes =  db_session.scalars(
         select(ClassModel)
-    )
-
+    ).all()
     if not classes:
         raise NotFound(ERROR_CLASSES_GET_ALL_NOT_FOUND)
+    
+
+    return classes
+
+def get_all_class_events_from_class(db_session: Session, class_id: str) -> list[ClassEventModel]:
+    """
+    Busca todos as aulas de uma determinada turma
+
+    - Args:
+        - db_session: Sessão do banco de dados
+
+    - Returns:
+        - list[str]: Lista de eventos das turmas encontradas no banco de dados.
+    """
+    events = db_session.scalars(
+        select(ClassEventModel).where(ClassEventModel.class_id == class_id)
+    ).all()
+
+    return events
+
+
+def get_all_class_events(db_session: Session) -> Sequence[ClassEventModel]:
+    """
+    Busca todos os eventos de todas as turmas
+
+    - Args:
+        - db_session: Sessão do banco de dados
+
+    - Returns:
+        - list[str]: Lista de eventos das turmas encontradas no banco de dados.
+    """
+    events = db_session.scalars(select(ClassEventModel)).all()
+
+    return events
+
+
+def get_all_disciplines(db_session: Session) -> list[DisciplinesModel]:
+    """
+    Busca todas as disciplinas no banco de dados
+
+    - Args:
+        - db_session: Sessão do banco de dados
+
+    - Returns:
+        - list[str]: Lista de disciplinas encontradas no banco de dados.
+    """
+    disciplines = db_session.scalars(select(DisciplinesModel)).all()
+
+    if not disciplines:
+        raise NotFound(ERROR_DISCIPLINES_GET_ALL_NOT_FOUND)
+
+    return disciplines

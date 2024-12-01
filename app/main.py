@@ -5,6 +5,8 @@ import uvicorn
 
 
 from database.models import create_tables
+from routes.classes import router as classes_router
+from routes.disciplines import router as disciplines_router
 from routes.user import router as user_router
 
 
@@ -20,12 +22,14 @@ app.add_middleware(
 )
 
 
+app.include_router(classes_router)
+app.include_router(disciplines_router)
 app.include_router(user_router)
 
 
 @app.get('/')
 def main():
-    return {"mensage": "API rodando!"}
+    return {"detail": "API rodando!"}
 
 # Executando o servidor
 if __name__ == "__main__":

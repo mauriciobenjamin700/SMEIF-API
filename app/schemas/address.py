@@ -16,7 +16,7 @@ from utils.format import clean_string_field
 from utils.messages.error import UnprocessableEntity
 
 
-class AddressRequest(BaseSchema):
+class Address(BaseSchema):
     """
     - state: str
     - city: str
