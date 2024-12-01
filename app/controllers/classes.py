@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 
+from database.queries.validate_foreignkey import validate_class_events
 from constants.classes import(
     ERROR_CLASS_ADD_CONFLICT,
     ERROR_CLASSES_EVENTS_ADD_CONFLICT,
@@ -13,13 +14,6 @@ from constants.classes import(
     MESSAGE_CLASS_EVENT_DELETE_SUCCESS,
     MESSAGE_CLASSES_EVENTS_ADD_RECURRENCES_SUCCESS,
     MESSAGE_CLASSES_EVENTS_DELETE_RECURRENCES_SUCCESS,
-)
-from database.mapping.classes import (
-    _build_class_info, 
-    map_ClassEventModel_to_ClassEventResponse, 
-    map_ClassModel_to_ClassResponse,
-    map_Recurrence_to_RecurrencesModel, 
-    map_RecurrencesModel_to_Recurrences
 )
 from database.models import(
     ClassModel,
@@ -38,9 +32,9 @@ from database.queries.get import (
 )
 from database.queries.get_all import (
     get_all_class_events,
+    get_all_class_events_from_class,
     get_all_classes, 
 )
-from database.queries.validate_foreignkey import validate_class_events
 from schemas.base import BaseMessage
 from schemas.classes import (
     ClassEventResponse,
@@ -480,14 +474,40 @@ class ClassesController():
         - Returns:
             - ClassResponse: Objeto com os dados da turma convertidos.
         """
-        return map_ClassModel_to_ClassResponse(self.db_session,model)
+        class_events = get_all_class_events_from_class(self.db_session, model.id)
+
+        if not class_events:
+
+            class_events = []
+
+        else:
+    
+            class_events = [
+                self._Model_to_ClassEventResponse(event) 
+                for event in class_events
+            ]
+
+                    
+
+        response = ClassResponse(
+            id=model.id,
+            education_level=model.education_level,
+            name=model.name,
+            section=model.section,
+            shift=model.shift,
+            max_students=model.max_students,
+            class_info=self._build_class_info(model), 
+            class_events=class_events
+        )
+
+        return response
     
 
     def _build_class_info(self, model: ClassModel) -> str:
         """
         constrói a informação da turma para ser exibida na resposta
         """
-        return _build_class_info(model)
+        return f"{model.name} {model.section}"
     
 
     def _Recurrence_to_Model(self, class_event_id: str,recurrence: Recurrences) -> RecurrencesModel:
@@ -501,7 +521,13 @@ class ClassesController():
         - Returns:
             - RecurrencesModel: Objeto com os dados da recorrência convertidos.
         """
-        return map_Recurrence_to_RecurrencesModel(class_event_id, recurrence)
+        return RecurrencesModel(
+            id=id_generate(),
+            class_event_id=class_event_id,
+            day_of_week=recurrence.day_of_week,
+            start_time=recurrence.start_time,
+            end_time=recurrence.end_time
+        )
     
     def _Model_to_Recurrence(self, model: RecurrencesModel) -> Recurrences:
         """
@@ -513,7 +539,11 @@ class ClassesController():
         - Returns:
             - Recurrences: Objeto com os dados da recorrência convertidos.
         """
-        return map_RecurrencesModel_to_Recurrences(model)
+        return Recurrences(
+            day_of_week=model.day_of_week,
+            start_time=model.start_time,
+            end_time=model.end_time
+        )
         
     def _Model_to_ClassEventResponse(self, model: ClassEventModel) -> ClassEventResponse:
         """
@@ -525,4 +555,17 @@ class ClassesController():
         - Returns:
             - ClassEventResponse: Objeto com os dados da aula convertidos.
         """
-        return map_ClassEventModel_to_ClassEventResponse(model)
+        return ClassEventResponse(
+            id=model.id,
+            class_id=model.class_id,
+            disciplines_id=[model.discipline_id],
+            teacher_id=model.teacher_id,
+            start_date=format_date(model.start_date, False),
+            end_date=format_date(model.end_date, False),
+            teacher_name=model.teacher.user.name,
+            discipline_name=model.discipline.name,
+            recurrences=[
+                self._Model_to_Recurrence(recurrence) 
+                for recurrence in model.recurrences
+            ]
+        )

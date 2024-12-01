@@ -6,22 +6,12 @@ class BaseSchema(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    def dict(self, exclude: list[str] = [],**kwargs) -> dict:
-        """
-        Mapeia os atributos do objeto para um dicionário, excluindo os atributos passados como argumento.
-
-        Valores None também são excluídos.
-        """
+    def dict(self, **kwargs) -> dict:
         result =  super().model_dump()
-        result = {k: v for k, v in result.items() if v is not None and k not in exclude}
-
+        result = {k: v for k, v in result.items() if v is not None}
 
         for k,v in kwargs.items():
-
-            if v is not None:
-
-                result[k] = v
-                
+            result[k] = v
         return result
     
 
