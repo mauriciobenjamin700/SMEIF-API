@@ -4,7 +4,8 @@ from pytest import raises
 
 from constants.classes import (
     ERROR_CLASSES_EVENTS_ADD_RECURRENCES_CONFLICT, 
-    MESSAGE_CLASS_EVENT_ADD_SUCCESS
+    MESSAGE_CLASS_EVENT_ADD_SUCCESS,
+    MESSAGE_CLASSES_EVENTS_ADD_RECURRENCES_SUCCESS
 )
 from controllers.classes import ClassesController
 from database.models import RecurrencesModel
@@ -23,7 +24,7 @@ def test_controller_classes_add_recurrences_success_two(
         recurrences=mock_Recurrences_list
     )
 
-    assert response.detail == MESSAGE_CLASS_EVENT_ADD_SUCCESS
+    assert response.detail == MESSAGE_CLASSES_EVENTS_ADD_RECURRENCES_SUCCESS
 
     models = db_session.query(RecurrencesModel).filter_by(class_event_id=mock_class_event_on_db.id).all()
 
@@ -57,7 +58,7 @@ def test_controller_classes_add_recurrences_success_one(
         recurrences=[mock_Recurrences_list[0]]
     )
 
-    assert response.detail == MESSAGE_CLASS_EVENT_ADD_SUCCESS
+    assert response.detail == MESSAGE_CLASSES_EVENTS_ADD_RECURRENCES_SUCCESS
 
     models = db_session.query(RecurrencesModel).filter_by(class_event_id=mock_class_event_on_db.id).all()
 

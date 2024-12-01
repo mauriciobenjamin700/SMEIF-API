@@ -177,7 +177,7 @@ async def delete_event(
     return response
 
 
-@router.get("/add-recurrences",description=ADD_RECURRENCES_DESCRIPTION, responses=ADD_RECURRENCES_RESPONSES, status_code=201)
+@router.post("/add-recurrences",description=ADD_RECURRENCES_DESCRIPTION, responses=ADD_RECURRENCES_RESPONSES, status_code=201)
 async def add_recurrences(
     class_event_id: str,
     recurrences: list[Recurrences],

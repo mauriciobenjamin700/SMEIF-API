@@ -28,6 +28,7 @@ from constants.classes import (
     ERROR_CLASSES_REQUIRED_FIELD_START_DATE,
     ERROR_CLASSES_REQUIRED_FIELD_TEACHER_CPF, 
     MESSAGE_CLASS_ADD_SUCCESS,
+    MESSAGE_CLASS_DELETE_SUCCESS,
     MESSAGE_CLASS_EVENT_ADD_SUCCESS,
     MESSAGE_CLASS_EVENT_DELETE_SUCCESS,
     MESSAGE_CLASSES_EVENTS_ADD_RECURRENCES_SUCCESS,
@@ -96,7 +97,7 @@ UPDATE_RESPONSES = generate_responses_documentation(
 
 DELETE_RESPONSES = generate_responses_documentation(
     [
-        generate_response(200, MESSAGE_CLASS_ADD_SUCCESS),
+        generate_response(200, MESSAGE_CLASS_DELETE_SUCCESS),
         generate_response(404, ERROR_CLASSES_GET_NOT_FOUND)
     ]
 )

@@ -316,7 +316,7 @@ def mock_ClassEventUpdate(
 
     request.class_id = mock_class_on_db.id
     request.teacher_id = mock_ClassTeacher_on_db.id
-    request.disciplines_id = mock_discipline_on_db.id
+    request.disciplines_id = [mock_discipline_on_db.id]
 
     request.start_date = "2026-01-01"
     request.end_date = "2026-06-01"

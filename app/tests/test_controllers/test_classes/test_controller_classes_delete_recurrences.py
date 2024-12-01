@@ -1,4 +1,4 @@
-from constants.classes import MESSAGE_CLASS_EVENT_DELETE_SUCCESS
+from constants.classes import MESSAGE_CLASSES_EVENTS_DELETE_RECURRENCES_SUCCESS
 from controllers.classes import ClassesController
 from database.models import RecurrencesModel
 
@@ -22,7 +22,7 @@ def test_controller_classes_delete_recurrences_success_one(
         recurrences=recurrences
     )
 
-    assert response.detail == MESSAGE_CLASS_EVENT_DELETE_SUCCESS
+    assert response.detail == MESSAGE_CLASSES_EVENTS_DELETE_RECURRENCES_SUCCESS
 
     models = db_session.query(RecurrencesModel).filter_by(class_event_id=mock_class_event_on_db.id).first()
 
@@ -49,7 +49,7 @@ def test_controller_classes_delete_recurrences_success_two(
         recurrences=recurrences + [controller._Model_to_Recurrence(mock_recurrence_on_db)]
     )
 
-    assert response.detail == MESSAGE_CLASS_EVENT_DELETE_SUCCESS
+    assert response.detail == MESSAGE_CLASSES_EVENTS_DELETE_RECURRENCES_SUCCESS
 
     models = db_session.query(RecurrencesModel).filter_by(class_event_id=mock_class_event_on_db.id).all()
 
