@@ -83,7 +83,7 @@ class ClassTeacherRequest(BaseSchema):
     classes_id: list[str] = Field(
         title="ID das Turmas",
         description="IDs das turmas que o professor ministra",
-        examples=["1", "2", "3"]
+        examples=[["1", "2", "3"], ["2", "3"]]
     )
 
 

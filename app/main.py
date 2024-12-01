@@ -7,6 +7,7 @@ import uvicorn
 from database.models import create_tables
 from routes.classes import router as classes_router
 from routes.disciplines import router as disciplines_router
+from routes.teacher import router as teacher_router
 from routes.user import router as user_router
 
 
@@ -24,6 +25,7 @@ app.add_middleware(
 
 app.include_router(classes_router)
 app.include_router(disciplines_router)
+app.include_router(teacher_router)
 app.include_router(user_router)
 
 
@@ -36,10 +38,12 @@ if __name__ == "__main__":
 
     create_tables()
 
-    config = uvicorn.Config("main:app", 
-                            port=5000,
-                            host='0.0.0.0', 
-                            log_level="info", 
-                            reload=True)
+    config = uvicorn.Config(
+        "main:app", 
+        port=5000,
+        host='0.0.0.0', 
+        log_level="info", 
+        reload=True
+    )
     server = uvicorn.Server(config)
     server.run()
