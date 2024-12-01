@@ -1,4 +1,3 @@
-from select import select
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -8,7 +7,6 @@ from constants.classes import (
 )
 from constants.disciplines import ERROR_DISCIPLINES_GET_NOT_FOUND
 from constants.teacher import ERROR_TEACHER_GET_NOT_FOUND
-
 from database.models import(
     ClassModel,
     ClassTeacherModel,

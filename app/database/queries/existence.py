@@ -14,6 +14,7 @@ from constants.user import (
 from database.base import BaseModel
 from database.models import (
     ClassEventModel,
+    ClassTeacherModel,
     DisciplinesModel,
     RecurrencesModel,
     UserModel,
@@ -21,7 +22,6 @@ from database.models import (
 )
 from schemas.base import UserLevel
 from schemas.classes import ClassEventRequest, Recurrences
-from utils.format import unformat_date, unformat_time
 from utils.messages.error import Conflict
 
 
@@ -175,3 +175,47 @@ def discipline_exists(db_session, discipline_name) -> bool:
     )
 
     return register_exists(db_session, DisciplinesModel, filters)
+
+
+def teacher_classes_exists(db_session: Session, user_cpf: str, classes: list[str]) -> bool:
+    """
+    Verifica se um professor possui cadastro nas turmas.
+
+    - Args:
+        - db_session: Sessão do banco de dados.
+        - user_cpf: CPF do professor.
+        - classes: IDs das turmas.
+
+    - Returns:
+        - bool: True se o professor possui as turmas, False caso contrário.
+    """
+
+    assossiation = db_session.scalars(
+        select(ClassTeacherModel).where(
+            and_(ClassTeacherModel.teacher_id == user_cpf, ClassTeacherModel.discipline_id.in_(classes))
+        )
+    ).all()
+
+    return True if assossiation else False
+
+
+def teacher_disciplines_exists(db_session: Session, user_cpf: str, disciplines: list[str]) -> bool:
+    """
+    Verifica se um professor possui cadastro nas disciplinas.
+
+    - Args:
+        - db_session: Sessão do banco de dados.
+        - user_cpf: CPF do professor.
+        - disciplines: IDs das disciplinas.
+
+    - Returns:
+        - bool: True se o professor possui as disciplinas, False caso contrário.
+    """
+
+    assossiation = db_session.scalars(
+        select(ClassTeacherModel).where(
+            and_(ClassTeacherModel.teacher_id == user_cpf, ClassTeacherModel.discipline_id.in_(disciplines))
+        )
+    ).all()
+
+    return True if assossiation else False
