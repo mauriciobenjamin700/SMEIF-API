@@ -8,7 +8,9 @@ from constants.user import ERROR_USER_NOT_FOUND_USERS
 from database.models import(
     ClassEventModel,
     ClassModel,
+    ClassTeacherModel,
     DisciplinesModel,
+    TeacherDisciplinesModel,
     UserModel
 )
 from utils.messages.error import NotFound
@@ -102,3 +104,44 @@ def get_all_disciplines(db_session: Session) -> list[DisciplinesModel]:
         raise NotFound(ERROR_DISCIPLINES_GET_ALL_NOT_FOUND)
 
     return disciplines
+
+
+def get_all_disciplines_by_teacher(db_session: Session, user_cpf: str) -> list[DisciplinesModel]:
+    """
+    Busca todas as disciplinas de um professor
+
+    - Args:
+        - db_session: Sessão do banco de dados
+        - user_cpf: CPF do professor
+
+    - Returns:
+        - list[DisciplinesModel]: Lista de disciplinas encontradas no banco de dados.
+    """
+    associations = db_session.scalars(
+        select(TeacherDisciplinesModel).where(TeacherDisciplinesModel.teacher_cpf == user_cpf)
+    ).all()
+
+    return [assossiation.discipline for assossiation in associations]
+
+
+def get_all_classes_by_teacher(db_session: Session, user_cpf: str) -> list[ClassModel]:
+    """
+    Busca todas as turmas de um professor
+
+    - Args:
+        - db_session: Sessão do banco de dados
+        - user_cpf: CPF do professor
+
+    - Returns:
+        - list[ClassModel]: Lista de turmas encontradas no banco de dados.
+    """
+    associations = db_session.scalars(
+        select(ClassTeacherModel).where(ClassTeacherModel.user_cpf == user_cpf)
+    ).all()
+
+    classes = []
+
+    for association in associations:
+        classes += association.classes
+
+    return classes

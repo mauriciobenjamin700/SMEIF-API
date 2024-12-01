@@ -4,9 +4,6 @@ from pydantic import(
 )
 
 
-from app.schemas.classes import ClassResponse
-from app.schemas.disciplines import DisciplineResponse
-from app.schemas.user import UserResponse
 from constants.base import ERROR_INVALID_CPF
 from constants.teacher import (
     ERROR_TEACHER_INVALID_FIELD_CLASSES, 
@@ -15,6 +12,9 @@ from constants.teacher import (
     ERROR_TEACHER_REQUIRED_FIELD_DISCIPLINES,
 )
 from schemas.base import BaseSchema
+from schemas.classes import ClassResponse
+from schemas.disciplines import DisciplineResponse
+from schemas.user import UserResponse
 from utils.format import (
     clean_string_field,
     unformat_cpf
@@ -28,10 +28,10 @@ from utils.validate import (
 
 class TeacherDisciplinesRequest(BaseSchema):
     """
-    - teacher_cpf: str
+    - user_cpf: str
     - disciplines_id: list[str]
     """
-    teacher_cpf: str = Field(
+    user_cpf: str = Field(
         title="CPF do Professor",
         description="CPF do professor fornecido no cadastro de usuário",
         examples=["123.456.789-09"]
@@ -39,11 +39,11 @@ class TeacherDisciplinesRequest(BaseSchema):
     disciplines_id: list[str] = Field(
         title="ID das Disciplinas",
         description="IDs das disciplinas que o professor ministra",
-        examples=["1", "2", "3"]
+        examples=[['1', '2'], ['45','37']]
     )
 
 
-    @field_validator("teacher_cpf", mode="before")
+    @field_validator("user_cpf", mode="before")
     def validate_teacher_cpf(cls, value) -> str:
 
         value = clean_string_field(value)
@@ -71,11 +71,11 @@ class TeacherDisciplinesRequest(BaseSchema):
 
 class ClassTeacherRequest(BaseSchema):
     """
-    - teacher_cpf: str
+    - user_cpf: str
     - classes_id: list[str] 
     """
 
-    teacher_cpf: str = Field(
+    user_cpf: str = Field(
         title="CPF do Professor",
         description="CPF do professor fornecido no cadastro de usuário",
         examples=["123.456.789-09"]
@@ -87,7 +87,7 @@ class ClassTeacherRequest(BaseSchema):
     )
 
 
-    @field_validator("teacher_cpf", mode="before")
+    @field_validator("user_cpf", mode="before")
     def validate_teacher_cpf(cls, value) -> str:
 
         value = clean_string_field(value)

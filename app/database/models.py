@@ -80,6 +80,12 @@ class UserModel(BaseModel):
         uselist=True,
     )
 
+    teacher_disciplines = relationship(
+        "TeacherDisciplinesModel",
+        back_populates="user",
+        uselist=True,
+    )
+
 
 class WarningModel(BaseModel):
     """
@@ -163,14 +169,12 @@ class ChildParentsModel(BaseModel):
     child = relationship(
         "ChildModel",
         back_populates="child_parents",
-        uselist=True,
-        order_by="ChildModel.name"
+        uselist=True
     )
     parent = relationship(
         "UserModel",
         back_populates="child_parents",
         uselist=True,
-        order_by="UserModel.name"
     )
 
 
@@ -193,6 +197,12 @@ class ClassModel(BaseModel):
     section: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     shift: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     max_students: Mapped[int] = mapped_column(Integer, unique=False, nullable=False)
+
+    class_teacher = relationship(
+        "ClassTeacherModel",
+        back_populates="classes",
+        uselist=True
+    )
 
 
 class ClassStudentModel(BaseModel):
@@ -226,7 +236,13 @@ class DisciplinesModel(BaseModel):
     class_event = relationship(
         "ClassEventModel",
         back_populates="discipline",
-        foreign_keys="[ClassEventModel.discipline_id]",
+        uselist=True,
+        cascade="all, delete-orphan"
+    )
+
+    teacher_disciplines = relationship(
+        "TeacherDisciplinesModel",
+        back_populates="discipline",
         uselist=True,
         cascade="all, delete-orphan"
     )
@@ -244,7 +260,9 @@ class ClassTeacherModel(BaseModel):
 
     ### relationships:
 
+    - classes: list[ClassModel]
     - class_event: list[ClassEventModel]
+    - user: UserModel
     """
     __tablename__ = 'class_teacher'
 
@@ -252,17 +270,21 @@ class ClassTeacherModel(BaseModel):
     user_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf", ondelete="CASCADE"), nullable=False)
     class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
 
-    class_event = relationship(
-        "ClassEventModel", 
-        back_populates="teacher", 
-        foreign_keys="[ClassEventModel.teacher_id]",
+
+    classes = relationship(
+        "ClassModel",
+        back_populates="class_teacher",
         uselist=True
+    )
+
+    class_event = relationship(
+        "ClassEventModel",
+        back_populates="teacher",
     )
 
     user = relationship(
         "UserModel",
         back_populates="class_teacher",
-        foreign_keys="[ClassTeacherModel.user_cpf]",
         uselist=False
     )
 
@@ -297,21 +319,18 @@ class ClassEventModel(BaseModel):
     teacher = relationship(
         "ClassTeacherModel",
         back_populates="class_event",
-        foreign_keys="[ClassEventModel.teacher_id]",
         uselist=False
     )
 
     discipline = relationship(
         "DisciplinesModel",
         back_populates="class_event",
-        foreign_keys="[ClassEventModel.discipline_id]",
         uselist=False
     )
 
     recurrences = relationship(
         "RecurrencesModel",
         back_populates="class_event",
-        foreign_keys="[RecurrencesModel.class_event_id]",
         uselist=True,
         cascade="all, delete-orphan"
     )
@@ -346,7 +365,6 @@ class RecurrencesModel(BaseModel):
     class_event = relationship(
         "ClassEventModel",
         back_populates="recurrences",
-        foreign_keys="[RecurrencesModel.class_event_id]",
         uselist=False
     )
     
@@ -357,13 +375,25 @@ class TeacherDisciplinesModel(BaseModel):
 
     - id: str
     - discipline_id: str
-    - teacher_cpf: str
+    - user_cpf: str
     """
     __tablename__ = 'teacher_disciplines'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
     discipline_id: Mapped[str] = mapped_column(String, ForeignKey("disciplines.id"), nullable=False)
-    teacher_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+    user_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), nullable=False)
+
+    discipline = relationship(
+        "DisciplinesModel",
+        back_populates="teacher_disciplines",
+        uselist=False
+    )
+
+    user = relationship(
+        "UserModel",
+        back_populates="teacher_disciplines",
+        uselist=False
+    )
 
 
 class PresenceModel(BaseModel):
