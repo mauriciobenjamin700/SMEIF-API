@@ -6,6 +6,7 @@ from constants.user import ERROR_USER_NOT_FOUND_USERS
 from controllers.user import UserController
 from schemas.user import UserResponse
 from utils.format import (
+    format_cpf,
     format_date,
     format_phone
 )
@@ -22,7 +23,7 @@ def test_get_all_user_success(db_session, mock_user_on_db):
     user = users[0]
     
     assert isinstance(user, UserResponse)
-    assert user.cpf == mock_user_on_db.cpf
+    assert user.cpf == format_cpf(mock_user_on_db.cpf)
     assert user.name == mock_user_on_db.name
     assert user.birth_date == format_date(mock_user_on_db.birth_date)
     assert user.gender == mock_user_on_db.gender

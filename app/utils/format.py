@@ -41,7 +41,7 @@ def format_phone(number: str) -> str:
         - number:: str: Número de telefone que será formatado
 
     - Return:
-        - str: Número de telefone formatado
+        - str: Número de telefone formatado ex((89) 91212-1212)
     """
     number = "".join([number for number in number if number.isnumeric()])
     return f"({number[:2]}) {number[2:7]}-{number[7:]}"

@@ -43,7 +43,9 @@ from utils.validate import(
 )
 from utils.format import (
     clean_string_field,
+    format_cpf,
     format_date,
+    format_phone,
     unformat_cpf,
     unformat_phone
 )
@@ -393,11 +395,33 @@ class UserResponse(BaseSchema):
         examples=["Apartamento 201"]
     )
 
+    @field_validator("cpf", mode="before")
+    def field_validate_cpf(cls, value) -> str:
+        
+        value = clean_string_field(value)
+        value = unformat_cpf(value)
+        value  = format_cpf(value)
+
+        return value
+    
+
+    @field_validator("phone", mode="before")
+    def field_validate_phone(cls, value) -> str:
+        value = clean_string_field(value)
+        value = unformat_phone(value)
+        value = format_phone(value)
+        return value
+
 
     @field_validator("phone_optional", mode="before")
     def field_validate_phone_optional(cls, value) -> str:
         if not value:
             value = ""
+
+        else:
+            value = clean_string_field(value)
+            value = unformat_phone(value)
+            value = format_phone(value)
 
         return value
 

@@ -17,6 +17,7 @@ from database.models import (
     ClassTeacherModel,
     DisciplinesModel,
     RecurrencesModel,
+    TeacherDisciplinesModel,
     UserModel,
     ClassModel
 )
@@ -192,7 +193,7 @@ def teacher_classes_exists(db_session: Session, user_cpf: str, classes: list[str
 
     assossiation = db_session.scalars(
         select(ClassTeacherModel).where(
-            and_(ClassTeacherModel.teacher_id == user_cpf, ClassTeacherModel.discipline_id.in_(classes))
+            and_(ClassTeacherModel.user_cpf == user_cpf, ClassTeacherModel.class_id.in_(classes))
         )
     ).all()
 
@@ -213,8 +214,8 @@ def teacher_disciplines_exists(db_session: Session, user_cpf: str, disciplines: 
     """
 
     assossiation = db_session.scalars(
-        select(ClassTeacherModel).where(
-            and_(ClassTeacherModel.teacher_id == user_cpf, ClassTeacherModel.discipline_id.in_(disciplines))
+        select(TeacherDisciplinesModel).where(
+            and_(TeacherDisciplinesModel.user_cpf == user_cpf, TeacherDisciplinesModel.discipline_id.in_(disciplines))
         )
     ).all()
 

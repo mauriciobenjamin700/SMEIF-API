@@ -120,7 +120,7 @@ def get_all_disciplines_by_teacher(db_session: Session, user_cpf: str) -> list[D
         - list[DisciplinesModel]: Lista de disciplinas encontradas no banco de dados.
     """
     associations = db_session.scalars(
-        select(TeacherDisciplinesModel).where(TeacherDisciplinesModel.teacher_cpf == user_cpf)
+        select(TeacherDisciplinesModel).where(TeacherDisciplinesModel.user_cpf == user_cpf)
     ).all()
 
     if not associations:
@@ -192,7 +192,7 @@ def get_all_class_teacher_models_by_filter(db_session: Session, user_cpf: str, c
 def get_all_teacher_disciplines_by_filter(db_session: Session, user_cpf: str, disciplines_id: list[str]) -> list[TeacherDisciplinesModel]:
 
     disciplines = db_session.query(TeacherDisciplinesModel).filter(
-    TeacherDisciplinesModel.teacher_cpf == user_cpf,
+    TeacherDisciplinesModel.user_cpf == user_cpf,
     TeacherDisciplinesModel.discipline_id.in_(disciplines_id)
     ).all()
 
