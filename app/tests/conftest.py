@@ -1,10 +1,10 @@
 from datetime import datetime
-from pytest import fixture
+from pytest import FixtureRequest, fixture
 from fastapi.testclient import TestClient
 
 
 from database.connection import Session
-from database.models import ClassEventModel, ClassModel, ClassTeacherModel, DisciplinesModel, RecurrencesModel, UserModel
+from database.models import ClassEventModel, ClassModel, ClassTeacherModel, DisciplinesModel, RecurrencesModel, TeacherDisciplinesModel, UserModel
 from main import app
 from schemas.address import Address
 from schemas.base import (
@@ -23,6 +23,10 @@ from schemas.classes import (
 from schemas.disciplines import(
     DisciplineRequest,
     DisciplineResponse
+)
+from schemas.teacher import (
+    ClassTeacherRequest,
+    TeacherDisciplinesRequest
 )
 from schemas.user import (
     UserDB,
@@ -47,6 +51,7 @@ def db_session():
 
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
+        session.query(TeacherDisciplinesModel).delete()
         session.query(UserModel).delete()
         session.query(ClassModel).delete()
         session.query(DisciplinesModel).delete()
@@ -59,6 +64,7 @@ def db_session():
 
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
+        session.query(TeacherDisciplinesModel).delete()
         session.query(UserModel).delete()
         session.query(ClassModel).delete()
         session.query(DisciplinesModel).delete()
@@ -190,6 +196,23 @@ def mock_discipline_response_data(mock_discipline_request_data) -> dict:
 
     return data
 
+
+@fixture
+def mock_teacher_disciplines_request_data():
+    data = {}
+    data["user_cpf"] = "123.456.789-00"
+    data["disciplines_id"] = ["1", "2", "3"]
+    
+    return data
+
+
+@fixture
+def mock_class_teacher_request_data():
+    data = {}
+    data["user_cpf"] = "123.456.789-00"
+    data["classes_id"] = ["1", "2", "3"]
+
+    return data
 
 
 
@@ -346,6 +369,29 @@ def mock_Recurrences_list() -> list[Recurrences]:
 
     return recurrences
 
+
+@fixture
+def mock_ClassTeacherRequest(
+    mock_teacher_on_db,
+    mock_class_on_db
+) -> ClassTeacherRequest:
+    
+    return ClassTeacherRequest(
+        user_cpf=mock_teacher_on_db.cpf,
+        classes_id=[mock_class_on_db.id]
+)
+
+@fixture
+def mock_mock_TeacherDisciplinesRequest(
+    mock_teacher_on_db,
+    mock_discipline_on_db
+) -> TeacherDisciplinesRequest:
+    
+    return TeacherDisciplinesRequest(
+        user_cpf=mock_teacher_on_db.cpf,
+        disciplines_id=[mock_discipline_on_db.id]
+    )
+
 ############################ MODELS ############################
 
 @fixture
@@ -381,10 +427,46 @@ def mock_class_on_db(db_session, mock_ClassRequest) -> ClassModel:
 
 
 @fixture
+def mock_list_class_on_db(db_session) -> list[ClassModel]:
+
+    classes = [
+        ClassModel(
+            id=id_generate(),
+            education_level=EducationLevel.ELEMENTARY.value,
+            name="5° Ano",
+            section="A",
+            shift=Shift.MORNING.value,
+            max_students=20
+        ),
+        ClassModel(
+            id=id_generate(),
+            education_level=EducationLevel.PRESCHOOL.value,
+            name="1° Ano",
+            section="A",
+            shift=Shift.AFTERNOON.value,
+            max_students=20
+        ),
+        ClassModel(
+            id=id_generate(),
+            education_level=EducationLevel.ELEMENTARY.value,
+            name="7° Ano",
+            section="A",
+            shift=Shift.MORNING.value,
+            max_students=20
+        )
+    ]
+
+    db_session.add_all(classes)
+    db_session.commit()
+
+    return classes
+
+
+@fixture
 def mock_teacher_on_db(db_session) -> UserModel:
 
     user = UserModel(
-        cpf="123.456.789-66",
+        cpf="12345678966",
         name="Teacher Doe",
         birth_date=datetime(1990, 1, 1),
         gender = Gender.MALE.value,
@@ -401,7 +483,6 @@ def mock_teacher_on_db(db_session) -> UserModel:
     )
 
     db_session.add(user)
-
     db_session.commit()
 
     return user
@@ -498,3 +579,40 @@ def mock_recurrence_on_db(
     db_session.commit()
 
     return recurrence
+
+
+@fixture
+def mock_teacher_discipline_on_db(
+    db_session,
+    mock_discipline_on_db, mock_teacher_on_db
+) -> TeacherDisciplinesModel:
+
+    teacher_discipline = TeacherDisciplinesModel(
+        id=id_generate(),
+        user_cpf=mock_teacher_on_db.cpf,
+        discipline_id=mock_discipline_on_db.id
+    )
+
+    db_session.add(teacher_discipline)
+    db_session.commit()
+
+    return teacher_discipline
+
+
+@fixture
+def mock_class_teacher_on_db(
+    db_session,
+    mock_class_on_db,
+    mock_teacher_on_db
+) -> ClassTeacherModel:
+    
+    class_teacher = ClassTeacherModel(
+        id=id_generate(),
+        user_cpf=mock_teacher_on_db.cpf,
+        class_id=mock_class_on_db.id
+    )
+
+    db_session.add(class_teacher)
+    db_session.commit()
+
+    return class_teacher

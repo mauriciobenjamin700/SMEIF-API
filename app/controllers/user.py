@@ -9,6 +9,7 @@ from constants.user import (
     MESSAGE_USER_UPDATE_FAIL, 
     MESSAGE_USER_UPDATE_SUCCESS
 )
+from database.mapping.user import map_UserModel_to_UserResponse
 from database.models import UserModel
 from database.queries.existence import check_user_existence
 from database.queries.get import get_user_by_cpf
@@ -27,7 +28,6 @@ from services.security.password import (
     verify
 )
 from services.security.tokens import encode_token
-from utils.format import format_date, format_phone
 from utils.messages.success import Success
 from utils.messages.error import (
     Server,
@@ -273,22 +273,7 @@ class UserController():
 
     
     def _map_UserModel_to_UserResponse(self, user: UserModel) -> UserResponse:
-        return UserResponse(
-            cpf=user.cpf,
-            name=user.name,
-            birth_date=format_date(user.birth_date),
-            gender=user.gender,
-            phone=format_phone(user.phone),
-            phone_optional= format_phone(user.phone_optional) if user.phone_optional else "",
-            email=user.email,
-            level=user.level,
-            state=user.state,
-            city=user.city,
-            neighborhood=user.neighborhood,
-            street=user.street,
-            house_number=user.house_number,
-            complement=user.complement if user.complement else ""
-        )
+        return map_UserModel_to_UserResponse(user)
     
     def _map_list_UserModel_to_list_UserResponse(self, users: list[UserModel]) -> list[UserResponse]:
         return [self._map_UserModel_to_UserResponse(user) for user in users]

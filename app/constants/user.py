@@ -40,6 +40,7 @@ ERROR_USER_EMAIL_ALREADY_EXISTS = "Email já cadastrado"
 
 
 ERROR_USER_INVALID_LEVEL = "Nível de Acesso inválido"
+ERROR_USER_INVALID_TEACHER_LEVEL = "Usuário não é um professor"
 ERROR_USER_INVALID_OPTIONAL_PHONE = "Telefone opcional invalido"
 ERROR_USER_INVALID_BIRTHDATE = "O usuário deve ter mais de 18 anos"
 

@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
 
@@ -10,7 +10,6 @@ from constants.classes import(
 from constants.disciplines import ERROR_DISCIPLINES_GET_NOT_FOUND
 from constants.user import (
     ERROR_USER_GET_TEACHER_NOT_FOUND,
-    ERROR_USER_NOT_ID,
     ERROR_USER_REQUIRED_FIELD_CPF,
     ERROR_USER_NOT_FOUND_USER
 )
@@ -50,8 +49,10 @@ def get_teacher_by_cpf(db_session: Session, teacher_cpf:str) -> UserModel:
 
     model = db_session.scalar(
         select(UserModel).where(
-            UserModel.cpf == teacher_cpf & 
-            UserModel.level == UserLevel.TEACHER.value
+            and_(
+                UserModel.cpf == teacher_cpf,
+                UserModel.level == UserLevel.TEACHER.value
+            )
         )
     )
 
