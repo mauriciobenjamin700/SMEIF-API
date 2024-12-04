@@ -2,18 +2,25 @@ from pydantic import Field
 
 
 from schemas.address import Address
-from schemas.base import BaseSchema
+from schemas.base import (
+    BaseSchema,
+    Gender,
+    Kinship,
+)
 
 
 
 class StudentRequest(BaseSchema):
     """
+    - cpf: str
     - name: str
     - birth_date: str
-    - cpf: str
     - gender: str
-
-
+    - class_id: str
+    - address: Address
+    - kinship: str
+    - parent_cpf: str
+    - complement: str
     """
 
     cpf: str = Field(
@@ -45,7 +52,22 @@ class StudentRequest(BaseSchema):
     kinship: str = Field(
         title="Parentesco",
         description="Parentesco do aluno com o Responsável",
-        examples=["Pai", "Mãe", "Avô", "Avó", "Tio", "Tia", "Irmão", "Irmão", "Primo", "Prima", "Responsável legal", "Tutor", "Padrasto", "Madrasta", "Outros"]
+        examples=[
+            Kinship.FATHER.value,
+            Kinship.MOTHER.value,
+            Kinship.GRANDMOTHER.value,
+            Kinship.GRANDFATHER.value,
+            Kinship.UNCLE.value,
+            Kinship.AUNT.value,
+            Kinship.BROTHER.value,
+            Kinship.SISTER.value,
+            Kinship.COUSIN.value,
+            Kinship.RESPONSIBLE.value,
+            Kinship.TUTOR.value,
+            Kinship.STEPFATHER.value,
+            Kinship.STEPMOTHER.value,
+            Kinship.OTHER.value
+        ]
     )
     parent_cpf: str = Field(
         title="CPF do Responsável",
@@ -86,3 +108,7 @@ class StudentResponse(BaseSchema):
         description="Turno da disciplina",
         examples=["Matutino", "Vespertino", "Noturno"]
     )
+
+
+class ChildRequest(BaseSchema):
+    cpf

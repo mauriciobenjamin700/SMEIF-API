@@ -29,17 +29,6 @@ class BaseMessage(BaseSchema):
     detail: str
 
 
-class Gender(str, Enum):
-    MALE = 'M',
-    FEMALE = 'F',
-    OTHER = 'Z'
-
-class UserLevel(int, Enum):
-    PARENT = 1
-    TEACHER = 2
-    COORDINATION = 3
-    ADMIN = 4
-
 class DaysOfWeek(str, Enum):
     MONDAY = "Segunda"
     TUESDAY = "Terça"
@@ -53,6 +42,36 @@ class DaysOfWeek(str, Enum):
 class EducationLevel(str, Enum):
     PRESCHOOL = "Infantil"
     ELEMENTARY = "Fundamental"
+
+
+class Gender(str, Enum):
+    MALE = 'M',
+    FEMALE = 'F',
+    OTHER = 'Z'
+
+
+class Kinship(str, Enum):
+    FATHER = "Pai"
+    MOTHER = "Mãe"
+    GRANDMOTHER = "Avô"
+    GRANDFATHER = "Avó"
+    UNCLE = "Tio"
+    AUNT = "Tia"
+    BROTHER = "Irmão"
+    SISTER = "Irmã"
+    COUSIN = "Primo(a)"
+    RESPONSIBLE = "Responsável Legal"
+    TUTOR = "Tutor(a)"
+    STEPFATHER = "Padrasto"
+    STEPMOTHER = "Madrasta"
+    OTHER = "Outros"
+
+
+class UserLevel(int, Enum):
+    PARENT = 1
+    TEACHER = 2
+    COORDINATION = 3
+    ADMIN = 4
 
 
 class Shift(str, Enum):
