@@ -13,6 +13,7 @@ from constants.user import (
 )
 from database.base import BaseModel
 from database.models import (
+    ChildModel,
     ClassEventModel,
     ClassTeacherModel,
     DisciplinesModel,
@@ -220,3 +221,27 @@ def teacher_disciplines_exists(db_session: Session, user_cpf: str, disciplines: 
     ).all()
 
     return True if assossiation else False
+
+
+def child_exists(db_session: Session, cpf: str) -> bool:
+    """
+    Verifica se um aluno existe.
+
+    - Args:
+        - db_session: Sessão do banco de dados.
+        - cpf: CPF do aluno.
+
+    - Returns:
+        - bool: True se o aluno existe, False caso contrário.
+    """
+
+    child = db_session.query(ChildModel).filter(ChildModel.cpf == cpf).first()
+
+    return True if child else False
+    
+
+def parent_exists(db_session: Session, cpf: str):
+
+    parent = db_session.query(UserModel).filter(UserModel.cpf == cpf).first()
+
+    return True if parent else False

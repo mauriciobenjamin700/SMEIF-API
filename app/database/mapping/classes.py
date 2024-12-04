@@ -77,7 +77,7 @@ def map_ClassEventModel_to_ClassEventResponse(model: ClassEventModel) -> ClassEv
     )
 
 
-def _build_class_info(model: ClassModel) -> str:
+def build_class_info(model: ClassModel) -> str:
     """
     constrói a informação da turma para ser exibida na resposta
     """
@@ -115,7 +115,7 @@ def map_ClassModel_to_ClassResponse(db_session: Session,model: ClassModel) -> Cl
         section=model.section,
         shift=model.shift,
         max_students=model.max_students,
-        class_info=_build_class_info(model), 
+        class_info=build_class_info(model), 
         class_events=class_events
     )
 

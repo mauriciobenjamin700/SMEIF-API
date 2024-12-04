@@ -113,21 +113,28 @@ class ChildModel(BaseModel):
     """
     Dados de um aluno
 
-    - matriculation: str
+
     - cpf: str
+    - matriculation: str
     - name: str
     - birth_date: datetime
     - gender: str
-    - address_id: str
     - dependencies: str | None
+    - state: str
+    - city: str
+    - neighborhood: str
+    - street: str
+    - house_number: str
+    - complement: str | None
 
     relationships:
     - child_parents: list[ChildParentsModel]
+    - class_student: ClassStudentModel | None
     """
     __tablename__ = 'child'
 
+    cpf: Mapped[str] = mapped_column(String, primary_key=True,unique=True, nullable=False)
     matriculation: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
-    cpf: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     birth_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     gender: Mapped[str] = mapped_column(CHAR(1), unique=False,nullable=False)
@@ -143,6 +150,12 @@ class ChildModel(BaseModel):
         "ChildParentsModel",
         back_populates="child",
         uselist=True
+    )
+
+    class_student = relationship(
+        "ClassStudentModel",
+        back_populates="child",
+        uselist=False
     )
 
 
@@ -188,6 +201,10 @@ class ClassModel(BaseModel):
     - section: str
     - shift: str
     - max_students: int
+
+    relationships:
+    - class_teacher: list[ClassTeacherModel]
+    - class_student: list[ClassStudentModel]
     """
     __tablename__ = 'class'
 
@@ -201,6 +218,12 @@ class ClassModel(BaseModel):
     class_teacher = relationship(
         "ClassTeacherModel",
         back_populates="classes",
+        uselist=True
+    )
+
+    class_student = relationship(
+        "ClassStudentModel",
+        back_populates="class_",
         uselist=True
     )
 
@@ -220,6 +243,18 @@ class ClassStudentModel(BaseModel):
     class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
     child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
 
+    class_ = relationship(
+        "ClassModel",
+        back_populates="class_student",
+        uselist=False
+    )
+
+    child = relationship(
+        "ChildModel",
+        back_populates="class_student",
+        uselist=False
+    )
+
 
 class DisciplinesModel(BaseModel):
     """
@@ -227,6 +262,10 @@ class DisciplinesModel(BaseModel):
 
     - id: str
     - name: str
+
+    relationships:
+    - class_event: list[ClassEventModel]
+    - teacher_disciplines: list[TeacherDisciplinesModel]
     """
     __tablename__ = 'disciplines'
 

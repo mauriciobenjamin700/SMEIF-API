@@ -1,3 +1,5 @@
+from email.policy import default
+from re import M
 from pydantic import Field
 
 
@@ -16,7 +18,7 @@ class StudentRequest(BaseSchema):
     - name: str
     - birth_date: str
     - gender: str
-    - class_id: str
+    - class_id: strclass_
     - address: Address
     - kinship: str
     - parent_cpf: str
@@ -41,7 +43,11 @@ class StudentRequest(BaseSchema):
     gender: str = Field(
         title="Gênero",
         description="Gênero do aluno",
-        examples=["M", "F", "Z"],
+        examples=[
+            Gender.MALE.value,
+            Gender.FEMALE.value,
+            Gender.OTHER.value
+        ],
     )
     class_id: str = Field(
         title="ID da Turma",
@@ -74,10 +80,11 @@ class StudentRequest(BaseSchema):
         description="CPF do Responsável",
         examples=["123.456.789-00", "987.654.321-00"]
     )
-    complement: str = Field(
+    complement: str | None = Field(
         title="Necessidades especiais",
         description="Caso o aluno tenha alguma condição médica, alergia, ou necessidades de acompanhamento especial.",
-        examples=["Autismo", "Intolerância a lactose", "mudo", "Cadeirante"]
+        examples=["Autismo", "Intolerância a lactose", "Mudo", "Cadeirante"],
+        default=None,
     )
 
 
@@ -111,4 +118,42 @@ class StudentResponse(BaseSchema):
 
 
 class ChildRequest(BaseSchema):
-    cpf
+    """
+    - cpf: str
+    - name: name
+    - birth_date: str
+    - gender: str
+    - address: Address
+    - dependencies: str | None
+    """
+    cpf: str = Field(
+        title="CPF da criança",
+        description="CPF da criança",
+        examples=["123.456.789-00", "987.654.321-00"]
+    )
+    name: str = Field(
+        title="Nome",
+        description="Nome da criança",
+        examples=["João", "Maria", "José"]
+    )
+    birth_date: str = Field(
+        title="Data de Nascimento",
+        description="Data de nascimento da criança",
+        examples=["1990-01-02"]
+    )
+    gender: str = Field(
+        title="Gênero",
+        description="Gênero da criança",
+        examples=[
+            Gender.MALE.value,
+            Gender.FEMALE.value,
+            Gender.OTHER.value
+        ],
+    )
+    address: Address
+    dependencies: str | None = Field(
+        title="Dependências",
+        description="Dependências da criança",
+        examples=["Autismo", "Intolerância a lactose", "Mudo", "Cadeirante"],
+        default=None
+    )

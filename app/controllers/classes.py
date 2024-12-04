@@ -15,7 +15,7 @@ from constants.classes import(
     MESSAGE_CLASSES_EVENTS_DELETE_RECURRENCES_SUCCESS,
 )
 from database.mapping.classes import (
-    _build_class_info, 
+    build_class_info, 
     map_ClassEventModel_to_ClassEventResponse, 
     map_ClassModel_to_ClassResponse,
     map_Recurrence_to_RecurrencesModel, 
@@ -483,11 +483,11 @@ class ClassesController():
         return map_ClassModel_to_ClassResponse(self.db_session,model)
     
 
-    def _build_class_info(self, model: ClassModel) -> str:
+    def build_class_info(self, model: ClassModel) -> str:
         """
         constrói a informação da turma para ser exibida na resposta
         """
-        return _build_class_info(model)
+        return build_class_info(model)
     
 
     def _Recurrence_to_Model(self, class_event_id: str,recurrence: Recurrences) -> RecurrencesModel:

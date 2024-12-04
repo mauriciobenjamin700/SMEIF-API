@@ -2,6 +2,9 @@ from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
 
+from constants.child import(
+    ERROR_CHILD_GET_NOT_FOUND
+)
 from constants.classes import(
     ERROR_CLASSES_EVENTS_DELETE_RECURRENCES_NOT_FOUND,
     ERROR_CLASSES_EVENTS_GET_NOT_FOUND,
@@ -14,6 +17,7 @@ from constants.user import (
     ERROR_USER_NOT_FOUND_USER
 )
 from database.models import(
+    ChildModel,
     ClassEventModel,
     ClassModel,
     DisciplinesModel,
@@ -135,5 +139,19 @@ def get_recurrence_by_attributes(
 
     if not model:
         raise NotFound(ERROR_CLASSES_EVENTS_DELETE_RECURRENCES_NOT_FOUND)
+    
+    return model
+
+
+def get_child_by_cpf(db_session: Session, cpf:str) -> ChildModel:
+
+    model = db_session.scalar(
+        select(ChildModel).where(
+            ChildModel.cpf == cpf
+        )
+    )
+
+    if not model:
+        raise NotFound(ERROR_CHILD_GET_NOT_FOUND)
     
     return model
