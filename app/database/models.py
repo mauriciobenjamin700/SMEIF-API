@@ -134,7 +134,7 @@ class ChildModel(BaseModel):
     __tablename__ = 'child'
 
     cpf: Mapped[str] = mapped_column(String, primary_key=True,unique=True, nullable=False)
-    matriculation: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    matriculation: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     birth_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     gender: Mapped[str] = mapped_column(CHAR(1), unique=False,nullable=False)

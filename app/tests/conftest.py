@@ -11,6 +11,7 @@ from schemas.base import (
     DaysOfWeek,
     EducationLevel,
     Gender,
+    Kinship,
     Shift,
     UserLevel
 )
@@ -215,6 +216,31 @@ def mock_class_teacher_request_data():
     return data
 
 
+
+@fixture
+def mock_StudentRequest_data(mock_address_data) -> dict:
+    data = {}
+    data["cpf"] = "123.456.789-00"
+    data["name"] = "Student John Doe"
+    data["birth_date"] = "2020-01-01"
+    data["gender"] = Gender.MALE.value
+    data["class_id"] = "1"
+    data["address"] = mock_address_data.copy()
+    data["kinship"] = Kinship.FATHER.value
+    data["parent_cpf"] = "123.456.789-01"
+
+    return data
+
+
+@fixture
+def mock_StudentResponse_data() -> dict:
+    data = {
+        "matriculation": "20240000001",
+        "name": "Student John Doe",
+        "class_info": "5° Ano A",
+        "shift": Shift.MORNING.value
+    }
+    return data
 
 ############################ SCHEMAS ############################
 

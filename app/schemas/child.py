@@ -1,15 +1,44 @@
-from email.policy import default
-from re import M
-from pydantic import Field
+from pydantic import (
+    Field,
+    field_validator
+)
 
 
+from constants.base import(
+ERROR_INVALID_CPF, 
+ERROR_INVALID_FORMAT_BIRTH_DATE, 
+ERROR_INVALID_FORMAT_GENDER,
+ERROR_INVALID_FORMAT_SHIFT
+)
+from constants.child import (
+    ERROR_CHILD_INVALID_FIELD_BIRTH_DATE,
+    ERROR_CHILD_INVALID_FIELD_KINSHIP,
+    ERROR_CHILD_REQUIRED_FIELD_BIRTH_DATE,
+    ERROR_CHILD_REQUIRED_FIELD_CLASS_ID,
+    ERROR_CHILD_REQUIRED_FIELD_CPF,
+    ERROR_CHILD_REQUIRED_FIELD_GENDER,
+    ERROR_CHILD_REQUIRED_FIELD_KINSHIP,
+    ERROR_CHILD_REQUIRED_FIELD_NAME,
+    ERROR_CHILD_REQUIRED_FIELD_PARENT_CPF,
+)
 from schemas.address import Address
 from schemas.base import (
     BaseSchema,
     Gender,
     Kinship,
+    Shift,
 )
-
+from utils.format import(
+    clean_string_field,
+    unformat_cpf
+)
+from utils.messages.error import UnprocessableEntity
+from utils.validate import(
+    is_adult,
+    validate_cpf,
+    validate_date,
+    validate_string
+)
 
 
 class StudentRequest(BaseSchema):
@@ -88,6 +117,93 @@ class StudentRequest(BaseSchema):
     )
 
 
+    @field_validator("cpf", mode="before")
+    def validate_cpf(cls, value) -> str:
+
+        value = value.strip()
+
+        if not value:
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_CPF)
+
+        if not validate_cpf(value):
+            raise UnprocessableEntity(ERROR_INVALID_CPF)
+        
+        return unformat_cpf(value)
+    
+
+    @field_validator("name", mode="before")
+    def validate_name(cls, value) -> str:
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_NAME)
+        
+        return clean_string_field(value)
+    
+
+    @field_validator("birth_date", mode="before")
+    def validate_birth_date(cls, value) -> str:
+            
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_BIRTH_DATE)
+        
+        if not validate_date(value):
+
+            raise UnprocessableEntity(ERROR_INVALID_FORMAT_BIRTH_DATE)
+        
+        if is_adult(value):
+
+            raise UnprocessableEntity(ERROR_CHILD_INVALID_FIELD_BIRTH_DATE)
+        
+        return value
+
+
+    @field_validator("gender", mode="before")
+    def validate_gender(cls, value) -> str:
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_GENDER)
+        
+        if value not in Gender.__dict__.values():
+
+            raise UnprocessableEntity(ERROR_INVALID_FORMAT_GENDER)
+        
+        return clean_string_field(value)
+    
+
+    @field_validator("class_id", mode="before")
+    def validate_class_id(cls, value) -> str:
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_CLASS_ID)
+        
+        return clean_string_field(value)
+    
+
+    @field_validator("kinship", mode="before")
+    def validate_kinship(cls, value) -> str:
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_KINSHIP)
+        
+        if value not in Kinship.__dict__.values():
+
+            raise UnprocessableEntity(ERROR_CHILD_INVALID_FIELD_KINSHIP)
+        
+        return clean_string_field(value)
+    
+    @field_validator("parent_cpf", mode="before")
+    def validate_parent_cpf(cls, value) -> str:
+
+        value = value.strip()
+
+        if not value:
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_PARENT_CPF)
+
+        if not validate_cpf(value):
+            raise UnprocessableEntity(ERROR_INVALID_CPF)
+        
+        return unformat_cpf(value)
+
 class StudentResponse(BaseSchema):
     """
     - matriculation: str
@@ -98,7 +214,7 @@ class StudentResponse(BaseSchema):
     matriculation: str = Field(
         title="Matrícula",
         description="Número de matrícula do aluno",
-        examples=["123456", "654321"]
+        examples=["20240000001", "20240000002"]
     )
     name: str = Field(
         title="Nome",
@@ -115,6 +231,15 @@ class StudentResponse(BaseSchema):
         description="Turno da disciplina",
         examples=["Matutino", "Vespertino", "Noturno"]
     )
+
+
+    @field_validator("shift", mode="before")
+    def validate_shift(cls, value) -> str:
+
+        if value not in Shift.__dict__.values():
+            raise UnprocessableEntity(ERROR_INVALID_FORMAT_SHIFT)
+
+        return clean_string_field(value)
 
 
 class ChildRequest(BaseSchema):
@@ -157,3 +282,56 @@ class ChildRequest(BaseSchema):
         examples=["Autismo", "Intolerância a lactose", "Mudo", "Cadeirante"],
         default=None
     )
+
+
+    @field_validator("cpf", mode="before")
+    def validate_cpf(cls, value) -> str:
+
+        value = value.strip()
+
+        if not value:
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_CPF)
+
+        if not validate_cpf(value):
+            raise UnprocessableEntity(ERROR_INVALID_CPF)
+        
+        return unformat_cpf(value)
+    
+
+    @field_validator("name", mode="before")
+    def validate_name(cls, value) -> str:
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_NAME)
+        
+        return clean_string_field(value)
+    
+
+    @field_validator("birth_date", mode="before")
+    def validate_birth_date(cls, value) -> str:
+            
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_BIRTH_DATE)
+        
+        if not validate_date(value):
+
+            raise UnprocessableEntity(ERROR_INVALID_FORMAT_BIRTH_DATE)
+        
+        if is_adult(value):
+
+            raise UnprocessableEntity(ERROR_CHILD_INVALID_FIELD_BIRTH_DATE)
+        
+        return value
+
+
+    @field_validator("gender", mode="before")
+    def validate_gender(cls, value) -> str:
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_GENDER)
+        
+        if value not in Gender.__dict__.values():
+
+            raise UnprocessableEntity(ERROR_INVALID_FORMAT_GENDER)
+        
+        return clean_string_field(value)
