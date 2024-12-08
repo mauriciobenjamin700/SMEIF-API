@@ -51,7 +51,7 @@ class StudentRequest(BaseSchema):
     - address: Address
     - kinship: str
     - parent_cpf: str
-    - complement: str
+    - dependencies: str | None
     """
 
     cpf: str = Field(
@@ -109,7 +109,7 @@ class StudentRequest(BaseSchema):
         description="CPF do Responsável",
         examples=["123.456.789-00", "987.654.321-00"]
     )
-    complement: str | None = Field(
+    dependencies: str | None = Field(
         title="Necessidades especiais",
         description="Caso o aluno tenha alguma condição médica, alergia, ou necessidades de acompanhamento especial.",
         examples=["Autismo", "Intolerância a lactose", "Mudo", "Cadeirante"],

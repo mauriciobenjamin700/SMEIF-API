@@ -1,5 +1,5 @@
 from datetime import datetime
-from pytest import FixtureRequest, fixture
+from pytest import fixture
 from fastapi.testclient import TestClient
 
 
@@ -20,6 +20,11 @@ from schemas.classes import (
     ClassEventResponse,
     ClassRequest,
     Recurrences
+)
+from schemas.child import(
+    ChildRequest,
+    StudentRequest,
+    StudentResponse
 )
 from schemas.disciplines import(
     DisciplineRequest,
@@ -240,7 +245,7 @@ def mock_StudentResponse_data() -> dict:
         "class_info": "5° Ano A",
         "shift": Shift.MORNING.value
     }
-    return data
+    return data.copy()
 
 ############################ SCHEMAS ############################
 
@@ -416,6 +421,30 @@ def mock_mock_TeacherDisciplinesRequest(
     return TeacherDisciplinesRequest(
         user_cpf=mock_teacher_on_db.cpf,
         disciplines_id=[mock_discipline_on_db.id]
+    )
+
+
+@fixture
+def mock_StudentRequest(
+    mock_class_on_db,
+    mock_father_on_db
+) -> dict:
+    return StudentRequest(
+        cpf="123.456.789-87",
+        name="Pedro Vital Jr",
+        birth_date="2010-01-01",
+        gender="M",
+        class_id=mock_class_on_db.id,
+        address=Address(
+            state="PI",
+            city="Oeiras",
+            neighborhood="Centro",
+            street="Rua dos Cavalos",
+            house_number="124"
+        ),
+        kinship=Kinship.FATHER.value,
+        parent_cpf=mock_father_on_db.cpf,
+
     )
 
 ############################ MODELS ############################
@@ -642,3 +671,29 @@ def mock_class_teacher_on_db(
     db_session.commit()
 
     return class_teacher
+
+
+@fixture
+def mock_father_on_db(
+    db_session
+) -> UserModel:
+    user = UserModel(
+        cpf="12345678978",
+        name="Pedro Vital",
+        birth_date=datetime(1980, 1, 10),
+        gender = Gender.MALE.value,
+        phone="89912344321",
+        email="pedrovital13@gmail.com",
+        password=protect("123456"),
+        level=UserLevel.PARENT.value,
+        state="PI",
+        city="Oeiras",
+        neighborhood="Centro",
+        street="Rua dos cavalos",
+        house_number="124",
+    )
+
+    db_session.add(user)
+    db_session.commit()
+
+    return user
