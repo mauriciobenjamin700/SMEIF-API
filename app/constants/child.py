@@ -14,5 +14,16 @@ ERROR_CHILD_ADD_NOT_FOUND_PARENT = "Não foi possível encontrar o responsável 
 
 ERROR_CHILD_GET_NOT_FOUND = "Estudante não encontrado"
 ERROR_CHILD_GET_ALL_NOT_FOUND = "Nenhum estudante encontrado"
+ERROR_CHILD_GET_CLASS_STUDENT_NOT_FOUND = "Aluno não vinculado a nenhuma turma"
+ERROR_CHILD_CHANGE_CLASS_STUDENT_ALREADY_ASSOCIATE = "Estudante já está matriculado na turma"
+ERROR_CHILD_ADD_PARENT_ALREADY_ASSOCIATE_PARENT = "Responsável já está vinculado ao estudante"
+ERROR_CHILD_DELETE_PARENT_NOT_ASSOCIATE_PARENT = "Responsável não está vinculado ao estudante"
+ERROR_CHILD_ADD_PARENT_LIMIT_REACHED = "Número máximo de responsáveis atingido"
+ERROR_CHILD_DELETE_PARENT_LIMIT_REACHED = "Número mínimo de responsáveis atingido"
 
 MESSAGE_CHILD_DELETE_SUCCESS = "Estudante removido com sucesso"
+MESSAGE_CHILD_ASSOCIATE_PARENT_SUCCESS = "Responsável vinculado com sucesso"
+MESSAGE_CHILD_DELETE_PARENT_SUCCESS = "Responsável removido com sucesso"
+
+MAX_PARENT = 2 # Número máximo de responsáveis por estudante
+MIN_PARENT = 1 # Número mínimo de responsáveis por estudante

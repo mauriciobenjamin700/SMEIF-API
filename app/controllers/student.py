@@ -1,17 +1,32 @@
 from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
 from constants.child import (
     ERROR_CHILD_ADD_CONFLICT_FIELD_CPF,
     ERROR_CHILD_ADD_NOT_FOUND_PARENT,
-    MESSAGE_CHILD_DELETE_SUCCESS
+    ERROR_CHILD_ADD_PARENT_ALREADY_ASSOCIATE_PARENT,
+    ERROR_CHILD_ADD_PARENT_LIMIT_REACHED,
+    ERROR_CHILD_CHANGE_CLASS_STUDENT_ALREADY_ASSOCIATE,
+    ERROR_CHILD_DELETE_PARENT_LIMIT_REACHED,
+    ERROR_CHILD_DELETE_PARENT_NOT_ASSOCIATE_PARENT,
+    ERROR_CHILD_GET_NOT_FOUND,
+    ERROR_CHILD_INVALID_FIELD_KINSHIP,
+    MAX_PARENT,
+    MESSAGE_CHILD_ASSOCIATE_PARENT_SUCCESS,
+    MESSAGE_CHILD_DELETE_PARENT_SUCCESS,
+    MESSAGE_CHILD_DELETE_SUCCESS,
+    MIN_PARENT
 )
 from database.queries.existence import(
     child_exists,
     parent_exists
 )
-from database.queries.get import get_child_by_cpf
+from database.queries.get import (
+    get_child_by_cpf,
+    get_class_by_id, get_class_student_by_child_cpf
+)
 from database.queries.get_all import get_all_children
 from database.mapping.student import (
     map_ChildModel_to_StudentResponse,
@@ -21,20 +36,25 @@ from database.models import(
     ChildParentsModel,
     ClassStudentModel
 )
-from schemas.base import BaseMessage
+from schemas.base import BaseMessage, Kinship
 from schemas.child import(
     ChildRequest,
     StudentRequest,
     StudentResponse
 )
 from services.generator.ids import id_generate
-from utils.format import unformat_cpf, unformat_date
+from utils.format import (
+    unformat_cpf, 
+    unformat_date
+)
 from utils.messages.error import(
     Conflict,
     NotFound,
-    Server
+    Server,
+    UnprocessableEntity
 )
 from utils.messages.success import Success
+
 
 class StudentController:
 
@@ -277,12 +297,191 @@ class StudentController:
 
             raise Server(e)
         
-    
-    def change_class(self):
-        pass
+    #TODO: Testar todas as funcs a baixo
+    def change_class(self, student_cpf: str, to_class_id: str, is_transfer: bool = True) -> StudentResponse:
+        """
+        Troca a turma de um estudante.
 
-    def add_parent(self):
-        pass
+        - Args:
+            - student_cpf: CPF do estudante.
+            - to_class_id: ID da turma para onde o estudante será movido.
+            - is_transfer: Indica se a mudança de turma é uma transferência ou Alocação de um aluno sem turma a uma turma (True em caso de transferência e False em caso de Alocação de aluno parado).
 
-    def remove_parent(self):
-        pass
+        - Returns:
+            - Objeto com os dados do estudante atualizado.
+        """
+
+        try:
+
+            child = get_child_by_cpf(
+                self.db_session, 
+                unformat_cpf(student_cpf)
+            )
+
+            class_ = get_class_by_id(self.db_session, to_class_id)
+
+
+            if is_transfer:
+
+                class_student = get_class_student_by_child_cpf(
+                    self.db_session,
+                    student_cpf
+                )
+
+                if class_student.class_id == class_.id: # conferindo se o aluno já está na turma
+                    
+                    raise Conflict(ERROR_CHILD_CHANGE_CLASS_STUDENT_ALREADY_ASSOCIATE)
+
+                class_student = to_class_id
+                
+            else:
+
+                class_student = ClassStudentModel(
+                    id = id_generate(),
+                    class_id = to_class_id,
+                    child_cpf=student_cpf
+                )
+
+                self.db_session.add(class_student)
+
+            self.db_session.commit()
+
+            response = map_ChildModel_to_StudentResponse(
+                self.db_session,
+                child,
+                class_
+            )
+
+            return response
+        
+        except HTTPException:
+
+            raise
+
+        except Exception as e:
+
+            raise Server(e)
+
+    def add_parent(self, child_cpf: str, kinship: str, parent_cpf: str) -> BaseMessage:
+        """
+        Adiciona um responsável para um estudante
+
+        - Args:
+            - child_cpf: CPF do estudante.
+            - kinship: Parentesco do responsável.
+            - parent_cpf: CPF do responsável.
+
+        - Returns:
+            - Mensagem de sucesso.
+
+
+        - Raises:
+            - UnprocessableEntity: Caso o parentesco seja inválido.
+            - NotFound: Caso o responsável do estudante não seja encontrado.
+            - NotFound: Caso o estudante não seja encontrado.
+            - Conflict: Caso o responsável já esteja associado ao estudante.
+            - Server: Caso ocorra algum erro no servidor.
+        """
+        try:
+
+            if kinship not in Kinship.__dict__.values():
+                raise UnprocessableEntity(ERROR_CHILD_INVALID_FIELD_KINSHIP)
+            
+
+            if not parent_exists(self.db_session, parent_cpf):
+                raise NotFound(ERROR_CHILD_ADD_NOT_FOUND_PARENT)
+            
+            if not child_exists(self.db_session, child_cpf):
+                raise NotFound(ERROR_CHILD_GET_NOT_FOUND)
+
+            associations = self.db_session.scalars(
+                select(ChildParentsModel).where(
+                    ChildParentsModel.child_cpf == child_cpf
+                )
+            ).all()
+
+            for association in associations:
+                if association.parent_cpf == parent_cpf:
+                    raise Conflict(ERROR_CHILD_ADD_PARENT_ALREADY_ASSOCIATE_PARENT)
+                
+            if len(associations) == MAX_PARENT:
+                raise Conflict(ERROR_CHILD_ADD_PARENT_LIMIT_REACHED)
+
+            child_parent = ChildParentsModel(
+                id=id_generate(),
+                kinship=kinship,
+                child_cpf=child_cpf,
+                parent_cpf=parent_cpf
+            )
+
+            self.db_session.add(child_parent)
+            self.db_session.commit()
+
+            return Success(MESSAGE_CHILD_ASSOCIATE_PARENT_SUCCESS)
+        
+        except HTTPException:
+                
+                raise
+
+        except Exception as e:
+
+            raise Server(e)
+
+    def delete_parent(self, child_cpf: str, parent_cpf: str) -> BaseMessage:
+        """
+        Desvincula um responsável de um estudante
+
+        - Args:
+            - child_cpf: CPF do estudante.
+            - parent_cpf: CPF do responsável.
+        
+        - Returns:
+            - Mensagem de sucesso.
+
+        - Raises:
+            - NotFound: Caso o responsável do estudante não seja encontrado.
+            - NotFound: Caso o estudante não seja encontrado.
+            - Conflict: Caso o responsável não esteja associado ao estudante.
+            - Server: Caso ocorra algum erro no servidor.
+        """
+
+        try:
+
+            if not parent_exists(self.db_session, parent_cpf):
+                raise NotFound(ERROR_CHILD_ADD_NOT_FOUND_PARENT)
+            
+            if not child_exists(self.db_session, child_cpf):
+                raise NotFound(ERROR_CHILD_GET_NOT_FOUND)
+
+            associations = self.db_session.scalars(
+                select(ChildParentsModel).where(
+                    ChildParentsModel.child_cpf == child_cpf
+                    )
+                ).all()
+
+            if len(associations) == MIN_PARENT:
+                raise Conflict(ERROR_CHILD_DELETE_PARENT_LIMIT_REACHED)
+
+            child_parent = None
+            
+            for association in associations:
+                if association.parent_cpf == parent_cpf:
+                    child_parent = association
+                    break
+
+            if child_parent is None:
+                raise NotFound(ERROR_CHILD_DELETE_PARENT_NOT_ASSOCIATE_PARENT)
+
+            self.db_session.delete(child_parent)
+            self.db_session.commit()
+
+            return Success(MESSAGE_CHILD_DELETE_PARENT_SUCCESS)
+        
+
+        except HTTPException:
+                
+                raise
+        
+        except Exception as e:
+
+            raise Server(e)

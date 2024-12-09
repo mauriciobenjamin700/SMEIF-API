@@ -14,6 +14,7 @@ from constants.user import (
 from database.base import BaseModel
 from database.models import (
     ChildModel,
+    ChildParentsModel,
     ClassEventModel,
     ClassTeacherModel,
     DisciplinesModel,
@@ -245,3 +246,18 @@ def parent_exists(db_session: Session, cpf: str):
     parent = db_session.query(UserModel).filter(UserModel.cpf == cpf).first()
 
     return True if parent else False
+
+
+def child_parent_exists(
+    db_session: Session,
+    child_cpf: str,
+    parent_cpf: str
+) -> bool:
+
+    model = db_session.scalar(
+        select(ChildParentsModel).where(
+            and_(ChildParentsModel.child_cpf == child_cpf, ChildParentsModel.parent_cpf == parent_cpf)
+        )
+    )
+
+    return True if model else False

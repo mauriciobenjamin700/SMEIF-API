@@ -50,7 +50,6 @@ from schemas.classes import (
     Recurrences,
 )
 from services.generator.ids import id_generate
-from utils.format import format_date
 from utils.messages.success import Success
 from utils.messages.error import(
     Conflict,
