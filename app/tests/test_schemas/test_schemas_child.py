@@ -39,7 +39,7 @@ def test_schema_StudentRequest_success(
     assert request.address == Address(**mock_StudentRequest_data["address"])
     assert request.kinship == mock_StudentRequest_data["kinship"]
     assert request.parent_cpf == unformat_cpf(mock_StudentRequest_data["parent_cpf"])
-    assert request.complement == None
+    assert request.dependencies == None
 
 
 def test_schema_StudentRequest_no_cpf(

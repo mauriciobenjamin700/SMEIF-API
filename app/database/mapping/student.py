@@ -21,12 +21,12 @@ def map_StudentRequest_to_ChildModel(request: StudentRequest) -> ChildModel:
         birth_date = unformat_date(request.birth_date, False),
         gender = request.gender,
         dependencies = request.dependencies,
-        state = request.state,
-        city = request.city,
-        neighborhood = request.neighborhood,
-        street = request.street,
-        house_number = request.house_number,
-        complement = request.complement,
+        state = request.address.state,
+        city = request.address.city,
+        neighborhood = request.address.neighborhood,
+        street = request.address.street,
+        house_number = request.address.house_number,
+        complement = request.address.complement,
     )
 
 

@@ -108,7 +108,12 @@ class UserRequest(BaseSchema):
     level: int = Field(
         title="level", 
         description="Nível de acesso do usuário", 
-        examples=[f"{key}: {value}" for key, value in UserLevel.__dict__.items()]
+        examples=[
+            UserLevel.PARENT.value,
+            UserLevel.TEACHER.value,
+            UserLevel.COORDINATION.value,
+            UserLevel.ADMIN.value
+        ]
     )
     address: Address = Field(
         title="address", 

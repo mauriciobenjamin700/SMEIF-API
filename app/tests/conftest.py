@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 
 from database.connection import Session
-from database.models import ClassEventModel, ClassModel, ClassTeacherModel, DisciplinesModel, RecurrencesModel, TeacherDisciplinesModel, UserModel
+from database.models import ChildModel, ChildParentsModel, ClassEventModel, ClassModel, ClassStudentModel, ClassTeacherModel, DisciplinesModel, NoteModel, PresenceModel, RecurrencesModel, TeacherDisciplinesModel, UserModel, WarningModel
 from main import app
 from schemas.address import Address
 from schemas.base import (
@@ -55,6 +55,11 @@ def db_session():
     try:
         session = Session()
 
+        session.query(ClassStudentModel).delete()
+        session.query(ChildParentsModel).delete()
+        session.query(WarningModel).delete()
+        session.query(NoteModel).delete()
+        session.query(PresenceModel).delete()
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
         session.query(TeacherDisciplinesModel).delete()
@@ -68,6 +73,11 @@ def db_session():
 
     finally:
 
+        session.query(ClassStudentModel).delete()
+        session.query(ChildParentsModel).delete()
+        session.query(WarningModel).delete()
+        session.query(NoteModel).delete()
+        session.query(PresenceModel).delete()
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
         session.query(TeacherDisciplinesModel).delete()
