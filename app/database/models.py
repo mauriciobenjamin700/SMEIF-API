@@ -149,13 +149,15 @@ class ChildModel(BaseModel):
     child_parents = relationship(
         "ChildParentsModel",
         back_populates="child",
-        uselist=True
+        uselist=True,
+        cascade="all, delete-orphan"
     )
 
     class_student = relationship(
         "ClassStudentModel",
         back_populates="child",
-        uselist=False
+        uselist=False,
+        cascade="all, delete-orphan"
     )
 
 
@@ -176,8 +178,8 @@ class ChildParentsModel(BaseModel):
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
     kinship: Mapped[str] = mapped_column(String, unique=False,nullable=False)
-    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), primary_key=True)
-    parent_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf"), primary_key=True)
+    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf", ondelete="CASCADE"))
+    parent_cpf: Mapped[str] = mapped_column(String, ForeignKey("user.cpf", ondelete="CASCADE"))
 
     child = relationship(
         "ChildModel",
@@ -240,8 +242,8 @@ class ClassStudentModel(BaseModel):
     __tablename__ = 'class_Student'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
-    class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
-    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
+    class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id", ondelete="CASCADE"), nullable=False)
+    child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf", ondelete="CASCADE"), nullable=False)
 
     class_ = relationship(
         "ClassModel",

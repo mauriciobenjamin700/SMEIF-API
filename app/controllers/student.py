@@ -28,7 +28,7 @@ from schemas.child import(
     StudentResponse
 )
 from services.generator.ids import id_generate
-from utils.format import unformat_date
+from utils.format import unformat_cpf, unformat_date
 from utils.messages.error import(
     Conflict,
     NotFound,
@@ -129,15 +129,20 @@ class StudentController:
 
             child = get_child_by_cpf(
                 self.db_session, 
-                cpf
+                unformat_cpf(cpf)
             )
 
             class_ = child.class_student.class_
 
             return map_ChildModel_to_StudentResponse(
                 self.db_session,
+                child,
                 class_
             )
+        
+        except HTTPException:
+
+            raise
 
         except Exception as e:
 
@@ -170,11 +175,16 @@ class StudentController:
                 students.append(
                     map_ChildModel_to_StudentResponse(
                         self.db_session,
+                        child,
                         class_
                     )
                 )
 
             return students
+        
+        except HTTPException:
+
+            raise 
 
         except Exception as e:
 
@@ -202,7 +212,7 @@ class StudentController:
 
             child = get_child_by_cpf(
                 self.db_session, 
-                request.cpf
+                unformat_cpf(request.cpf)
             )
 
             for key, value in request.dict().items():
@@ -218,12 +228,17 @@ class StudentController:
 
             response = map_ChildModel_to_StudentResponse(
                 self.db_session,
+                child,
                 child.class_student.class_
             )
 
             self.db_session.commit()
 
             return response
+        
+        except HTTPException:
+
+            raise
 
         except Exception as e:
 
@@ -245,7 +260,7 @@ class StudentController:
 
             child = get_child_by_cpf(
                 self.db_session, 
-                cpf
+                unformat_cpf(cpf)
             )
 
             self.db_session.delete(child)
@@ -253,6 +268,10 @@ class StudentController:
             self.db_session.commit()
 
             return Success(MESSAGE_CHILD_DELETE_SUCCESS)
+        
+        except HTTPException:
+
+            raise
 
         except Exception as e:
 

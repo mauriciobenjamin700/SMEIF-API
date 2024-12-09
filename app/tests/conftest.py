@@ -4,7 +4,22 @@ from fastapi.testclient import TestClient
 
 
 from database.connection import Session
-from database.models import ChildModel, ChildParentsModel, ClassEventModel, ClassModel, ClassStudentModel, ClassTeacherModel, DisciplinesModel, NoteModel, PresenceModel, RecurrencesModel, TeacherDisciplinesModel, UserModel, WarningModel
+from database.mapping.student import map_StudentRequest_to_ChildModel
+from database.models import (
+    ChildModel, 
+    ChildParentsModel, 
+    ClassEventModel, 
+    ClassModel, 
+    ClassStudentModel, 
+    ClassTeacherModel, 
+    DisciplinesModel, 
+    NoteModel, 
+    PresenceModel, 
+    RecurrencesModel, 
+    TeacherDisciplinesModel, 
+    UserModel, 
+    WarningModel
+)
 from main import app
 from schemas.address import Address
 from schemas.base import (
@@ -57,6 +72,7 @@ def db_session():
 
         session.query(ClassStudentModel).delete()
         session.query(ChildParentsModel).delete()
+        session.query(ChildModel).delete()
         session.query(WarningModel).delete()
         session.query(NoteModel).delete()
         session.query(PresenceModel).delete()
@@ -75,6 +91,7 @@ def db_session():
 
         session.query(ClassStudentModel).delete()
         session.query(ChildParentsModel).delete()
+        session.query(ChildModel).delete()
         session.query(WarningModel).delete()
         session.query(NoteModel).delete()
         session.query(PresenceModel).delete()
@@ -457,7 +474,22 @@ def mock_StudentRequest(
 
     )
 
+
+@fixture
+def mock_ChildRequest_update(
+    mock_StudentRequest
+) -> ChildRequest:
+    return ChildRequest(
+        cpf=mock_StudentRequest.cpf,
+        name="Pedro Vital Junior",
+        birth_date="2011-01-01",
+        gender=Gender.MALE.value,
+        address=mock_StudentRequest.address,
+        dependencies="Precisa de ajuda para focar nos estudos, pois vive se distraindo."
+    )
+
 ############################ MODELS ############################
+
 
 @fixture
 def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
@@ -707,3 +739,37 @@ def mock_father_on_db(
     db_session.commit()
 
     return user
+
+
+@fixture
+def mock_student_on_db(
+    db_session,
+    mock_StudentRequest
+) -> ChildModel:
+    
+    request = StudentRequest(**mock_StudentRequest.dict())
+    
+    model = map_StudentRequest_to_ChildModel(request)
+
+    db_session.add(model)
+
+    class_student = ClassStudentModel(
+        id = id_generate(),
+        class_id = request.class_id,
+        child_cpf=request.cpf
+    )
+
+    db_session.add(class_student)
+
+    child_parents = ChildParentsModel(
+        id=id_generate(),
+        kinship=request.kinship,
+        child_cpf=request.cpf,
+        parent_cpf=request.parent_cpf
+    )
+
+    db_session.add(child_parents)
+    
+    db_session.commit()
+
+    return model
