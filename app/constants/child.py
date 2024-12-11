@@ -5,7 +5,7 @@ ERROR_CHILD_REQUIRED_FIELD_GENDER = "Gênero do estudante é obrigatório"
 ERROR_CHILD_REQUIRED_FIELD_CLASS_ID = "ID da turma do estudante é obrigatório"
 ERROR_CHILD_REQUIRED_FIELD_KINSHIP = "Parentesco com o responsável é obrigatório"
 ERROR_CHILD_REQUIRED_FIELD_PARENT_CPF = "CPF do responsável é obrigatório"
-
+ERROR_CHUILD_REQUIRED_FIELD_STUDENT_CPF = "CPF do estudante é obrigatório"
 ERROR_CHILD_INVALID_FIELD_BIRTH_DATE = "Data de nascimento do estudante inválida\n Aluno deve ser menor de idade"
 ERROR_CHILD_INVALID_FIELD_KINSHIP = "Tipo de parentesco invalido"
 

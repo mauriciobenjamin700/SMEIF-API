@@ -1,6 +1,6 @@
 from datetime import datetime
-from pytest import fixture
 from fastapi.testclient import TestClient
+from pytest import fixture
 
 
 from database.connection import Session
@@ -524,6 +524,24 @@ def mock_class_on_db(db_session, mock_ClassRequest) -> ClassModel:
 
 
 @fixture
+def mock_new_class_on_db(db_session):
+    
+    to_db = ClassModel(
+        id = id_generate(),
+        education_level=EducationLevel.ELEMENTARY.value,
+        name="5° Ano",
+        section="A",
+        shift=Shift.MORNING.value,
+        max_students=20
+    )
+
+    db_session.add(to_db)
+    db_session.commit()
+
+    return to_db
+
+
+@fixture
 def mock_list_class_on_db(db_session) -> list[ClassModel]:
 
     classes = [
@@ -739,6 +757,33 @@ def mock_father_on_db(
     db_session.commit()
 
     return user
+
+
+@fixture
+def mock_new_parent_on_db(
+    db_session
+):
+    
+    parent = UserModel(
+        cpf="123.321.123-32",
+        name="José Maria",
+        birth_date=datetime(1995, 9, 20),
+        gender = Gender.FEMALE.value,
+        phone="89912344322",
+        email="josemaria@gmail.com",
+        password=protect("123456"),
+        level=UserLevel.PARENT.value,
+        state="PI",
+        city="Teresina",
+        neighborhood="Barra Nova",
+        street="Rua dos Bandeirantes",
+        house_number="125"
+    )
+    
+    db_session.add(parent)
+    db_session.commit()
+    
+    return parent
 
 
 @fixture

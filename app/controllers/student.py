@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
+from constants.base import ERROR_INVALID_CPF
 from constants.child import (
     ERROR_CHILD_ADD_CONFLICT_FIELD_CPF,
     ERROR_CHILD_ADD_NOT_FOUND_PARENT,
@@ -13,6 +14,7 @@ from constants.child import (
     ERROR_CHILD_DELETE_PARENT_NOT_ASSOCIATE_PARENT,
     ERROR_CHILD_GET_NOT_FOUND,
     ERROR_CHILD_INVALID_FIELD_KINSHIP,
+    ERROR_CHILD_REQUIRED_FIELD_CLASS_ID,
     MAX_PARENT,
     MESSAGE_CHILD_ASSOCIATE_PARENT_SUCCESS,
     MESSAGE_CHILD_DELETE_PARENT_SUCCESS,
@@ -54,6 +56,7 @@ from utils.messages.error import(
     UnprocessableEntity
 )
 from utils.messages.success import Success
+from utils.validate import validate_cpf
 
 
 class StudentController:
@@ -312,13 +315,27 @@ class StudentController:
         """
 
         try:
+            
+            student_cpf = unformat_cpf(student_cpf)
+            
+            if not validate_cpf(student_cpf):
+                
+                raise UnprocessableEntity(ERROR_INVALID_CPF)
+            
+            if not to_class_id:
+                
+                raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_CLASS_ID)
+                
 
             child = get_child_by_cpf(
                 self.db_session, 
-                unformat_cpf(student_cpf)
+                student_cpf
             )
 
-            class_ = get_class_by_id(self.db_session, to_class_id)
+            class_ = get_class_by_id(
+                self.db_session, 
+                to_class_id
+            )
 
 
             if is_transfer:

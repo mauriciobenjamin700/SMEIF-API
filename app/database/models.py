@@ -35,7 +35,7 @@ class UserModel(BaseModel):
     - birth_date: datetime
     - gender: str
     - phone: str
-    - phone_optional: str | None
+    - phone_optional: str | None = None
     - email: str
     - password: str
     - level: str
@@ -44,7 +44,7 @@ class UserModel(BaseModel):
     - neighborhood: str
     - street: str
     - house_number: str
-    - complement: str | None
+    - complement: str | None = None
 
     relationships:
     - child_parents: list[ChildParentsModel]
@@ -237,6 +237,10 @@ class ClassStudentModel(BaseModel):
     - id: str
     - class_id: str
     - child_cpf: str
+    
+    Relationships:
+    - class_: ClassModel
+    - child: ChildModel
     """
 
     __tablename__ = 'class_Student'
