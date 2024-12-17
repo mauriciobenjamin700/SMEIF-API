@@ -768,7 +768,7 @@ def mock_new_parent_on_db(
         cpf="123.321.123-32",
         name="José Maria",
         birth_date=datetime(1995, 9, 20),
-        gender = Gender.FEMALE.value,
+        gender = Gender.MALE.value,
         phone="89912344322",
         email="josemaria@gmail.com",
         password=protect("123456"),
@@ -782,6 +782,33 @@ def mock_new_parent_on_db(
     
     db_session.add(parent)
     db_session.commit()
+    
+    return parent
+
+
+@fixture
+def mock_second_parent_on_db(
+    db_session
+):
+    parent = UserModel(
+        cpf="123.321.123-33",
+        name="Maria R",
+        birth_date=datetime(1995, 9, 20),
+        gender = Gender.FEMALE.value,
+        phone="89912344323",
+        email="mariajose@gmail.com",
+        password=protect("123456"),
+        level=UserLevel.PARENT.value,
+        state="PI",
+        city="Teresina",
+        neighborhood="Barra Nova",
+        street="Rua dos Bandeirantes",
+        house_number="126"
+    )
+    
+    db_session.add(parent)
+    db_session.commit()
+    
     
     return parent
 
@@ -818,3 +845,26 @@ def mock_student_on_db(
     db_session.commit()
 
     return model
+
+
+@fixture
+def mock_student_on_db_with_max_parents(
+    db_session,
+    mock_student_on_db: ChildModel,
+    mock_second_parent_on_db: UserModel
+):
+    student = mock_student_on_db
+    parent = mock_second_parent_on_db
+
+    child_parents = ChildParentsModel(
+        id=id_generate(),
+        kinship=Kinship.GRANDFATHER.value,
+        child_cpf=student.cpf,
+        parent_cpf=parent.cpf
+    )
+
+    db_session.add(child_parents)
+    
+    db_session.commit()
+
+    return student
