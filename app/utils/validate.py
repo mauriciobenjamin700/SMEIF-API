@@ -38,7 +38,7 @@ def validate_cpf(string:str) -> bool:
         - string:: str: String que será validada para ser, CPF ou CNPJ
         
     - Return:
-        - str: CPF formatado (apenas números)
+        - bool: True caso esteja no formato correto e False caso esteja no formato errado
     
     - Raises:
         - HTTPException: Caso o tamanho da string seja inválido para ser um CPF ou CNPJ

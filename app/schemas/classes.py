@@ -51,7 +51,7 @@ class ClassRequest(BaseSchema):
     - shift: str
     - max_students: int
     """
-    education_level: str = Field(
+    education_level: EducationLevel = Field(
         title="Tipo de educação",
         description="Tipo de ensino daquele aluno",
         examples=[EducationLevel.ELEMENTARY.value, EducationLevel.PRESCHOOL.value]
@@ -67,7 +67,7 @@ class ClassRequest(BaseSchema):
         examples=["A", "B", "C"],
         max_length=1
     )
-    shift: str = Field(
+    shift: Shift = Field(
         title="Turno",
         description="Turno da disciplina",
         examples=[Shift.MORNING.value, Shift.AFTERNOON.value, Shift.NIGHT.value]
@@ -154,7 +154,7 @@ class Recurrences(BaseSchema):
     - start_time: str
     - end_time: str
     """
-    day_of_week: str = Field(
+    day_of_week: DaysOfWeek = Field(
         title="Dia da Semana",
         description="Dia da semana que a aula ocorrerá",
         examples=[
