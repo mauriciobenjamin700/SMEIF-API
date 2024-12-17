@@ -300,7 +300,7 @@ class StudentController:
 
             raise Server(e)
         
-    #TODO: Testar todas as functions a baixo
+        
     def change_class(self, student_cpf: str, to_class_id: str, is_transfer: bool = True) -> StudentResponse:
         """
         Troca a turma de um estudante.

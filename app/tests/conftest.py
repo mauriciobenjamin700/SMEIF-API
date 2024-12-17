@@ -477,10 +477,11 @@ def mock_StudentRequest(
 
 @fixture
 def mock_ChildRequest_update(
+    mock_student_on_db,
     mock_StudentRequest
 ) -> ChildRequest:
     return ChildRequest(
-        cpf=mock_StudentRequest.cpf,
+        cpf=mock_student_on_db.cpf,
         name="Pedro Vital Junior",
         birth_date="2011-01-01",
         gender=Gender.MALE.value,
