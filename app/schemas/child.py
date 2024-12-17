@@ -69,7 +69,7 @@ class StudentRequest(BaseSchema):
         description="Data de nascimento do aluno",
         examples=["1990-01-01"]
     )
-    gender: str = Field(
+    gender: Gender = Field(
         title="Gênero",
         description="Gênero do aluno",
         examples=[
@@ -84,7 +84,7 @@ class StudentRequest(BaseSchema):
         examples=['1', '2', '3']
     )
     address: Address
-    kinship: str = Field(
+    kinship: Kinship = Field(
         title="Parentesco",
         description="Parentesco do aluno com o Responsável",
         examples=[

@@ -454,7 +454,7 @@ def mock_mock_TeacherDisciplinesRequest(
 @fixture
 def mock_StudentRequest(
     mock_class_on_db,
-    mock_father_on_db
+    mock_parent_on_db
 ) -> dict:
     return StudentRequest(
         cpf="123.456.789-87",
@@ -470,7 +470,7 @@ def mock_StudentRequest(
             house_number="124"
         ),
         kinship=Kinship.FATHER.value,
-        parent_cpf=mock_father_on_db.cpf,
+        parent_cpf=mock_parent_on_db.cpf,
 
     )
 
@@ -734,7 +734,7 @@ def mock_class_teacher_on_db(
 
 
 @fixture
-def mock_father_on_db(
+def mock_parent_on_db(
     db_session
 ) -> UserModel:
     user = UserModel(

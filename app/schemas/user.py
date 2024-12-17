@@ -80,7 +80,7 @@ class UserRequest(BaseSchema):
         description="Data de nascimento do usuário", 
         examples=["2000-12-25"]
     )
-    gender: str = Field(
+    gender: Gender = Field(
         title="gender", 
         description="Gênero do usuário", 
         examples=["M", "F","Z"]
@@ -105,7 +105,7 @@ class UserRequest(BaseSchema):
         description="Senha do usuário", 
         examples=["123456"]
     )
-    level: int = Field(
+    level: UserLevel = Field(
         title="level", 
         description="Nível de acesso do usuário", 
         examples=[

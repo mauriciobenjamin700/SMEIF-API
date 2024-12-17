@@ -300,7 +300,7 @@ class StudentController:
 
             raise Server(e)
         
-    #TODO: Testar todas as funcs a baixo
+    #TODO: Testar todas as functions a baixo
     def change_class(self, student_cpf: str, to_class_id: str, is_transfer: bool = True) -> StudentResponse:
         """
         Troca a turma de um estudante.
@@ -476,8 +476,6 @@ class StudentController:
                     )
                 ).all()
 
-            if len(associations) == MIN_PARENT:
-                raise Conflict(ERROR_CHILD_DELETE_PARENT_LIMIT_REACHED)
 
             child_parent = None
             
@@ -488,6 +486,9 @@ class StudentController:
 
             if child_parent is None:
                 raise NotFound(ERROR_CHILD_DELETE_PARENT_NOT_ASSOCIATE_PARENT)
+            
+            if len(associations) == MIN_PARENT:
+                raise Conflict(ERROR_CHILD_DELETE_PARENT_LIMIT_REACHED)
 
             self.db_session.delete(child_parent)
             self.db_session.commit()
