@@ -80,7 +80,7 @@ class UserRequest(BaseSchema):
         description="Data de nascimento do usuário", 
         examples=["2000-12-25"]
     )
-    gender: str = Field(
+    gender: Gender = Field(
         title="gender", 
         description="Gênero do usuário", 
         examples=["M", "F","Z"]
@@ -105,7 +105,7 @@ class UserRequest(BaseSchema):
         description="Senha do usuário", 
         examples=["123456"]
     )
-    level: int = Field(
+    level: UserLevel = Field(
         title="level", 
         description="Nível de acesso do usuário", 
         examples=[f"{key}: {value}" for key, value in UserLevel.__dict__.items()]
@@ -339,7 +339,7 @@ class UserResponse(BaseSchema):
         description="Data de nascimento do usuário", 
         examples=["01/01/2000"]
     )
-    gender: str = Field(
+    gender: Gender = Field(
         title="gender", 
         description="Gênero do usuário", 
         examples=["Masculino", "Feminino","Outros"]
@@ -359,7 +359,7 @@ class UserResponse(BaseSchema):
         description="E-mail do usuário", 
         examples=["jhon.doe@gmail.com"]
     )
-    level: int = Field(
+    level: UserLevel = Field(
         title="level", 
         description="Nível de acesso do usuário", 
         examples=["1"]
@@ -478,7 +478,7 @@ class UserUpdateRequest(BaseSchema):
         examples=["123456"], 
         default=None
     )
-    level: int | None = Field(
+    level: UserLevel | None = Field(
         title="level", 
         description="Nível de acesso do usuário", 
         examples=[1,2], 

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="bUa19V4T7xQ8ulzxWAfa" name="Página-1">
-        <mxGraphModel dx="1837" dy="669" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="2166" dy="477" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -145,22 +145,25 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="113" value="Note" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
-                    <mxGeometry x="940" y="840" width="220" height="156" as="geometry"/>
+                    <mxGeometry x="940" y="840" width="220" height="182" as="geometry"/>
                 </mxCell>
                 <mxCell id="114" value="id: STRING PK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
                     <mxGeometry y="26" width="220" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="115" value="points: FLOAT NOT NULL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
+                <mxCell id="279" value="aval_number: FLOAT NOT NULL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" vertex="1" parent="113">
                     <mxGeometry y="52" width="220" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="190" value="discipline_id: STRING FK (Disciplines)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
+                <mxCell id="115" value="points: FLOAT NOT NULL" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
                     <mxGeometry y="78" width="220" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="241" value="class_id: STRING FK (Class)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
+                <mxCell id="190" value="discipline_id: STRING FK (Disciplines)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
                     <mxGeometry y="104" width="220" height="26" as="geometry"/>
                 </mxCell>
-                <mxCell id="116" value="child_cpf: STRING FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
+                <mxCell id="241" value="class_id: STRING FK (Class)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
                     <mxGeometry y="130" width="220" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="116" value="child_cpf: STRING FK" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#000000;" parent="113" vertex="1">
+                    <mxGeometry y="156" width="220" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="211" style="edgeStyle=none;html=1;strokeColor=#000000;" parent="1" source="120" target="163" edge="1">
                     <mxGeometry relative="1" as="geometry"/>

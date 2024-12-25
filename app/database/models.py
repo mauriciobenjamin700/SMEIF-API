@@ -422,15 +422,16 @@ class NoteModel(BaseModel):
     Dados de notas de um aluno em uma determinada disciplina que acontecerá em uma turma
     
     - id: str
+    - aval_number: int
     - points: float
     - discipline_id: str
     - class_id: str
-    - points: float
     - child_cpf: str
     """
     __tablename__ = 'note'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    aval_number: Mapped[int] = mapped_column(Integer, nullable=False)
     points: Mapped[float] = mapped_column(Float, nullable=False)
     discipline_id: Mapped[str] = mapped_column(String, ForeignKey("disciplines.id"), nullable=False)
     class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
