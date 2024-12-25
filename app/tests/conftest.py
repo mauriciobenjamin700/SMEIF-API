@@ -1,16 +1,32 @@
 from datetime import datetime
-from pytest import FixtureRequest, fixture
 from fastapi.testclient import TestClient
+from pytest import fixture
 
 
 from database.connection import Session
-from database.models import ClassEventModel, ClassModel, ClassTeacherModel, DisciplinesModel, RecurrencesModel, TeacherDisciplinesModel, UserModel
+from database.mapping.student import map_StudentRequest_to_ChildModel
+from database.models import (
+    ChildModel, 
+    ChildParentsModel, 
+    ClassEventModel, 
+    ClassModel, 
+    ClassStudentModel, 
+    ClassTeacherModel, 
+    DisciplinesModel, 
+    NoteModel, 
+    PresenceModel, 
+    RecurrencesModel, 
+    TeacherDisciplinesModel, 
+    UserModel, 
+    WarningModel
+)
 from main import app
 from schemas.address import Address
 from schemas.base import (
     DaysOfWeek,
     EducationLevel,
     Gender,
+    Kinship,
     Shift,
     UserLevel
 )
@@ -19,6 +35,11 @@ from schemas.classes import (
     ClassEventResponse,
     ClassRequest,
     Recurrences
+)
+from schemas.child import(
+    ChildRequest,
+    StudentRequest,
+    StudentResponse
 )
 from schemas.disciplines import(
     DisciplineRequest,
@@ -49,6 +70,12 @@ def db_session():
     try:
         session = Session()
 
+        session.query(ClassStudentModel).delete()
+        session.query(ChildParentsModel).delete()
+        session.query(ChildModel).delete()
+        session.query(WarningModel).delete()
+        session.query(NoteModel).delete()
+        session.query(PresenceModel).delete()
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
         session.query(TeacherDisciplinesModel).delete()
@@ -62,6 +89,12 @@ def db_session():
 
     finally:
 
+        session.query(ClassStudentModel).delete()
+        session.query(ChildParentsModel).delete()
+        session.query(ChildModel).delete()
+        session.query(WarningModel).delete()
+        session.query(NoteModel).delete()
+        session.query(PresenceModel).delete()
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
         session.query(TeacherDisciplinesModel).delete()
@@ -215,6 +248,31 @@ def mock_class_teacher_request_data():
     return data
 
 
+
+@fixture
+def mock_StudentRequest_data(mock_address_data) -> dict:
+    data = {}
+    data["cpf"] = "123.456.789-00"
+    data["name"] = "Student John Doe"
+    data["birth_date"] = "2020-01-01"
+    data["gender"] = Gender.MALE.value
+    data["class_id"] = "1"
+    data["address"] = mock_address_data.copy()
+    data["kinship"] = Kinship.FATHER.value
+    data["parent_cpf"] = "123.456.789-01"
+
+    return data
+
+
+@fixture
+def mock_StudentResponse_data() -> dict:
+    data = {
+        "matriculation": "20240000001",
+        "name": "Student John Doe",
+        "class_info": "5° Ano A",
+        "shift": Shift.MORNING.value
+    }
+    return data.copy()
 
 ############################ SCHEMAS ############################
 
@@ -392,7 +450,47 @@ def mock_mock_TeacherDisciplinesRequest(
         disciplines_id=[mock_discipline_on_db.id]
     )
 
+
+@fixture
+def mock_StudentRequest(
+    mock_class_on_db,
+    mock_parent_on_db
+) -> dict:
+    return StudentRequest(
+        cpf="123.456.789-87",
+        name="Pedro Vital Jr",
+        birth_date="2010-01-01",
+        gender="M",
+        class_id=mock_class_on_db.id,
+        address=Address(
+            state="PI",
+            city="Oeiras",
+            neighborhood="Centro",
+            street="Rua dos Cavalos",
+            house_number="124"
+        ),
+        kinship=Kinship.FATHER.value,
+        parent_cpf=mock_parent_on_db.cpf,
+
+    )
+
+
+@fixture
+def mock_ChildRequest_update(
+    mock_student_on_db,
+    mock_StudentRequest
+) -> ChildRequest:
+    return ChildRequest(
+        cpf=mock_student_on_db.cpf,
+        name="Pedro Vital Junior",
+        birth_date="2011-01-01",
+        gender=Gender.MALE.value,
+        address=mock_StudentRequest.address,
+        dependencies="Precisa de ajuda para focar nos estudos, pois vive se distraindo."
+    )
+
 ############################ MODELS ############################
+
 
 @fixture
 def mock_user_on_db(db_session, mock_UserRequest) -> UserModel:
@@ -418,6 +516,24 @@ def mock_class_on_db(db_session, mock_ClassRequest) -> ClassModel:
     to_db = ClassModel(
         id = id_generate(),
         **request.dict()
+    )
+
+    db_session.add(to_db)
+    db_session.commit()
+
+    return to_db
+
+
+@fixture
+def mock_new_class_on_db(db_session):
+    
+    to_db = ClassModel(
+        id = id_generate(),
+        education_level=EducationLevel.ELEMENTARY.value,
+        name="5° Ano",
+        section="A",
+        shift=Shift.MORNING.value,
+        max_students=20
     )
 
     db_session.add(to_db)
@@ -616,3 +732,140 @@ def mock_class_teacher_on_db(
     db_session.commit()
 
     return class_teacher
+
+
+@fixture
+def mock_parent_on_db(
+    db_session
+) -> UserModel:
+    user = UserModel(
+        cpf="12345678978",
+        name="Pedro Vital",
+        birth_date=datetime(1980, 1, 10),
+        gender = Gender.MALE.value,
+        phone="89912344321",
+        email="pedrovital13@gmail.com",
+        password=protect("123456"),
+        level=UserLevel.PARENT.value,
+        state="PI",
+        city="Oeiras",
+        neighborhood="Centro",
+        street="Rua dos cavalos",
+        house_number="124",
+    )
+
+    db_session.add(user)
+    db_session.commit()
+
+    return user
+
+
+@fixture
+def mock_new_parent_on_db(
+    db_session
+):
+    
+    parent = UserModel(
+        cpf="123.321.123-32",
+        name="José Maria",
+        birth_date=datetime(1995, 9, 20),
+        gender = Gender.MALE.value,
+        phone="89912344322",
+        email="josemaria@gmail.com",
+        password=protect("123456"),
+        level=UserLevel.PARENT.value,
+        state="PI",
+        city="Teresina",
+        neighborhood="Barra Nova",
+        street="Rua dos Bandeirantes",
+        house_number="125"
+    )
+    
+    db_session.add(parent)
+    db_session.commit()
+    
+    return parent
+
+
+@fixture
+def mock_second_parent_on_db(
+    db_session
+):
+    parent = UserModel(
+        cpf="123.321.123-33",
+        name="Maria R",
+        birth_date=datetime(1995, 9, 20),
+        gender = Gender.FEMALE.value,
+        phone="89912344323",
+        email="mariajose@gmail.com",
+        password=protect("123456"),
+        level=UserLevel.PARENT.value,
+        state="PI",
+        city="Teresina",
+        neighborhood="Barra Nova",
+        street="Rua dos Bandeirantes",
+        house_number="126"
+    )
+    
+    db_session.add(parent)
+    db_session.commit()
+    
+    
+    return parent
+
+
+@fixture
+def mock_student_on_db(
+    db_session,
+    mock_StudentRequest
+) -> ChildModel:
+    
+    request = StudentRequest(**mock_StudentRequest.dict())
+    
+    model = map_StudentRequest_to_ChildModel(request)
+
+    db_session.add(model)
+
+    class_student = ClassStudentModel(
+        id = id_generate(),
+        class_id = request.class_id,
+        child_cpf=request.cpf
+    )
+
+    db_session.add(class_student)
+
+    child_parents = ChildParentsModel(
+        id=id_generate(),
+        kinship=request.kinship,
+        child_cpf=request.cpf,
+        parent_cpf=request.parent_cpf
+    )
+
+    db_session.add(child_parents)
+    
+    db_session.commit()
+
+    return model
+
+
+@fixture
+def mock_student_on_db_with_max_parents(
+    db_session,
+    mock_student_on_db: ChildModel,
+    mock_second_parent_on_db: UserModel
+):
+    student = mock_student_on_db
+    parent = mock_second_parent_on_db
+
+    child_parents = ChildParentsModel(
+        id=id_generate(),
+        kinship=Kinship.GRANDFATHER.value,
+        child_cpf=student.cpf,
+        parent_cpf=parent.cpf
+    )
+
+    db_session.add(child_parents)
+    
+    db_session.commit()
+
+    return student

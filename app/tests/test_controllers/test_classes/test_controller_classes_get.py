@@ -20,7 +20,7 @@ def test_controller_classes_get_success(db_session,mock_class_on_db):
     assert response.section == mock_class_on_db.section
     assert response.shift == mock_class_on_db.shift
     assert response.max_students == mock_class_on_db.max_students
-    assert response.class_info == uc._build_class_info(mock_class_on_db)
+    assert response.class_info == uc.build_class_info(mock_class_on_db)
 
 
 def test_controller_classes_get_not_found(db_session):

@@ -2,6 +2,11 @@ from sqlalchemy import select, and_
 from sqlalchemy.orm import Session
 
 
+from constants.child import(
+    ERROR_CHILD_DELETE_PARENT_NOT_ASSOCIATE_PARENT,
+    ERROR_CHILD_GET_CLASS_STUDENT_NOT_FOUND,
+    ERROR_CHILD_GET_NOT_FOUND
+)
 from constants.classes import(
     ERROR_CLASSES_EVENTS_DELETE_RECURRENCES_NOT_FOUND,
     ERROR_CLASSES_EVENTS_GET_NOT_FOUND,
@@ -14,8 +19,11 @@ from constants.user import (
     ERROR_USER_NOT_FOUND_USER
 )
 from database.models import(
+    ChildModel,
+    ChildParentsModel,
     ClassEventModel,
     ClassModel,
+    ClassStudentModel,
     DisciplinesModel,
     RecurrencesModel,
     UserModel
@@ -23,7 +31,8 @@ from database.models import(
 from schemas.base import UserLevel
 from schemas.classes import Recurrences
 from utils.messages.error import (
-    BadRequest, 
+    BadRequest,
+    Conflict, 
     NotFound
 )
 
@@ -136,4 +145,53 @@ def get_recurrence_by_attributes(
     if not model:
         raise NotFound(ERROR_CLASSES_EVENTS_DELETE_RECURRENCES_NOT_FOUND)
     
+    return model
+
+
+def get_child_by_cpf(db_session: Session, cpf:str) -> ChildModel:
+
+    model = db_session.scalar(
+        select(ChildModel).where(
+            ChildModel.cpf == cpf
+        )
+    )
+
+    if not model:
+        raise NotFound(ERROR_CHILD_GET_NOT_FOUND)
+    
+    return model
+
+
+def get_class_student_by_child_cpf(
+    db_session: Session,
+    child_cpf: str
+) -> ClassStudentModel:
+
+    model = db_session.scalar(
+        select(ClassStudentModel).where(
+            ClassStudentModel.child_cpf == child_cpf
+        )
+    )
+
+    if not model:
+        raise NotFound(ERROR_CHILD_GET_CLASS_STUDENT_NOT_FOUND)
+    
+    return model
+
+
+def get_child_parent(
+    db_session: Session,
+    child_cpf: str,
+    parent_cpf: str
+) -> ChildParentsModel:
+
+    model = db_session.scalar(
+        select(ChildParentsModel).where(
+            and_(ChildParentsModel.child_cpf == child_cpf, ChildParentsModel.parent_cpf == parent_cpf)
+        )
+    )
+
+    if not model:
+        Conflict(ERROR_CHILD_DELETE_PARENT_NOT_ASSOCIATE_PARENT)
+
     return model

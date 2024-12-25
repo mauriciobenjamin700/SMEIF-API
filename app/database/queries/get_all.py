@@ -3,10 +3,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
+from constants.child import ERROR_CHILD_GET_ALL_NOT_FOUND
 from constants.teacher import ERROR_TEACHER_GET_ALL_NOT_FOUND
 from constants.disciplines import ERROR_DISCIPLINES_GET_ALL_NOT_FOUND
 from constants.user import ERROR_USER_NOT_FOUND_USERS
 from database.models import(
+    ChildModel,
     ClassEventModel,
     ClassModel,
     ClassTeacherModel,
@@ -200,3 +202,21 @@ def get_all_teacher_disciplines_by_filter(db_session: Session, user_cpf: str, di
         raise NotFound(ERROR_DISCIPLINES_GET_ALL_NOT_FOUND)
     
     return disciplines
+
+
+def get_all_children(db_session: Session) -> list[ChildModel]:
+    """
+    Busca todos os estudantes no banco de dados
+
+    - Args:
+        - db_session: Sessão do banco de dados
+
+    - Returns:
+        - list[ChildModel]: Lista de estudantes encontrados no banco de dados.
+    """
+    children = db_session.scalars(select(ChildModel)).all()
+
+    if not children:
+        raise NotFound(ERROR_CHILD_GET_ALL_NOT_FOUND)
+
+    return children

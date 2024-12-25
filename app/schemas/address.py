@@ -25,12 +25,37 @@ class Address(BaseSchema):
     - house_number: str
     - complement: str = ""
     """
-    state: str = Field(title="state", description="Estado", examples=["PI", "SP"])
-    city: str = Field(title="city", description="Cidade", examples=["Teresina", "São Paulo"])
-    neighborhood: str = Field(title="neighborhood", description="Bairro", examples=["Centro", "Vila"])
-    street: str = Field(title="street", description="Rua", examples=["Rua A", "Rua B"])
-    house_number: str = Field(title="house_number", description="Número da casa", examples=["123", "456"])
-    complement: str = Field(title="complement", description="Complemento", examples=["A", "B"], default="")
+    state: str = Field(
+        title="state", 
+        description="Estado", 
+        examples=["PI", "SP"]
+    )
+    city: str = Field(
+        title="city", 
+        description="Cidade", 
+        examples=["Teresina", "São Paulo"]
+    )
+    neighborhood: str = Field(
+        title="neighborhood", 
+        description="Bairro", 
+        examples=["Centro", "Vila"]
+    )
+    street: str = Field(
+        title="street", 
+        description="Rua", 
+        examples=["Rua A", "Rua B"]
+    )
+    house_number: str = Field(
+        title="house_number", 
+        description="Número da casa", 
+        examples=["123", "456"]
+    )
+    complement: str = Field(
+        title="complement", 
+        description="Complemento", 
+        examples=["A", "B"], 
+        default=""
+    )
 
 
     @field_validator("state", mode="before")
