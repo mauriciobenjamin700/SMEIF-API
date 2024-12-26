@@ -130,6 +130,7 @@ class ChildModel(BaseModel):
     relationships:
     - child_parents: list[ChildParentsModel]
     - class_student: ClassStudentModel | None
+    - notes: list[NoteModel]
     """
     __tablename__ = 'child'
 
@@ -157,6 +158,12 @@ class ChildModel(BaseModel):
         "ClassStudentModel",
         back_populates="child",
         uselist=False,
+        cascade="all, delete-orphan"
+    )
+    notes = relationship(
+        "NoteModel",
+        back_populates="child",
+        uselist=True,
         cascade="all, delete-orphan"
     )
 
@@ -207,6 +214,7 @@ class ClassModel(BaseModel):
     relationships:
     - class_teacher: list[ClassTeacherModel]
     - class_student: list[ClassStudentModel]
+    - notes: list[NoteModel]
     """
     __tablename__ = 'class'
 
@@ -225,6 +233,12 @@ class ClassModel(BaseModel):
 
     class_student = relationship(
         "ClassStudentModel",
+        back_populates="class_",
+        uselist=True
+    )
+    
+    notes = relationship(
+        "NoteModel",
         back_populates="class_",
         uselist=True
     )
@@ -490,6 +504,7 @@ class NoteModel(BaseModel):
     __tablename__ = 'note'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    semester: Mapped[int] = mapped_column(Integer, nullable=False)
     aval_number: Mapped[int] = mapped_column(Integer, nullable=False)
     points: Mapped[float] = mapped_column(Float, nullable=False)
     discipline_id: Mapped[str] = mapped_column(String, ForeignKey("disciplines.id"), nullable=False)

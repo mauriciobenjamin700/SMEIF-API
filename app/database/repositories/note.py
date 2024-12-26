@@ -1,7 +1,5 @@
-from datetime import datetime
 from sqlalchemy import (
     and_,
-    or_,
     select
 )
 from sqlalchemy.orm import Session
@@ -68,15 +66,15 @@ class NoteRepository:
     
     
     def map_model_to_response(self, model: NoteModel):
-        
-        student = model.child
-        
+                
         return NoteResponse(
             **model.dict(),
-            student_name=student.name,
-            matriculation=student.matriculation,
+            student_name=model.child.name,
+            matriculation=model.child.matriculation,
             discipline_name=model.discipline.name,
-            class_name=model.class_.name
+            class_name=model.class_.name,
+            class_section=model.class_.section,
+            class_shift=model.class_.shift
         )
     
     
@@ -113,7 +111,11 @@ class NoteRepository:
 
 
         if model: # Caso exista uma nota para este aluno nesta turma nesta disciplina
-            if model.aval_number == note.aval_number: # se for para a mesma nota, sobe conflito
+            if (
+                model.aval_number == note.aval_number
+                and 
+                model.semester == note.semester
+            ): # se for para a mesma nota, sobe conflito
                 raise Conflict(ERROR_NOTE_ALREADY_ADD)
         
         else: # Caso seja a primeira nota, precisamos validar se os dados externos existem e estão corretos

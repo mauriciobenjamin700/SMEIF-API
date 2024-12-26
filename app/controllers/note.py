@@ -4,9 +4,11 @@ from sqlalchemy.orm import Session
 
 from constants.note import (
     ERROR_NOTE_NOT_FOUND,
-    SUCCESS_NOTE_ADD
+    SUCCESS_NOTE_ADD,
+    SUCCESS_NOTE_DELETE
 )
 from database.repositories.note import NoteRepository
+from schemas.base import BaseMessage
 from schemas.note import (
     NoteFilters,
     NoteRequest,
@@ -107,6 +109,34 @@ class NoteController:
             response = self.repository.map_model_to_response(model)
             
             return response
+            
+        except HTTPException:
+            
+            raise
+        
+        except Exception as e:
+            
+            raise Server(e)
+        
+        
+    def delete(self, id: int) -> BaseMessage:
+        """
+        Deleta uma nota no banco de dados
+        
+        - Args:
+            - id: ID da nota a ser deletada.
+            
+        - Returns:
+            - Success: Mensagem de sucesso ao deletar a nota.
+        """
+        try:
+            
+            result = self.repository.delete(id)
+            
+            if not result:
+                raise NotFound(ERROR_NOTE_NOT_FOUND)
+            
+            return Success(SUCCESS_NOTE_DELETE)
             
         except HTTPException:
             
