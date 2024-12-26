@@ -16,7 +16,7 @@ class BaseModel(DeclarativeBase):
         columns_str = ", ".join(f"{key}={value!r}" for key, value in columns.items())
         return f"{cls.__name__}({columns_str})"
     
-    def dict(self, exclude: list[str] = [], **kwargs) -> Dict[str, Any]:
+    def dict(self, exclude: list[str] = []) -> Dict[str, Any]:
         """
         Converte o objeto para um dicionário, removendo chaves com valores None e os valores de chave dentro de exclude.
         

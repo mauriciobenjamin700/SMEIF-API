@@ -3,13 +3,18 @@ from sqlalchemy.orm import Session
 
 
 from constants.note import (
+    ERROR_NOTE_NOT_FOUND,
     SUCCESS_NOTE_ADD
 )
 from database.repositories.note import NoteRepository
 from schemas.note import (
-    NoteRequest
+    NoteFilters,
+    NoteRequest,
+    NoteResponse,
+    NoteUpdate
 )
 from utils.messages.error import(
+    NotFound,
     Server
 )
 from utils.messages.success import Success
@@ -21,7 +26,15 @@ class NoteController:
         
     
     def add(self, request: NoteRequest):
+        """
+        Registra uma nova nota no banco de dados
         
+        - Args:
+            - request: Objeto com os dados da nova nota.
+            
+        - Returns:
+            - Success: Mensagem de sucesso ao cadastrar a nova nota.
+        """
         try:
             
             self.repository.validate_note(request)
@@ -41,5 +54,64 @@ class NoteController:
             raise Server(e)
         
         
-    def get_all():
-        pass
+    def get_all(self, filters: NoteFilters) -> list[NoteResponse]:
+        """
+        Busca todas as notas cadastradas no banco de dados e retorna de acordo com os filtros passados
+        
+        - Args:
+            - filters: Objeto com os filtros para busca.
+            
+        - Returns:
+            - list[NoteResponse]: Lista de notas encontradas no banco de dados.
+        """
+        try:
+            
+            models = self.repository.get_all()
+            
+            for key, value in filters.dict().items():
+                
+                models = [model for model in models if getattr(model, key) == value]
+            
+            response = [self.repository.map_model_to_response(model) for model in models]
+            
+            return response
+            
+        except Exception as e:
+            
+            raise Server(e)
+        
+        
+    def update(self, request: NoteUpdate) -> NoteResponse:
+        """
+        Atualiza uma nota no banco de dados
+        
+        - Args:
+            - request: Objeto com os novos dados da nota.
+            
+        - Returns:
+            - NoteResponse: Objeto com os dados da nota atualizada.
+        """
+        try:
+            
+            model = self.repository.get(request.id)
+            
+            if not model:
+                raise NotFound(ERROR_NOTE_NOT_FOUND)
+            
+            for key, value in request.dict(exclude=["id"]).items():
+                
+                setattr(model, key, value)
+                        
+            model = self.repository.update(model)
+            
+            response = self.repository.map_model_to_response(model)
+            
+            return response
+            
+        except HTTPException:
+            
+            raise
+        
+        except Exception as e:
+            
+            raise Server(e)

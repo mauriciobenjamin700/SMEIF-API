@@ -20,7 +20,8 @@ from database.models import (
 )
 from schemas.note import (
     NoteRequest,
-    NoteDB
+    NoteDB,
+    NoteResponse
 )
 from utils.messages.error import (
     Conflict,
@@ -67,7 +68,16 @@ class NoteRepository:
     
     
     def map_model_to_response(self, model: NoteModel):
-        pass
+        
+        student = model.child
+        
+        return NoteResponse(
+            **model.dict(),
+            student_name=student.name,
+            matriculation=student.matriculation,
+            discipline_name=model.discipline.name,
+            class_name=model.class_.name
+        )
     
     
     def map_request_to_model(self, request: NoteRequest) -> NoteModel:

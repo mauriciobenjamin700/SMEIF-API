@@ -272,6 +272,7 @@ class DisciplinesModel(BaseModel):
     relationships:
     - class_event: list[ClassEventModel]
     - teacher_disciplines: list[TeacherDisciplinesModel]
+    - notes: list[NoteModel]
     """
     __tablename__ = 'disciplines'
 
@@ -287,6 +288,13 @@ class DisciplinesModel(BaseModel):
 
     teacher_disciplines = relationship(
         "TeacherDisciplinesModel",
+        back_populates="discipline",
+        uselist=True,
+        cascade="all, delete-orphan"
+    )
+    
+    notes = relationship(
+        "NoteModel",
         back_populates="discipline",
         uselist=True,
         cascade="all, delete-orphan"
@@ -472,6 +480,12 @@ class NoteModel(BaseModel):
     - discipline_id: str
     - class_id: str
     - child_cpf: str
+    
+    Relationships:
+    
+    - discipline: DisciplinesModel
+    - class_: ClassModel
+    - child: ChildModel
     """
     __tablename__ = 'note'
 
@@ -481,6 +495,25 @@ class NoteModel(BaseModel):
     discipline_id: Mapped[str] = mapped_column(String, ForeignKey("disciplines.id"), nullable=False)
     class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
     child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
+
+
+    discipline = relationship(
+        "DisciplinesModel",
+        back_populates="notes",
+        uselist=False
+    )
+    
+    class_ = relationship(
+        "ClassModel",
+        back_populates="notes",
+        uselist=False
+    )
+    
+    child = relationship(
+        "ChildModel",
+        back_populates="notes",
+        uselist=False
+    )
 
 
 def create_tables():
