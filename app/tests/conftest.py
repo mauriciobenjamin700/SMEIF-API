@@ -274,6 +274,31 @@ def mock_StudentResponse_data() -> dict:
     }
     return data.copy()
 
+
+@fixture
+def mock_NoteRequest_data() -> dict:
+    data = {}
+    data["semester"] = 1
+    data["aval_number"] = 1
+    data["points"] = 7.5
+    data["discipline_id"] = "12345"
+    data["class_id"] = "12345"
+    data["child_cpf"] = "123.456.789-00"
+
+    return data.copy()
+
+
+@fixture
+def mock_NoteFilters_data() -> dict:
+    data = {}
+    data["semester"] = 1
+    data["aval_number"] = 1
+    data["discipline_id"] = "12345"
+    data["class_id"] = "12345"
+    data["child_cpf"] = "123.456.789-00"
+
+    return data.copy()
+
 ############################ SCHEMAS ############################
 
 

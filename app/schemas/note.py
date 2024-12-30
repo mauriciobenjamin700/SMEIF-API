@@ -136,9 +136,12 @@ class NoteRequest(BaseSchema):
     def validate_child_cpf(cls, value):
         
         value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_NOTE_REQUIRED_FIELD_CHILD_CPF)
         
         if not validate_cpf(value):
-            raise UnprocessableEntity(ERROR_NOTE_REQUIRED_FIELD_CHILD_CPF)
+            raise UnprocessableEntity(ERROR_INVALID_CPF)
         
         value = unformat_cpf(value)
         
@@ -156,7 +159,10 @@ class NoteDB(NoteRequest):
     - class_id: str
     - child_cpf: str
     """
-    id: str = Field(default_factory=id_generate)
+    id: str = Field(
+        default_factory=id_generate,
+        frozen=True,
+    )
 
 
 class NoteFilters(BaseSchema):
