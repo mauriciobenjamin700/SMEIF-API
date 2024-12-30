@@ -38,12 +38,15 @@ from schemas.classes import (
 )
 from schemas.child import(
     ChildRequest,
-    StudentRequest,
-    StudentResponse
+    StudentRequest
 )
 from schemas.disciplines import(
     DisciplineRequest,
     DisciplineResponse
+)
+from schemas.note import (
+    NoteDB,
+    NoteRequest
 )
 from schemas.teacher import (
     ClassTeacherRequest,
@@ -70,11 +73,11 @@ def db_session():
     try:
         session = Session()
 
+        session.query(NoteModel).delete()
+        session.query(WarningModel).delete()
         session.query(ClassStudentModel).delete()
         session.query(ChildParentsModel).delete()
         session.query(ChildModel).delete()
-        session.query(WarningModel).delete()
-        session.query(NoteModel).delete()
         session.query(PresenceModel).delete()
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
@@ -89,11 +92,11 @@ def db_session():
 
     finally:
 
+        session.query(NoteModel).delete()
+        session.query(WarningModel).delete()
         session.query(ClassStudentModel).delete()
         session.query(ChildParentsModel).delete()
         session.query(ChildModel).delete()
-        session.query(WarningModel).delete()
-        session.query(NoteModel).delete()
         session.query(PresenceModel).delete()
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
@@ -298,6 +301,7 @@ def mock_NoteFilters_data() -> dict:
     data["child_cpf"] = "123.456.789-00"
 
     return data.copy()
+
 
 ############################ SCHEMAS ############################
 
@@ -512,6 +516,22 @@ def mock_ChildRequest_update(
         gender=Gender.MALE.value,
         address=mock_StudentRequest.address,
         dependencies="Precisa de ajuda para focar nos estudos, pois vive se distraindo."
+    )
+
+
+@fixture
+def mock_NoteRequest(
+    mock_discipline_on_db,
+    mock_class_on_db,
+    mock_student_on_db,
+) -> NoteRequest:
+    return NoteRequest(
+        semester=1,
+        aval_number=1,
+        points=7.5,
+        discipline_id=mock_discipline_on_db.id,
+        class_id=mock_class_on_db.id,
+        child_cpf=mock_student_on_db.cpf
     )
 
 ############################ MODELS ############################
@@ -894,3 +914,18 @@ def mock_student_on_db_with_max_parents(
     db_session.commit()
 
     return student
+
+
+@fixture
+def mock_note_on_db(
+    db_session,
+    mock_NoteRequest
+) -> NoteModel:
+    to_db = NoteDB(**mock_NoteRequest.dict())
+    model = NoteModel(**to_db.dict())
+
+    db_session.add(model)
+
+    db_session.commit()
+
+    return model

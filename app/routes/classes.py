@@ -5,7 +5,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 
-from controllers.classes import ClassesController
+from useCases.classes import ClassesUseCases
 from routes.docs.classes import(
     ADD_DESCRIPTION,
     ADD_RESPONSES,
@@ -53,7 +53,7 @@ async def add_class(
     db_session: Session = Depends(db_session),
 ) -> BaseMessage:    
 
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
 
     response = uc.add(request)
 
@@ -66,7 +66,7 @@ async def get_class(
     db_session: Session = Depends(db_session)
 ) -> ClassResponse:
 
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
 
     response = uc.get(class_id)
 
@@ -78,7 +78,7 @@ async def list_classes(
     db_session: Session = Depends(db_session)
 ) -> list[ClassResponse]:
 
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
 
     response = uc.get_all()
 
@@ -92,7 +92,7 @@ async def update_class(
     db_session: Session = Depends(db_session)
 ) -> ClassResponse:
 
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
 
     response = uc.update(class_id, update)
 
@@ -105,7 +105,7 @@ async def delete_class(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
 
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
 
     response = uc.delete(class_id)
 
@@ -118,7 +118,7 @@ def add_event(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
 
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
 
     response = uc.add_event(request)
 
@@ -131,7 +131,7 @@ async def get_event(
     db_session: Session = Depends(db_session)
 ) -> ClassEventResponse:
     
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
 
     response = uc.get_event(class_event_id)
 
@@ -143,7 +143,7 @@ async def list_events(
     db_session: Session = Depends(db_session)
 ) -> list[ClassEventResponse]:
     
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
 
     response = uc.get_all_events()
 
@@ -157,7 +157,7 @@ async def update_event(
     db_session: Session = Depends(db_session)
 ) -> ClassEventResponse:
         
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
     
     response = uc.update_event(class_event_id, update)
     
@@ -170,7 +170,7 @@ async def delete_event(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
         
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
     
     response = uc.delete_event(class_event_id)
     
@@ -184,7 +184,7 @@ async def add_recurrences(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
         
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
     
     response = uc.add_recurrences(class_event_id, recurrences)
     
@@ -198,7 +198,7 @@ async def delete_recurrences(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
         
-    uc = ClassesController(db_session)
+    uc = ClassesUseCases(db_session)
     
     response = uc.delete_recurrences(class_event_id, recurrences)
     

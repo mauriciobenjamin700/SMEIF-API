@@ -2,6 +2,10 @@ from sqlalchemy import (
     and_,
     select
 )
+from sqlalchemy.exc import (
+    IntegrityError,
+    InternalError
+)
 from sqlalchemy.orm import Session
 
 from constants.child import ERROR_CHILD_GET_NOT_FOUND
@@ -23,7 +27,8 @@ from schemas.note import (
 )
 from utils.messages.error import (
     Conflict,
-    NotFound
+    NotFound,
+    Server
 )
 
 class NoteRepository:
@@ -32,9 +37,17 @@ class NoteRepository:
         
         
     def add(self, model: NoteModel) -> None:
+        try:
+            self.db_session.add(model)
+            self.db_session.commit()
+        except IntegrityError as e:
+            raise Conflict(e.detail)
         
-        self.db_session.add(model)
-        self.db_session.commit()
+        except InternalError as e:
+            raise Conflict(e.detail)
+        
+        except Exception as e:
+            raise Server(e)
         
     
     def get(self, id: str) -> NoteModel | None:

@@ -489,6 +489,7 @@ class NoteModel(BaseModel):
     Dados de notas de um aluno em uma determinada disciplina que acontecerá em uma turma
     
     - id: str
+    - semester: int
     - aval_number: int
     - points: float
     - discipline_id: str

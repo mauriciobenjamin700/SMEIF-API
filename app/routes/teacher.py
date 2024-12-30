@@ -5,7 +5,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 
-from controllers.teacher import TeacherController
+from useCases.teacher import TeacherUseCases
 from routes.docs.teacher import (
     ADD_DISCIPLINES_DESCRIPTION,
     ADD_CLASS_RESPONSES,
@@ -37,9 +37,9 @@ async def add_class(
     db_session: Session = Depends(db_session)
 ) -> TeacherResponse:
 
-    controller = TeacherController(db_session)
+    uc = TeacherUseCases(db_session)
 
-    response = controller.add_classes(request)
+    response = uc.add_classes(request)
 
     return response
 
@@ -50,9 +50,9 @@ async def add_disciplines(
     db_session: Session = Depends(db_session)
 ) -> TeacherResponse:
 
-    controller = TeacherController(db_session)
+    uc = TeacherUseCases(db_session)
 
-    response = controller.add_disciplines(request)
+    response = uc.add_disciplines(request)
 
     return response
 
@@ -63,9 +63,9 @@ async def get_teacher(
     db_session: Session = Depends(db_session)
 ) -> TeacherResponse:
 
-    controller = TeacherController(db_session)
+    uc = TeacherUseCases(db_session)
 
-    response = controller.get(user_cpf)
+    response = uc.get(user_cpf)
 
     return response
 
@@ -75,9 +75,9 @@ async def list_teachers(
     db_session: Session = Depends(db_session)
 ) -> list[TeacherResponse]:
 
-    controller = TeacherController(db_session)
+    uc = TeacherUseCases(db_session)
 
-    response = controller.get_all()
+    response = uc.get_all()
 
     return response
 
@@ -88,9 +88,9 @@ def delete_classes(
     db_session: Session = Depends(db_session)
 ) -> TeacherResponse:
 
-    controller = TeacherController(db_session)
+    uc = TeacherUseCases(db_session)
 
-    response = controller.delete_classes(request)
+    response = uc.delete_classes(request)
 
     return response
 
@@ -101,8 +101,8 @@ def delete_disciplines(
     db_session: Session = Depends(db_session)
 ) -> TeacherResponse:
     
-    controller = TeacherController(db_session)
+    uc = TeacherUseCases(db_session)
 
-    response = controller.delete_disciplines(request)
+    response = uc.delete_disciplines(request)
 
     return response

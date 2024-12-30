@@ -30,8 +30,11 @@ tests: start
 test-schemas: start
 	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/test_schemas/$(file)
 
-test-controllers: start
-	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/test_controllers/$(file)
+test-repositories: start
+	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/test_repositories/$(file)
+
+test-useCases: start
+	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/test_useCases/$(file)
 
 test-routes: start
 	@docker exec -it smeif-api pytest -p no:warnings /api/app/tests/test_routes/$(file)

@@ -5,7 +5,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 
-from controllers.student import StudentController
+from useCases.student import StudentUseCases
 from routes.docs.student import (
     ADD_DESCRIPTION,
     GET_DESCRIPTION,
@@ -45,9 +45,9 @@ async def add_student(
     db_session: Session = Depends(db_session)
 ) -> StudentResponse:
     
-    controller = StudentController(db_session)
+    uc = StudentUseCases(db_session)
     
-    response = controller.add(request)
+    response = uc.add(request)
     
     return response
 
@@ -58,9 +58,9 @@ def get_student(
     db_session: Session = Depends(db_session)
 ) -> StudentResponse:
     
-    controller = StudentController(db_session)
+    uc = StudentUseCases(db_session)
     
-    response = controller.get(student_cpf)
+    response = uc.get(student_cpf)
     
     return response
 
@@ -70,9 +70,9 @@ def list_students(
     db_session: Session = Depends(db_session)
 ) -> list[StudentResponse]:
     
-    controller = StudentController(db_session)
+    uc = StudentUseCases(db_session)
     
-    response = controller.get_all()
+    response = uc.get_all()
     
     return response
 
@@ -83,9 +83,9 @@ async def update_student(
     db_session: Session = Depends(db_session)
 ) -> StudentResponse:
     
-    controller = StudentController(db_session)
+    uc = StudentUseCases(db_session)
     
-    response = controller.update(request)
+    response = uc.update(request)
     
     return response
 
@@ -96,9 +96,9 @@ def delete_student(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
     
-    controller = StudentController(db_session)
+    uc = StudentUseCases(db_session)
     
-    response = controller.delete(student_cpf)
+    response = uc.delete(student_cpf)
     
     return response
 
@@ -111,9 +111,9 @@ def change_student_class(
     db_session: Session = Depends(db_session)
 ) -> StudentResponse:
     
-    controller = StudentController(db_session)
+    uc = StudentUseCases(db_session)
     
-    response = controller.change_class(student_cpf, to_class_id, is_transfer)
+    response = uc.change_class(student_cpf, to_class_id, is_transfer)
     
     return response
 
@@ -126,9 +126,9 @@ def add_student_parent(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
     
-    controller = StudentController(db_session)
+    uc = StudentUseCases(db_session)
     
-    response = controller.add_parent(student_cpf, kinship, parent_cpf)
+    response = uc.add_parent(student_cpf, kinship, parent_cpf)
     
     return response
 
@@ -140,8 +140,8 @@ def remove_student_parent(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
     
-    controller = StudentController(db_session)
+    uc = StudentUseCases(db_session)
     
-    response = controller.delete_parent(student_cpf, parent_cpf)
+    response = uc.delete_parent(student_cpf, parent_cpf)
     
     return response
