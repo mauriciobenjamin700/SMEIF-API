@@ -16,6 +16,7 @@ ERROR_NOTE_INVALID_FIELD_POINTS = "A nota deve ser um número entre 0 e 10"
 # Conflitos
 ERROR_NOTE_ALREADY_ADD = "Nota já cadastrada"
 ERROR_NOTE_NOT_FOUND = "Nota não encontrada"
+ERROR_NOTE_NOT_FOUND_NOTES = "Notas não encontradas"
 
 # Success
 SUCCESS_NOTE_ADD = "Nota cadastrada com sucesso"

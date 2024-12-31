@@ -3,6 +3,12 @@ from pytest import raises
 from sqlalchemy.orm import Session
 
 
+from constants.child import ERROR_CHILD_GET_NOT_FOUND
+from constants.classes import ERROR_CLASSES_GET_NOT_FOUND
+from constants.disciplines import ERROR_DISCIPLINES_GET_NOT_FOUND
+from constants.note import (
+    ERROR_NOTE_ALREADY_ADD
+)
 from database.models import NoteModel
 from database.repositories.note import NoteRepository
 
@@ -16,7 +22,7 @@ def inspect_notes_model(Note1: NoteModel, note2: NoteModel):
 
 
 def test_NoteRepository_add_success(
-    db_session,
+    db_session: Session,
     mock_NoteRequest
 ):
     
@@ -34,7 +40,7 @@ def test_NoteRepository_add_success(
 
 
 def test_NoteRepository_get_success(
-    db_session,
+    db_session: Session,
     mock_note_on_db
 ):
     model = mock_note_on_db
@@ -50,7 +56,7 @@ def test_NoteRepository_get_success(
 
 
 def test_NoteRepository_get_not_found(
-    db_session
+    db_session: Session
 ):
     repository = NoteRepository(db_session)
 
@@ -60,7 +66,7 @@ def test_NoteRepository_get_not_found(
 
 
 def test_NoteRepository_get_by_child_cpf_success(
-    db_session,
+    db_session: Session,
     mock_note_on_db
 ):
     model = mock_note_on_db
@@ -76,7 +82,7 @@ def test_NoteRepository_get_by_child_cpf_success(
 
 
 def test_NoteRepository_get_by_child_cpf_not_found(
-    db_session
+    db_session: Session
 ):
     repository = NoteRepository(db_session)
 
@@ -86,7 +92,7 @@ def test_NoteRepository_get_by_child_cpf_not_found(
 
 
 def test_NoteRepository_get_all_success(
-    db_session,
+    db_session: Session,
     mock_note_on_db
 ):
     model = mock_note_on_db
@@ -103,7 +109,7 @@ def test_NoteRepository_get_all_success(
 
 
 def test_NoteRepository_update_success(
-    db_session,
+    db_session: Session,
     mock_note_on_db
 ):
     model = mock_note_on_db
@@ -121,7 +127,7 @@ def test_NoteRepository_update_success(
 
 
 def test_NoteRepository_delete_success(
-    db_session,
+    db_session: Session,
     mock_note_on_db
 ):
     model = mock_note_on_db
@@ -138,7 +144,7 @@ def test_NoteRepository_delete_success(
 
 
 def test_NoteRepository_delete_not_found(
-    db_session
+    db_session: Session
 ):
     repository = NoteRepository(db_session)
 
@@ -148,7 +154,7 @@ def test_NoteRepository_delete_not_found(
 
 
 def test_NoteRepository_map_model_to_response(
-    db_session,
+    db_session: Session,
     mock_student_on_db,
     mock_discipline_on_db,
     mock_class_on_db,
@@ -170,3 +176,88 @@ def test_NoteRepository_map_model_to_response(
     assert response.discipline_name == mock_discipline_on_db.name
     assert response.class_name == mock_class_on_db.name
     assert response.class_shift == mock_class_on_db.shift
+
+
+def test_NoteRepository_validate_note(
+    db_session: Session,
+    mock_NoteRequest
+):
+    
+    request  = mock_NoteRequest
+
+    repository = NoteRepository(db_session)
+
+    response = repository.validate_note(request)
+
+    assert response is None
+
+
+def test_NoteRepository_validate_note_already_exists(
+    db_session: Session,
+    mock_note_on_db,
+    mock_NoteRequest
+):
+    
+    request  = mock_NoteRequest
+    
+
+    repository = NoteRepository(db_session)
+
+    with raises(HTTPException) as e:
+
+        repository.validate_note(request)
+
+    
+    assert e.value.status_code == 409
+    assert e.value.detail == ERROR_NOTE_ALREADY_ADD
+
+
+def test_NoteRepository_validate_note_not_found_discipline_id(
+    db_session: Session,
+    mock_NoteRequest
+):
+    
+    request = mock_NoteRequest
+    request.discipline_id = "123"
+
+    repository = NoteRepository(db_session)
+
+    with raises(HTTPException) as e:
+        repository.validate_note(request)
+
+    assert e.value.status_code == 404
+    assert e.value.detail == ERROR_DISCIPLINES_GET_NOT_FOUND
+
+
+def test_NoteRepository_validate_note_not_found_class_id(
+    db_session: Session,
+    mock_NoteRequest
+):
+    
+    request = mock_NoteRequest
+    request.class_id = "123"
+
+    repository = NoteRepository(db_session)
+
+    with raises(HTTPException) as e:
+        repository.validate_note(request)
+
+    assert e.value.status_code == 404
+    assert e.value.detail == ERROR_CLASSES_GET_NOT_FOUND
+
+
+def test_NoteRepository_validate_note_not_found_student_cpf(
+    db_session: Session,
+    mock_NoteRequest
+):
+    
+    request = mock_NoteRequest
+    request.child_cpf = "123"
+
+    repository = NoteRepository(db_session)
+
+    with raises(HTTPException) as e:
+        repository.validate_note(request)
+
+    assert e.value.status_code == 404
+    assert e.value.detail == ERROR_CHILD_GET_NOT_FOUND

@@ -98,7 +98,7 @@ class NoteRepository:
         return NoteModel(**to_db.dict())
     
     
-    def validate_note(self, note: NoteRequest):
+    def validate_note(self, note: NoteRequest) -> None:
         """
         Valida se a nota a ser cadastrada já existe para o aluno na turma e disciplina
         

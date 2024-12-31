@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from constants.note import (
     ERROR_NOTE_NOT_FOUND,
+    ERROR_NOTE_NOT_FOUND_NOTES,
     SUCCESS_NOTE_ADD,
     SUCCESS_NOTE_DELETE
 )
@@ -27,7 +28,7 @@ class NoteUseCases:
         self.repository = NoteRepository(db_session)
         
     
-    def add(self, request: NoteRequest):
+    def add(self, request: NoteRequest) -> BaseMessage:
         """
         Registra uma nova nota no banco de dados
         
@@ -69,6 +70,10 @@ class NoteUseCases:
         try:
             
             models = self.repository.get_all()
+
+            if not models:
+                
+                raise NotFound(ERROR_NOTE_NOT_FOUND_NOTES)
             
             for key, value in filters.dict().items():
                 
