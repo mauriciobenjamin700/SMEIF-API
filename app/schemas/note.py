@@ -173,7 +173,7 @@ class NoteFilters(BaseSchema):
     - aval_number: int | None
     - semester: int | None
     """
-    class_id: str = Field(
+    class_id: str | None = Field(
         title="ID da turma",
         description="ID da turma a ser filtrada",
         examples=["123456"],

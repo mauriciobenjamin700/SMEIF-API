@@ -113,9 +113,9 @@ class NoteUseCases:
                 
                 setattr(model, key, value)
                         
-            model = self.repository.update(model)
+            updated_model = self.repository.update(model)
             
-            response = self.repository.map_model_to_response(model)
+            response = self.repository.map_model_to_response(updated_model)
             
             return response
             

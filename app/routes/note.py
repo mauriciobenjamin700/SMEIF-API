@@ -26,7 +26,7 @@ from services.session import db_session
 from useCases.note import NoteUseCases
 
 
-router = APIRouter(prefix='/notes', tags=['Notes'])
+router = APIRouter(prefix='/note', tags=['Notes'])
 
 
 @router.post('/add', description=ADD_DESCRIPTION,responses=ADD_RESPONSES, status_code=201)
