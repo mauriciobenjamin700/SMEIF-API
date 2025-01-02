@@ -128,7 +128,7 @@ class NoteUseCases:
             raise Server(e)
         
         
-    def delete(self, id: int) -> BaseMessage:
+    def delete(self, id: str) -> BaseMessage:
         """
         Deleta uma nota no banco de dados
         
