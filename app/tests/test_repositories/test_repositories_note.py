@@ -11,14 +11,7 @@ from constants.note import (
 )
 from database.models import NoteModel
 from database.repositories.note import NoteRepository
-
-def inspect_notes_model(Note1: NoteModel, note2: NoteModel):
-    assert Note1.id == note2.id
-    assert Note1.child_cpf == note2.child_cpf
-    assert Note1.discipline_id == note2.discipline_id
-    assert Note1.class_id == note2.class_id
-    assert Note1.aval_number == note2.aval_number
-    assert Note1.semester == note2.semester
+from tests.inspect import inspect_notes_model
 
 
 def test_NoteRepository_add_success(

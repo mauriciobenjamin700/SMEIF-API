@@ -57,7 +57,7 @@ class NoteUseCases:
             raise Server(e)
         
         
-    def get_all(self, filters: NoteFilters) -> list[NoteResponse]:
+    def get_all(self, filters: NoteFilters = NoteFilters()) -> list[NoteResponse]:
         """
         Busca todas as notas cadastradas no banco de dados e retorna de acordo com os filtros passados
         
@@ -82,6 +82,10 @@ class NoteUseCases:
             response = [self.repository.map_model_to_response(model) for model in models]
             
             return response
+        
+        except HTTPException:
+            
+            raise
             
         except Exception as e:
             

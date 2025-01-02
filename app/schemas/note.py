@@ -285,7 +285,8 @@ class NoteUpdate(BaseSchema):
     points: float | None = Field(
         title="Pontuação",
         description="Pontuação da avaliação, podendo ser de 0 a 10",
-        examples=[0.0, 10.0]
+        examples=[0.0, 10.0],
+        default=None
     )
     
     

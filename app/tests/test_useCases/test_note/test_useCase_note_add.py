@@ -1,16 +1,9 @@
 from sqlalchemy.orm import Session
 
 
-from constants.note import (
-    SUCCESS_NOTE_ADD
-)
-from database.models import (
-    NoteModel
-)
-from schemas.note  import (
-    NoteRequest,
-    NoteResponse
-)
+from constants.note import SUCCESS_NOTE_ADD
+from database.models import NoteModel
+from schemas.note  import NoteRequest
 from useCases.note import NoteUseCases
 
 
@@ -26,7 +19,7 @@ def test_NoteUseCases_add_success(
     response = use_case.add(request)
     db = db_session.query(NoteModel).filter(
         NoteModel.discipline_id == request.discipline_id,
-        NoteModel.teacher_id == request.teacher_id,
+        NoteModel.class_id == request.class_id,
         NoteModel.child_cpf == request.child_cpf,
     ).first()
     

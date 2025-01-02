@@ -46,7 +46,8 @@ from schemas.disciplines import(
 )
 from schemas.note import (
     NoteDB,
-    NoteRequest
+    NoteRequest,
+    NoteUpdate
 )
 from schemas.teacher import (
     ClassTeacherRequest,
@@ -534,6 +535,38 @@ def mock_NoteRequest(
         child_cpf=mock_student_on_db.cpf
     )
 
+
+@fixture
+def mock_NoteUpdate_points(
+    mock_note_on_db
+) -> NoteUpdate:
+    return NoteUpdate(
+        id=mock_note_on_db.id,
+        points=9.3
+    )
+
+
+@fixture
+def mock_NoteUpdate_aval_number(
+    mock_note_on_db
+):
+    return NoteUpdate(
+        id=mock_note_on_db.id,
+        aval_number=2
+    )
+
+@fixture
+def mock_NoteUpdate_points_and_aval_number(
+    mock_note_on_db
+):
+
+    return NoteUpdate(
+        id=mock_note_on_db.id,
+        points=9.3,
+        aval_number=2
+    )
+
+
 ############################ MODELS ############################
 
 
@@ -929,3 +962,74 @@ def mock_note_on_db(
     db_session.commit()
 
     return model
+
+
+@fixture
+def mock_note_on_db_list(
+    db_session,
+    mock_student_on_db: ChildModel,
+    mock_discipline_on_db: DisciplinesModel,
+    mock_class_on_db: ClassModel
+):
+    """
+    4 notas do 1 semestre e uma do 2
+    """
+    student = mock_student_on_db
+    discipline = mock_discipline_on_db
+    class_ = mock_class_on_db
+
+    notes = [
+        NoteModel(
+            id=id_generate(),
+            semester=1,
+            aval_number=1,
+            points=7.8,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        )
+        ,
+        NoteModel(
+            id=id_generate(),
+            semester=1,
+            aval_number=2,
+            points=8.5,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        ),
+        NoteModel(
+            id=id_generate(),
+            semester=1,
+            aval_number=3,
+            points=9,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        ),
+        NoteModel(
+            id=id_generate(),
+            semester=1,
+            aval_number=4,
+            points=7,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        ),
+        NoteModel(
+            id=id_generate(),
+            semester=2,
+            aval_number=1,
+            points=10,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        )
+    ]
+
+
+    db_session.add_all(notes)
+
+    db_session.commit()
+
+    return notes
