@@ -14,6 +14,11 @@ from re import (
 )
 
 
+from constants.base import ERROR_INVALID_CPF
+from constants.child import ERROR_CHILD_REQUIRED_FIELD_CPF
+from utils.messages.error import UnprocessableEntity
+
+
 def validate_string(string: str) -> bool:
 
     result = True
@@ -232,3 +237,28 @@ def validate_phone_number(phone_number: str) -> bool:
         # raise HTTPException(400, 'Número de telefone inválido. Deve conter 11 dígitos no formato correto (XX9XXXXXXXX)')
     
     return result
+
+
+def validate_and_format_child_cpf(child_cpf: str) -> str:
+    """
+    Valida um CPF de criança e retorna o CPF formatado.
+    
+    - Args:
+        - child_cpf: str: CPF de criança que será validado e formatado
+        
+    - Return:
+        - str: CPF de criança formatado
+    
+    - Raises:    
+        - HTTPException: 400 - CPF de criança inválido
+    """
+
+    child_cpf = child_cpf.strip().replace(".", "").replace("-", "")
+
+    if not child_cpf:
+        raise UnprocessableEntity(ERROR_CHILD_REQUIRED_FIELD_CPF)
+
+    if not validate_cpf(child_cpf):
+        raise UnprocessableEntity(ERROR_INVALID_CPF)    
+
+    return child_cpf
