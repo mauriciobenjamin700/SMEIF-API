@@ -130,6 +130,7 @@ class ChildModel(BaseModel):
     relationships:
     - child_parents: list[ChildParentsModel]
     - class_student: ClassStudentModel | None
+    - notes: list[NoteModel]
     """
     __tablename__ = 'child'
 
@@ -157,6 +158,12 @@ class ChildModel(BaseModel):
         "ClassStudentModel",
         back_populates="child",
         uselist=False,
+        cascade="all, delete-orphan"
+    )
+    notes = relationship(
+        "NoteModel",
+        back_populates="child",
+        uselist=True,
         cascade="all, delete-orphan"
     )
 
@@ -207,6 +214,7 @@ class ClassModel(BaseModel):
     relationships:
     - class_teacher: list[ClassTeacherModel]
     - class_student: list[ClassStudentModel]
+    - notes: list[NoteModel]
     """
     __tablename__ = 'class'
 
@@ -225,6 +233,12 @@ class ClassModel(BaseModel):
 
     class_student = relationship(
         "ClassStudentModel",
+        back_populates="class_",
+        uselist=True
+    )
+    
+    notes = relationship(
+        "NoteModel",
         back_populates="class_",
         uselist=True
     )
@@ -272,6 +286,7 @@ class DisciplinesModel(BaseModel):
     relationships:
     - class_event: list[ClassEventModel]
     - teacher_disciplines: list[TeacherDisciplinesModel]
+    - notes: list[NoteModel]
     """
     __tablename__ = 'disciplines'
 
@@ -287,6 +302,13 @@ class DisciplinesModel(BaseModel):
 
     teacher_disciplines = relationship(
         "TeacherDisciplinesModel",
+        back_populates="discipline",
+        uselist=True,
+        cascade="all, delete-orphan"
+    )
+    
+    notes = relationship(
+        "NoteModel",
         back_populates="discipline",
         uselist=True,
         cascade="all, delete-orphan"
@@ -467,19 +489,47 @@ class NoteModel(BaseModel):
     Dados de notas de um aluno em uma determinada disciplina que acontecerá em uma turma
     
     - id: str
+    - semester: int
+    - aval_number: int
     - points: float
     - discipline_id: str
     - class_id: str
-    - points: float
     - child_cpf: str
+    
+    Relationships:
+    
+    - discipline: DisciplinesModel
+    - class_: ClassModel
+    - child: ChildModel
     """
     __tablename__ = 'note'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    semester: Mapped[int] = mapped_column(Integer, nullable=False)
+    aval_number: Mapped[int] = mapped_column(Integer, nullable=False)
     points: Mapped[float] = mapped_column(Float, nullable=False)
     discipline_id: Mapped[str] = mapped_column(String, ForeignKey("disciplines.id"), nullable=False)
     class_id: Mapped[str] = mapped_column(String, ForeignKey("class.id"), nullable=False)
     child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
+
+
+    discipline = relationship(
+        "DisciplinesModel",
+        back_populates="notes",
+        uselist=False
+    )
+    
+    class_ = relationship(
+        "ClassModel",
+        back_populates="notes",
+        uselist=False
+    )
+    
+    child = relationship(
+        "ChildModel",
+        back_populates="notes",
+        uselist=False
+    )
 
 
 def create_tables():

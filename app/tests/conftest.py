@@ -38,12 +38,16 @@ from schemas.classes import (
 )
 from schemas.child import(
     ChildRequest,
-    StudentRequest,
-    StudentResponse
+    StudentRequest
 )
 from schemas.disciplines import(
     DisciplineRequest,
     DisciplineResponse
+)
+from schemas.note import (
+    NoteDB,
+    NoteRequest,
+    NoteUpdate
 )
 from schemas.teacher import (
     ClassTeacherRequest,
@@ -70,11 +74,11 @@ def db_session():
     try:
         session = Session()
 
+        session.query(NoteModel).delete()
+        session.query(WarningModel).delete()
         session.query(ClassStudentModel).delete()
         session.query(ChildParentsModel).delete()
         session.query(ChildModel).delete()
-        session.query(WarningModel).delete()
-        session.query(NoteModel).delete()
         session.query(PresenceModel).delete()
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
@@ -89,11 +93,11 @@ def db_session():
 
     finally:
 
+        session.query(NoteModel).delete()
+        session.query(WarningModel).delete()
         session.query(ClassStudentModel).delete()
         session.query(ChildParentsModel).delete()
         session.query(ChildModel).delete()
-        session.query(WarningModel).delete()
-        session.query(NoteModel).delete()
         session.query(PresenceModel).delete()
         session.query(ClassEventModel).delete()
         session.query(ClassTeacherModel).delete()
@@ -273,6 +277,32 @@ def mock_StudentResponse_data() -> dict:
         "shift": Shift.MORNING.value
     }
     return data.copy()
+
+
+@fixture
+def mock_NoteRequest_data() -> dict:
+    data = {}
+    data["semester"] = 1
+    data["aval_number"] = 1
+    data["points"] = 7.5
+    data["discipline_id"] = "12345"
+    data["class_id"] = "12345"
+    data["child_cpf"] = "123.456.789-00"
+
+    return data.copy()
+
+
+@fixture
+def mock_NoteFilters_data() -> dict:
+    data = {}
+    data["semester"] = 1
+    data["aval_number"] = 1
+    data["discipline_id"] = "12345"
+    data["class_id"] = "12345"
+    data["child_cpf"] = "123.456.789-00"
+
+    return data.copy()
+
 
 ############################ SCHEMAS ############################
 
@@ -488,6 +518,54 @@ def mock_ChildRequest_update(
         address=mock_StudentRequest.address,
         dependencies="Precisa de ajuda para focar nos estudos, pois vive se distraindo."
     )
+
+
+@fixture
+def mock_NoteRequest(
+    mock_discipline_on_db,
+    mock_class_on_db,
+    mock_student_on_db,
+) -> NoteRequest:
+    return NoteRequest(
+        semester=1,
+        aval_number=1,
+        points=7.5,
+        discipline_id=mock_discipline_on_db.id,
+        class_id=mock_class_on_db.id,
+        child_cpf=mock_student_on_db.cpf
+    )
+
+
+@fixture
+def mock_NoteUpdate_points(
+    mock_note_on_db
+) -> NoteUpdate:
+    return NoteUpdate(
+        id=mock_note_on_db.id,
+        points=9.3
+    )
+
+
+@fixture
+def mock_NoteUpdate_aval_number(
+    mock_note_on_db
+):
+    return NoteUpdate(
+        id=mock_note_on_db.id,
+        aval_number=2
+    )
+
+@fixture
+def mock_NoteUpdate_points_and_aval_number(
+    mock_note_on_db
+):
+
+    return NoteUpdate(
+        id=mock_note_on_db.id,
+        points=9.3,
+        aval_number=2
+    )
+
 
 ############################ MODELS ############################
 
@@ -869,3 +947,89 @@ def mock_student_on_db_with_max_parents(
     db_session.commit()
 
     return student
+
+
+@fixture
+def mock_note_on_db(
+    db_session,
+    mock_NoteRequest
+) -> NoteModel:
+    to_db = NoteDB(**mock_NoteRequest.dict())
+    model = NoteModel(**to_db.dict())
+
+    db_session.add(model)
+
+    db_session.commit()
+
+    return model
+
+
+@fixture
+def mock_note_on_db_list(
+    db_session,
+    mock_student_on_db: ChildModel,
+    mock_discipline_on_db: DisciplinesModel,
+    mock_class_on_db: ClassModel
+):
+    """
+    4 notas do 1 semestre e uma do 2
+    """
+    student = mock_student_on_db
+    discipline = mock_discipline_on_db
+    class_ = mock_class_on_db
+
+    notes = [
+        NoteModel(
+            id=id_generate(),
+            semester=1,
+            aval_number=1,
+            points=7.8,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        )
+        ,
+        NoteModel(
+            id=id_generate(),
+            semester=1,
+            aval_number=2,
+            points=8.5,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        ),
+        NoteModel(
+            id=id_generate(),
+            semester=1,
+            aval_number=3,
+            points=9,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        ),
+        NoteModel(
+            id=id_generate(),
+            semester=1,
+            aval_number=4,
+            points=7,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        ),
+        NoteModel(
+            id=id_generate(),
+            semester=2,
+            aval_number=1,
+            points=10,
+            discipline_id=discipline.id,
+            class_id=class_.id,
+            child_cpf=student.cpf
+        )
+    ]
+
+
+    db_session.add_all(notes)
+
+    db_session.commit()
+
+    return notes

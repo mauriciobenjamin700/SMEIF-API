@@ -5,7 +5,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 
-from controllers.disciplines import DisciplinesController
+from useCases.disciplines import DisciplinesUseCases
 from routes.docs.disciplines import(
     ADD_DESCRIPTION,
     GET_DESCRIPTION,
@@ -35,7 +35,7 @@ async def add_discipline(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
     
-    uc = DisciplinesController(db_session)
+    uc = DisciplinesUseCases(db_session)
 
     response = uc.add(request)
 
@@ -48,7 +48,7 @@ async def get_discipline(
     db_session: Session = Depends(db_session)
 ) -> DisciplineResponse:
 
-    uc = DisciplinesController(db_session)
+    uc = DisciplinesUseCases(db_session)
 
     response = uc.get(discipline_name)
 
@@ -60,7 +60,7 @@ async def list_disciplines(
     db_session: Session = Depends(db_session)
 ) -> list[DisciplineResponse]:
 
-    uc = DisciplinesController(db_session)
+    uc = DisciplinesUseCases(db_session)
 
     response = uc.get_all()
 
@@ -74,7 +74,7 @@ async def update_discipline(
     db_session: Session = Depends(db_session)
 ) -> DisciplineResponse:
     
-        uc = DisciplinesController(db_session)
+        uc = DisciplinesUseCases(db_session)
     
         response = uc.update(name, request)
     
@@ -87,7 +87,7 @@ async def delete_discipline(
     db_session: Session = Depends(db_session)
 ) -> BaseMessage:
 
-    uc = DisciplinesController(db_session)
+    uc = DisciplinesUseCases(db_session)
 
     response = uc.delete(discipline_name)
 

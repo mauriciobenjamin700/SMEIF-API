@@ -78,3 +78,8 @@ class Shift(str, Enum):
     MORNING = "Matutino"
     AFTERNOON = "Vespertino"
     NIGHT = "Noturno"
+    
+    
+class PresenceType(str, Enum):
+    P = "P"
+    F = "F"
