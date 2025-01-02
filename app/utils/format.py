@@ -72,6 +72,9 @@ def clean_string_field(string: str) -> str:
     - Return:
         - str: String limpa
     """
+    if not isinstance(string, str):
+        return ""
+
     return string.strip() if string else ""
 
 

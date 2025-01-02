@@ -10,7 +10,8 @@ from pydantic import (
 
 from constants.presence import(
     ERROR_PRESENCE_INVALID_FIELD_TYPE,
-    ERROR_PRESENCE_REQUIRED_FIELD_CLASS_EVENT_ID
+    ERROR_PRESENCE_REQUIRED_FIELD_CLASS_EVENT_ID,
+    ERROR_PRESENCE_REQUIRED_FIELD_TYPE
 )
 from schemas.base import (
     BaseSchema,
@@ -68,6 +69,8 @@ class PresenceRequest(BaseSchema):
     @field_validator("child_cpf", mode="before")
     def validate_child_cpf(cls, value) -> str:
 
+        value = clean_string_field(value)
+
         value = validate_and_format_child_cpf(value)
 
         return value
@@ -75,6 +78,11 @@ class PresenceRequest(BaseSchema):
 
     @field_validator("type", mode="before")
     def validate_type(cls, value) -> str:
+
+        value = clean_string_field(value)
+
+        if not validate_string(value):
+            raise UnprocessableEntity(ERROR_PRESENCE_REQUIRED_FIELD_TYPE)
 
         if value not in [PresenceType.P.value, PresenceType.F.value]:
             raise UnprocessableEntity(ERROR_PRESENCE_INVALID_FIELD_TYPE)

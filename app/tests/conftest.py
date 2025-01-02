@@ -27,6 +27,7 @@ from schemas.base import (
     EducationLevel,
     Gender,
     Kinship,
+    PresenceType,
     Shift,
     UserLevel
 )
@@ -303,6 +304,16 @@ def mock_NoteFilters_data() -> dict:
 
     return data.copy()
 
+
+@fixture
+def mock_PresenceRequest_data() -> dict:
+    data = {}
+    data["class_event_id"] = "12345"
+    data["child_cpf"] = "123.456.789-00"
+    data["type"] = PresenceType.P.value
+
+
+    return data.copy()
 
 ############################ SCHEMAS ############################
 
