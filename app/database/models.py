@@ -212,6 +212,7 @@ class ClassModel(BaseModel):
     - max_students: int
 
     relationships:
+    - class_events: list[ClassEventModel]
     - class_teacher: list[ClassTeacherModel]
     - class_student: list[ClassStudentModel]
     - notes: list[NoteModel]
@@ -224,6 +225,12 @@ class ClassModel(BaseModel):
     section: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     shift: Mapped[str] = mapped_column(String, unique=False, nullable=False)
     max_students: Mapped[int] = mapped_column(Integer, unique=False, nullable=False)
+
+    class_event = relationship(
+        "ClassEventModel",
+        back_populates="class_",
+        uselist=True
+    )
 
     class_teacher = relationship(
         "ClassTeacherModel",
@@ -371,7 +378,11 @@ class ClassEventModel(BaseModel):
 
     ### Relationships:
 
+    - class_: ClassModel
     - teacher: ClassTeacherModel
+    - discipline: DisciplinesModel
+    - recurrences: list[RecurrencesModel]
+    - presences: list[PresenceModel]
 
     """
     __tablename__ = 'class_event'
@@ -382,6 +393,12 @@ class ClassEventModel(BaseModel):
     teacher_id: Mapped[str] = mapped_column(String, ForeignKey("class_teacher.id"), nullable=False)
     start_date: Mapped[datetime] = mapped_column(Date, nullable=False)
     end_date: Mapped[datetime] = mapped_column(Date, nullable=False)
+
+    class_ = relationship(
+        "ClassModel",
+        back_populates="class_event",
+        uselist=False
+    )
 
     teacher = relationship(
         "ClassTeacherModel",
@@ -397,6 +414,13 @@ class ClassEventModel(BaseModel):
 
     recurrences = relationship(
         "RecurrencesModel",
+        back_populates="class_event",
+        uselist=True,
+        cascade="all, delete-orphan"
+    )
+
+    presences = relationship(
+        "PresenceModel",
         back_populates="class_event",
         uselist=True,
         cascade="all, delete-orphan"
@@ -468,21 +492,25 @@ class PresenceModel(BaseModel):
     Dados de presença de um aluno em uma aula
 
     - id: str
+    - created_at: datetime
     - class_event_id: str
     - child_cpf: str
     - type: str
-    - start_class: datetime
-    - end_class: datetime
     """
     __tablename__ = 'presence'
 
     id: Mapped[str] = mapped_column(String, unique=True, nullable=False, primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     class_event_id: Mapped[str] = mapped_column(String, ForeignKey("class_event.id"), nullable=False)
     child_cpf: Mapped[str] = mapped_column(String, ForeignKey("child.cpf"), nullable=False)
     type: Mapped[str] = mapped_column(CHAR(1), nullable=False) # P or F
-    start_class: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    end_class: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
+
+    class_event = relationship(
+        "ClassEventModel",
+        back_populates="presences",
+        uselist=False
+    )
 
 class NoteModel(BaseModel):
     """

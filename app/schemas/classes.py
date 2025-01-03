@@ -28,6 +28,7 @@ from constants.classes import (
     ERROR_CLASSES_REQUIRED_FIELD_TEACHER_NAME
 )
 from constants.disciplines import ERROR_DISCIPLINES_REQUIRED_FIELD_NAME
+from database.models import ClassModel
 from schemas.base import (
     BaseSchema, 
     DaysOfWeek,
@@ -434,3 +435,10 @@ class ClassResponse(ClassRequest):
             raise UnprocessableEntity(ERROR_CLASSES_INVALID_FIELD_CLASS_EVENTS)
         
         return value
+
+
+def build_class_info(model: ClassModel | ClassRequest | ClassResponse) -> str:
+    """
+    constrói a informação da turma para ser exibida na resposta
+    """
+    return f"{model.name} {model.section}"

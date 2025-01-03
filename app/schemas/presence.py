@@ -153,7 +153,7 @@ class PresenceResponse(BaseSchema):
     date: str = Field(
         title="Data da aula",
         description="Data de início da aula",
-        examples=["2030-12-10"]
+        examples=["10-12-2030"]
     )
     duration: str = Field(
         title="Horário de término da aula",

@@ -1,5 +1,8 @@
-from datetime import datetime
-from datetime import time
+from datetime import (
+    datetime, 
+    time
+)
+from pytz import timezone
 
 
 def format_cpf(cpf:str) -> str:
@@ -147,3 +150,25 @@ def format_string_date(date: str) -> str:
         - str: Data formatada
     """
     return format_date(datetime.strptime(date, "%Y-%m-%d"))
+
+
+def format_data_utc_to_local(utc_date: str | datetime, local_timezone: str = "America/Sao_Paulo") -> str:
+    """
+    Formata uma data UTC para a timezone local
+
+    - Args:
+        - utc_date:: str: Data UTC
+        - local_timezone:: str: Timezone local
+
+    - Return:
+        - str: Data formatada na timezone local
+    """
+
+    if isinstance(utc_date, datetime):
+        return utc_date.astimezone(timezone(local_timezone)).strftime("%Y-%m-%d %H:%M")
+
+    elif isinstance(utc_date, str):
+
+        return datetime.strptime(utc_date, "%Y-%m-%dT%H:%M:%S.%fZ").astimezone(timezone(local_timezone)).strftime("%Y-%m-%d %H:%M")
+    
+    raise ValueError("Formato de Data Invalida")

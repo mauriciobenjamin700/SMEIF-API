@@ -1,13 +1,23 @@
-from datetime import datetime
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
-from database.models import PresenceModel
+from database.models import (
+    ClassEventModel, 
+    PresenceModel
+)
+from schemas.classes import build_class_info
+
 from schemas.presence import (
     PresenceRequest,
-    PresenceDB
+    PresenceDB,
+    PresenceResponse
 )
-from services.generator.ids import id_generate
+from utils.format import (
+    format_data_utc_to_local, 
+    format_date
+)
+
 
 class PresenceRepository:
     def __init__(self, db_session: Session):
@@ -21,14 +31,22 @@ class PresenceRepository:
         
     
     def get(self, id: str) -> PresenceModel | None:
-        return self.db_session.query(PresenceModel).filter(PresenceModel.id == id).first()
+        return self.db_session.scalar(
+            select(PresenceModel)
+            .where(PresenceModel.id == id)
+        )
         
             
     def get_by_child_cpf(self, child_cpf: str) -> list[PresenceModel]:
-        return self.db_session.query(PresenceModel).filter(PresenceModel.child_cpf == child_cpf).all()
+        return self.db_session.scalars(
+            select(PresenceModel)
+            .where(PresenceModel.child_cpf == child_cpf)
+        ).all()
     
     def get_all(self) -> list[PresenceModel]:
-        return self.db_session.query(PresenceModel).all()
+        return self.db_session.scalars(
+            select(PresenceModel)
+        ).all()
     
 
     def update(self, model: PresenceModel) -> PresenceModel:
@@ -48,17 +66,26 @@ class PresenceRepository:
         return result
     
     
-    def map_model_to_response(self, model: PresenceModel):
-        pass
+    def map_model_to_response(self, model: PresenceModel) -> PresenceResponse:
+
+        class_event:ClassEventModel = model.class_event
+
+        duration = class_event.end_date - class_event.start_date 
+
+        return PresenceResponse(
+            **model.dict(exclude=["created_at"]),
+            created_at=format_data_utc_to_local(model.created_at),
+            date=format_date(class_event.start_date),
+            duration=str(duration),
+            class_info=build_class_info(class_event.class_)
+
+        )
     
     
-    def map_request_to_model(self, request: PresenceRequest, file_path: str | None = None):
+    def map_request_to_model(self, request: PresenceRequest) -> PresenceModel:
         
         to_db = PresenceDB(
-            id=id_generate(),
-            date=datetime.now(),
-            file_path=file_path,
             **request.dict(),
         )
 
-        return PresenceDB(**to_db.dict())
+        return PresenceModel(**to_db.dict())
